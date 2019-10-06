@@ -10,7 +10,54 @@ public class Enka {
     private State startState = null;
     private State acceptableState = null;
 
+    private Set<State> currentStates = new HashSet<>();
+
     private StringBuilder table = new StringBuilder();
+
+    public void reset() {
+        currentStates.clear();
+        currentStates.add(startState);
+    }
+
+    public EnkaStatus changeState(char c) {
+        int size = 0;
+        while (size != currentStates.size()) {
+            size = currentStates.size();
+            doEpsilonTransitions();
+        }
+        doLinkTransitions(c);
+        size = 0;
+        while (size != currentStates.size()) {
+            size = currentStates.size();
+            doEpsilonTransitions();
+        }
+
+        if (currentStates.isEmpty()) {
+            return EnkaStatus.DENIED;
+        } else if (currentStates.contains(acceptableState)) {
+            return EnkaStatus.ACCEPTED;
+        } else {
+            return EnkaStatus.IN_PROGRESS;
+        }
+    }
+
+    private void doEpsilonTransitions() {
+        Set<State> currentStatesCopy = new HashSet<>(currentStates);
+        for (State state: currentStatesCopy) {
+            currentStates.addAll(state.epsilonTrans);
+        }
+    }
+
+    private void doLinkTransitions(char c) {
+        Set<State> newCurrentStates = new HashSet<>();
+        for (State state: currentStates) {
+            Set<State> states = state.charTrans.get(c);
+            if (states != null) {
+                newCurrentStates.addAll(states);
+            }
+        }
+        currentStates = newCurrentStates;
+    }
 
     public void buildFromTable(String table) {
         states.clear();
