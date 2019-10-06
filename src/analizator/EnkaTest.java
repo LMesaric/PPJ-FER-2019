@@ -9,10 +9,33 @@ import java.nio.file.StandardOpenOption;
 public class EnkaTest {
 
     public static void main(String[] args) throws IOException {
-        Enka enka = new Enka();
         Path path = Paths.get("./src/analizator/enkaTable.txt");
-        String table = enka.buildTable("((1|2|3)ab|c)c");
+        String expression = "((1|2|3)ab|c)c";
+        generateTable(path, expression);
+        String simulate = "1abc";
+        System.out.println(simulateEnka(buildEnka(path), simulate));
+    }
+
+    private static void generateTable(Path path, String expression) throws IOException {
+        Enka enka = new Enka();
+        String table = enka.buildTable(expression);
         Files.write(path, table.getBytes(), StandardOpenOption.CREATE);
+    }
+
+    private static Enka buildEnka(Path path) throws IOException {
+        String table = new String(Files.readAllBytes(path));
+        Enka enka = new Enka();
+        enka.buildFromTable(table);
+        return enka;
+    }
+
+    private static EnkaStatus simulateEnka(Enka enka, String expression) {
+        EnkaStatus status = null;
+        enka.reset();
+        for (char c: expression.toCharArray()) {
+            status = enka.changeState(c);
+        }
+        return status;
     }
 
 }
