@@ -12,8 +12,9 @@ public class EnkaTest {
         Path path = Paths.get("./src/analizator/enkaTable.txt");
         String expression = "((1|2|3)ab|c)c";
         generateTable(path, expression);
+        Enka enka = buildEnka(path);
         String simulate = "1abc";
-        System.out.println(simulateEnka(buildEnka(path), simulate));
+        System.out.println(simulateEnka(enka, simulate));
     }
 
     private static void generateTable(Path path, String expression) throws IOException {
@@ -33,7 +34,7 @@ public class EnkaTest {
         EnkaStatus status = null;
         enka.reset();
         for (char c: expression.toCharArray()) {
-            status = enka.changeState(c);
+            status = enka.performTransition(c);
         }
         return status;
     }
