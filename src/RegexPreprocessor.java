@@ -19,15 +19,21 @@ public class RegexPreprocessor {
         Function<String, Matcher> matcherFactory = Pattern.compile("(\\{[a-zA-Z]+})")::matcher;
 
         for (int i = 0; i < input.length; ++i) {
-            String[] defDecl = input[i].split("\\s+");
-            Matcher m = matcherFactory.apply(defDecl[1]);
+            String line = input[i];
+            Matcher m = matcherFactory.apply(line);
 
             while (m.find()) {
-                defDecl[1] = defDecl[1].replace(m.group(), "(" + definitions.get(m.group()) + ")");
+                if (definitions.containsKey(m.group())) {
+                    line = line.replace(m.group(), "(" + definitions.get(m.group()) + ")");
+                }
             }
 
-            definitions.put(defDecl[0], defDecl[1]);
-            input[i] = defDecl[0] + ' ' + defDecl[1];
+            if (line.startsWith("{")) {
+                String[] kv = line.split("\\s+");
+                definitions.put(kv[0], kv[1]);
+            }
+
+            input[i] = line;
         }
 
         return input;

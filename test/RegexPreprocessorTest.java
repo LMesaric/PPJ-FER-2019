@@ -32,6 +32,23 @@ public class RegexPreprocessorTest {
                 }
             )
         );
+
+        assertArrayEquals(
+            new String[]{
+                "{var} var|\\?",
+                "<S_state>(var|\\?)|(var2) {",
+                "   -",
+                "}"
+            },
+            new RegexPreprocessor().parse(
+                new String[]{
+                    "{var} var|\\?",
+                    "<S_state>{var}|(var2) {",
+                    "   -",
+                    "}"
+                }
+            )
+        );
     }
 
 }
