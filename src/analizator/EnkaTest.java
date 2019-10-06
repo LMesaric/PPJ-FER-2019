@@ -4,23 +4,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 public class EnkaTest {
 
     public static void main(String[] args) throws IOException {
         Path path = Paths.get("./src/analizator/enkaTable.txt");
-        String expression = "((1|2|3)ab|c)c";
-        generateTable(path, expression);
         Enka enka = buildEnka(path);
         String simulate = "1abc";
         System.out.println(simulateEnka(enka, simulate));
-    }
-
-    private static void generateTable(Path path, String expression) throws IOException {
-        Enka enka = new Enka();
-        String table = enka.buildTable(expression);
-        Files.write(path, table.getBytes(), StandardOpenOption.CREATE);
     }
 
     private static Enka buildEnka(Path path) throws IOException {
