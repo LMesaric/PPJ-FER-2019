@@ -17,21 +17,12 @@ public class Enka {
     public void reset() {
         currentStates.clear();
         currentStates.add(startState);
+        doEpsilonTransitions();
     }
 
-    public EnkaStatus changeState(char c) {
-        int size = 0;
-        while (size != currentStates.size()) {
-            size = currentStates.size();
-            doEpsilonTransitions();
-        }
+    public EnkaStatus performTransition(char c) {
         doLinkTransitions(c);
-        size = 0;
-        while (size != currentStates.size()) {
-            size = currentStates.size();
-            doEpsilonTransitions();
-        }
-
+        doEpsilonTransitions();
         if (currentStates.isEmpty()) {
             return EnkaStatus.DENIED;
         } else if (currentStates.contains(acceptableState)) {
@@ -42,9 +33,13 @@ public class Enka {
     }
 
     private void doEpsilonTransitions() {
-        Set<State> currentStatesCopy = new HashSet<>(currentStates);
-        for (State state: currentStatesCopy) {
-            currentStates.addAll(state.epsilonTrans);
+        int size = 0;
+        while (size != currentStates.size()) {
+            size = currentStates.size();
+            Set<State> currentStatesCopy = new HashSet<>(currentStates);
+            for (State state: currentStatesCopy) {
+                currentStates.addAll(state.epsilonTrans);
+            }
         }
     }
 
