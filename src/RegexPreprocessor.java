@@ -28,7 +28,7 @@ public class RegexPreprocessor {
                 }
             }
 
-            if (line.startsWith("{")) {
+            if (line.length() > 1 && line.startsWith("{")) {
                 String[] kv = line.split("\\s+");
                 definitions.put(kv[0], kv[1]);
             }
