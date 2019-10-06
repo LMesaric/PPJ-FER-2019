@@ -1,5 +1,3 @@
-import analizator.Enka;
-
 import java.util.LinkedList;
 import java.util.List;
 

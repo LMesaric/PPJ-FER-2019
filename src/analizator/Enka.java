@@ -4,15 +4,11 @@ import java.util.*;
 
 public class Enka {
 
-    private static final char EPSILON = '$';
-
     private Map<Integer, State> states = new HashMap<>();
     private State startState = null;
     private State acceptableState = null;
 
     private Set<State> currentStates = new HashSet<>();
-
-    private StringBuilder table = new StringBuilder();
 
     public void reset() {
         currentStates.clear();
