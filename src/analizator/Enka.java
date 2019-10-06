@@ -2,7 +2,7 @@ package analizator;
 
 import java.util.*;
 
-public class Enka {
+class Enka {
 
     private Map<Integer, State> states = new HashMap<>();
     private State startState = null;
@@ -10,13 +10,13 @@ public class Enka {
 
     private Set<State> currentStates = new HashSet<>();
 
-    public void reset() {
+    void reset() {
         currentStates.clear();
         currentStates.add(startState);
         doEpsilonTransitions();
     }
 
-    public EnkaStatus performTransition(char c) {
+    EnkaStatus performTransition(char c) {
         doLinkTransitions(c);
         doEpsilonTransitions();
         if (currentStates.isEmpty()) {
@@ -50,7 +50,7 @@ public class Enka {
         currentStates = newCurrentStates;
     }
 
-    public void buildFromTable(String table) {
+    void buildFromTable(String table) {
         states.clear();
         String[] rows = table.split("\n");
         for (String row: rows) {

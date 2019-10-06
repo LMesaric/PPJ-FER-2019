@@ -1,7 +1,7 @@
 import java.util.LinkedList;
 import java.util.List;
 
-public class TableGenerator {
+class TableGenerator {
 
     private static final char EPSILON = '$';
 
@@ -14,7 +14,7 @@ public class TableGenerator {
         stateId = 0;
     }
 
-    public String buildTable(String expression) {
+    String buildTable(String expression) {
         reset();
         build(expression);
         return table.toString();
