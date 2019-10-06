@@ -4,11 +4,50 @@ import java.util.*;
 
 public class Enka {
 
+    private static final char EPSILON = '$';
+
+    private Map<Integer, State> states = new HashMap<>();
     private State startState = null;
     private State acceptableState = null;
+
     private StringBuilder table = new StringBuilder();
 
-    private static final char EPSILON = '$';
+    public void buildFromTable(String table) {
+        states.clear();
+        String[] rows = table.split("\n");
+        for (String row: rows) {
+            String[] columns = row.split(" ");
+            char link = (char) Integer.parseInt(columns[0]);
+            int stateIdLeft = Integer.parseInt(columns[1]);
+            State left = putIfAbsentAndReturn(stateIdLeft);
+            int stateIdRight = Integer.parseInt(columns[2]);
+            State right = putIfAbsentAndReturn(stateIdRight);
+
+            if (link == '$') {
+                epsilonLinkState(left, right);
+            } else {
+                charLinkState(left, right, link);
+            }
+        }
+        startState = states.get(0);
+        acceptableState = states.get(1);
+    }
+
+    private State putIfAbsentAndReturn(int stateId) {
+        states.putIfAbsent(stateId, new State(stateId));
+        return states.get(stateId);
+    }
+
+    private void epsilonLinkState(State left, State right) {
+        left.epsilonTrans.add(right);
+    }
+
+    private void charLinkState(State left, State right, char link) {
+        if (!left.charTrans.containsKey(link)) {
+            left.charTrans.put(link, new HashSet<>());
+        }
+        left.charTrans.get(link).add(right);
+    }
 
     public String buildTable(String expression) {
         table.setLength(0);
@@ -118,7 +157,7 @@ public class Enka {
         epsilonLink(last, right);
     }
 
-    private static int indexOfClosingBracket(String expression, int index) {
+    private int indexOfClosingBracket(String expression, int index) {
         int closingBracket = index;
         int brackets = 0;
         while (expression.charAt(closingBracket) != ')' || brackets != 0) {
@@ -152,6 +191,10 @@ public class Enka {
 
         State() {
             id = stateId++;
+        }
+
+        State(int id) {
+            this.id = id;
         }
 
     }
