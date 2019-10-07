@@ -111,7 +111,7 @@ class TableGenerator {
             } else {
                 a = generateStateId();
                 b = generateStateId();
-                if (c == '$') {
+                if (c == Enka.EPSILON) {
                     epsilonLink(a, b);
                 } else {
                     charLink(a, b, c);
