@@ -15,7 +15,7 @@ public class TableGeneratorTest {
     private static void generateTable(Path path, String expression) throws IOException {
         TableGenerator generator = new TableGenerator();
         String table = generator.buildTable(expression);
-        Files.write(path, table.getBytes(), StandardOpenOption.CREATE);
+        Files.write(path, table.getBytes());
     }
 
 }
