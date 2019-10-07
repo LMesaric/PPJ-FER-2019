@@ -1,6 +1,9 @@
 package analizator;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class Enka {
 
@@ -33,7 +36,7 @@ public class Enka {
         while (size != currentStates.size()) {
             size = currentStates.size();
             Set<State> currentStatesCopy = new HashSet<>(currentStates);
-            for (State state: currentStatesCopy) {
+            for (State state : currentStatesCopy) {
                 currentStates.addAll(state.epsilonTrans);
             }
         }
@@ -41,7 +44,7 @@ public class Enka {
 
     private void doLinkTransitions(char c) {
         Set<State> newCurrentStates = new HashSet<>();
-        for (State state: currentStates) {
+        for (State state : currentStates) {
             Set<State> states = state.charTrans.get(c);
             if (states != null) {
                 newCurrentStates.addAll(states);
@@ -53,7 +56,7 @@ public class Enka {
     public void buildFromTable(String table) {
         states.clear();
         String[] rows = table.split("\n");
-        for (String row: rows) {
+        for (String row : rows) {
             String[] columns = row.split(" ");
             char link = (char) Integer.parseInt(columns[0]);
             int stateIdLeft = Integer.parseInt(columns[1]);
