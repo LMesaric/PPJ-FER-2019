@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,7 +32,7 @@ class EnkaTest {
         assertEquals(testEnka("(a|b|\\_)((1|2|3)ab|c)c", " cc"), EnkaStatus.ACCEPTED);
     }
 
-    EnkaStatus testEnka(String expression, String simulate) throws IOException {
+    private EnkaStatus testEnka(String expression, String simulate) throws IOException {
         generateTable(expression);
         Enka enka = buildEnka(path);
         return simulateEnka(enka, simulate);

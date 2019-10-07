@@ -1,9 +1,9 @@
+import analizator.Enka;
+
 import java.util.LinkedList;
 import java.util.List;
 
 class TableGenerator {
-
-    private static final char EPSILON = '$';
 
     private int stateId;
 
@@ -68,7 +68,7 @@ class TableGenerator {
     }
 
     private void epsilonLink(int left, int right) {
-        table.append(String.format("%d %d %d\n", (int) EPSILON, left, right));
+        table.append(String.format("%d %d %d\n", (int) Enka.EPSILON, left, right));
     }
 
     private void charLink(int left, int right, char link) {
