@@ -26,7 +26,7 @@ class TableGenerator {
         int right = generateStateId();
 
         if (Choices.size() > 1) {
-            for (String choice: Choices) {
+            for (String choice : Choices) {
                 Pair tmp = build(choice);
                 epsilonLink(left, tmp.left);
                 epsilonLink(tmp.right, right);

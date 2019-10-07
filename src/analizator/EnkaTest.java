@@ -24,7 +24,7 @@ public class EnkaTest {
     private static EnkaStatus simulateEnka(Enka enka, String expression) {
         EnkaStatus status = null;
         enka.reset();
-        for (char c: expression.toCharArray()) {
+        for (char c : expression.toCharArray()) {
             status = enka.performTransition(c);
         }
         return status;
