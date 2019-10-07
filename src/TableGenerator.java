@@ -129,6 +129,7 @@ class TableGenerator {
         while (expression.charAt(closingBracket) != ')' || brackets != 0) {
             if (expression.charAt(closingBracket) == '(') brackets++;
             if (expression.charAt(closingBracket) == ')') brackets--;
+            if (expression.charAt(closingBracket) == '\\') closingBracket++;
             if (++closingBracket >= expression.length()) return -1;
         }
         return closingBracket;
