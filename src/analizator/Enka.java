@@ -47,9 +47,9 @@ public class Enka {
     private void doLinkTransitions(char c) {
         Set<State> newCurrentStates = new HashSet<>();
         for (State state : currentStates) {
-            Set<State> states = state.charTrans.get(c);
-            if (states != null) {
-                newCurrentStates.addAll(states);
+            Set<State> newStates = state.charTrans.get(c);
+            if (newStates != null) {
+                newCurrentStates.addAll(newStates);
             }
         }
         currentStates = newCurrentStates;
@@ -65,7 +65,6 @@ public class Enka {
             State left = putIfAbsentAndReturn(stateIdLeft);
             int stateIdRight = Integer.parseInt(columns[2]);
             State right = putIfAbsentAndReturn(stateIdRight);
-
             if (link == EPSILON) {
                 epsilonLinkState(left, right);
             } else {

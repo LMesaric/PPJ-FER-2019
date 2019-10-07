@@ -10,8 +10,8 @@ class TableGenerator {
     private StringBuilder table = new StringBuilder();
 
     private void reset() {
-        table.setLength(0);
         stateId = 0;
+        table.setLength(0);
     }
 
     String buildTable(String expression) {
@@ -25,6 +25,7 @@ class TableGenerator {
         int left = generateStateId();
         int right = generateStateId();
 
+        // Determine whether given expression should be separated
         if (Choices.size() > 1) {
             for (String choice : Choices) {
                 Pair tmp = build(choice);
@@ -49,6 +50,7 @@ class TableGenerator {
         for (int index = 0; index < expression.length(); index++) {
             char c = expression.charAt(index);
             if (c == '\\') {
+                // Escape next character
                 Choice.append(c);
                 index++;
                 c = expression.charAt(index);
@@ -80,7 +82,6 @@ class TableGenerator {
         for (int index = 0; index < expression.length(); index++) {
             char c = expression.charAt(index);
             int a, b;
-
             if (c == '\\') {
                 if (index >= expression.length() - 1) break;
                 index++;
@@ -98,7 +99,6 @@ class TableGenerator {
                 a = generateStateId();
                 b = generateStateId();
                 charLink(a, b, link);
-
             } else if (c == '(') {
                 int closingBracket = indexOfClosingBracket(expression, index + 1);
                 if (closingBracket == -1) {
@@ -129,6 +129,7 @@ class TableGenerator {
         while (expression.charAt(closingBracket) != ')' || brackets != 0) {
             if (expression.charAt(closingBracket) == '(') brackets++;
             if (expression.charAt(closingBracket) == ')') brackets--;
+            // Ignore escaped character
             if (expression.charAt(closingBracket) == '\\') closingBracket++;
             if (++closingBracket >= expression.length()) return -1;
         }
@@ -144,6 +145,7 @@ class TableGenerator {
             this.left = left;
             this.right = right;
         }
+
     }
 
 }
