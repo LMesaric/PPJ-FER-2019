@@ -30,6 +30,12 @@ class EnkaTest {
         assertEquals(testEnka("(a|b|\\n)((1|2|3)ab|c)c", "a1abc"), EnkaStatus.ACCEPTED);
 
         assertEquals(testEnka("(a|b|\\_)((1|2|3)ab|c)c", " cc"), EnkaStatus.ACCEPTED);
+
+        assertEquals(testEnka("(a|b|\\))((1|2|3)ab|c)c", ")cc"), EnkaStatus.ACCEPTED);
+        assertEquals(testEnka("(a|b|\\))((1|2|3)ab|c)c", ")1abc"), EnkaStatus.ACCEPTED);
+
+        assertEquals(testEnka("(a|b|\\()((1|2|3)ab|c)c", "(cc"), EnkaStatus.ACCEPTED);
+        assertEquals(testEnka("(a|b|\\()((1|2|3)ab|c)c", "(1abc"), EnkaStatus.ACCEPTED);
     }
 
     private EnkaStatus testEnka(String expression, String simulate) throws IOException {
