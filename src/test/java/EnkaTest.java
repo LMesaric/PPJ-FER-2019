@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EnkaTest {
 
-    private Path path = Paths.get("./src/analizator/enkaTable.txt");
+    private Path path = Paths.get("./src/main/java/analizator/enkaTable.txt");
 
     @Test
     void test() throws IOException {
