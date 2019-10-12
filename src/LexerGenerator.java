@@ -33,7 +33,7 @@ public class LexerGenerator {
                 return i + 1;
             }
         }
-        return input.length;
+        throw new IllegalStateException();
     }
 
     private static int addState(Map<String, StringBuilder> states, String[] input, int index) {
