@@ -4,6 +4,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+// State description:
+// STATE:
+// <state name>
+// TABLE:
+// <enka table for regex>
+// ACTIONS:
+// <list of actions to be performed>
+// TABLE:
+// ...
 public class LexerGenerator {
 
     public static void main(String[] args) throws IOException {
@@ -14,12 +23,15 @@ public class LexerGenerator {
             }
         }
         RegexPreprocessor rp = new RegexPreprocessor();
+        // Expand regular expressions
         String input = rp.parse(readInput.toString());
         generateFinalTable(input.split("\n"));
     }
 
     private static void generateFinalTable(String[] input) throws IOException {
+        // Maps each state to its description
         Map<String, StringBuilder> states = new HashMap<>();
+        // Ignore all irrelevant lines
         String[] relevantInput = Arrays.copyOfRange(input, ignoreIrrelevantInput(input), input.length);
         for (int i = 0; i < relevantInput.length; i++) {
             i = addState(states, relevantInput, i);
@@ -37,6 +49,7 @@ public class LexerGenerator {
     }
 
     private static int addState(Map<String, StringBuilder> states, String[] input, int index) {
+        // Extract state name
         StringBuilder stateBuilder = new StringBuilder();
         int i = 1;
         for (; i < input[index].length() && input[index].charAt(i) != '>'; i++) {
@@ -44,6 +57,7 @@ public class LexerGenerator {
         }
         String state = stateBuilder.toString();
 
+        // Build table for the regex appended to the state name
         TableGenerator tg = new TableGenerator();
         String table = tg.buildTable(input[index].substring(i + 1));
 
