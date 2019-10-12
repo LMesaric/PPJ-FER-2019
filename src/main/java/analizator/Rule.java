@@ -4,18 +4,12 @@ import java.util.List;
 
 public class Rule {
 
-    private String state;
     private Enka enka;
     private List<String> actions;
 
-    public Rule(String state, Enka enka, List<String> actions) {
-        this.state = state;
+    public Rule(Enka enka, List<String> actions) {
         this.enka = enka;
         this.actions = actions;
-    }
-
-    public String getState() {
-        return state;
     }
 
     public Enka getEnka() {

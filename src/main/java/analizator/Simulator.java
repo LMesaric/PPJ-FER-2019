@@ -1,55 +1,77 @@
 package analizator;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class Simulator {
 
-    private List<Rule> allRules;
-    private Map<String, Rule> rulesMap;
-    private Rule startingRule;
+    private String startingState;
+    private Map<String, List<Rule>> stateRules;
+    private char[] input;
+    private Consumer<String> outputConsumer;
+    private Consumer<String> errorConsumer;
 
-    public Simulator(BufferedReader definitionReader) throws IOException {
-        while (true) {
-            Rule rule = loadSingleDefinition(definitionReader);
-            if (rule == null) break;
-            allRules.add(rule);
-            rulesMap.put(rule.getState(), rule);
+    private String currentState;
+
+
+    public Simulator(String startingState, Map<String, List<Rule>> stateRules, String input,
+                     Consumer<String> outputConsumer, Consumer<String> errorConsumer) {
+        this.startingState = startingState;
+        this.stateRules = stateRules;
+        this.input = input.toCharArray();
+        this.outputConsumer = outputConsumer;
+        this.errorConsumer = errorConsumer;
+    }
+
+    public void simulate() {
+        currentState = startingState;
+        int firstPos = 0;
+        int line = 1;
+
+        while (firstPos < input.length) {
+            List<Rule> rules = stateRules.get(currentState);
+            rules.forEach(r -> r.getEnka().reset());
+            int currPos = firstPos;
+            int lastPos = -1;
+            Rule matchedRule = null;
+
+            while (currPos < input.length) {
+                char c = input[currPos];
+                currPos++;
+                performTransitions(rules, c);
+
+                matchedRule = getFirstAccepted(rules);
+                if (matchedRule != null) {
+                    lastPos = currPos;
+                } else if (isAllDenied(rules)) {
+                    break;
+                }
+            }
+
+            if (matchedRule != null) {
+                firstPos = lastPos;
+                // DO ACTIONS
+            } else {
+                errorConsumer.accept(String.format("Error pos: %d, line: %d, char: %c", firstPos, line, input[firstPos]));
+                firstPos++;
+            }
         }
     }
 
-    private Rule loadSingleDefinition(BufferedReader definitionReader) throws IOException {
-        if (definitionReader.readLine() == null) return null;
-
-        String state = definitionReader.readLine().trim();
-        definitionReader.readLine();
-
-        StringBuilder sb = new StringBuilder();
-        while (true) {
-            String line = definitionReader.readLine().trim();
-            if (line.startsWith("ACTIONS")) break;
-            sb.append(line + "\n");
+    private Rule getFirstAccepted(List<Rule> rules) {
+        for (Rule rule : rules) {
+            if (rule.getEnka().getLastStatus() == EnkaStatus.ACCEPTED) return rule;
         }
-        sb.deleteCharAt(sb.length() - 1);
-        Enka enka = new Enka();
-        enka.buildFromTable(sb.toString());
-
-        List<String> actions = new ArrayList<>();
-        while (true) {
-            String line = definitionReader.readLine().trim();
-            if (line.startsWith("STATE")) break;
-            actions.add(line);
-        }
-
-        return new Rule(state, enka, actions);
+        return null;
     }
 
-    public void simulate(String input, BufferedWriter resultWriter) {
+    private boolean isAllDenied(List<Rule> rules) {
+        return rules.stream().noneMatch(rule -> rule.getEnka().getLastStatus() != EnkaStatus.DENIED);
+    }
 
+    private void performTransitions(List<Rule> rules, char c) {
+        rules.forEach(rule -> rule.getEnka().performTransition(c));
     }
 
 }
