@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 public class EnkaTest {
 
     public static void main(String[] args) throws IOException {
-        Path path = Paths.get("./src/analizator/enkaTable.txt");
+        Path path = Paths.get("./src/main/java/analizator/enkaTable.txt");
         Enka enka = buildEnka(path);
         String simulate = "1abc";
         System.out.println(simulateEnka(enka, simulate));

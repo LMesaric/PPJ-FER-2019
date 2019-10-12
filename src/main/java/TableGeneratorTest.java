@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 public class TableGeneratorTest {
 
     public static void main(String[] args) throws IOException {
-        Path path = Paths.get("./src/analizator/enkaTable.txt");
+        Path path = Paths.get("./src/main/java/analizator/enkaTable.txt");
         String expression = "((1|2|3)ab|c)c";
         generateTable(path, expression);
     }
