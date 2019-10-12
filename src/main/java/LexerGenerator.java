@@ -73,7 +73,7 @@ public class LexerGenerator {
     }
 
     private static void createTable(Map<String, StringBuilder> states) throws IOException {
-        Path path = Paths.get("./src/analizator/generated.txt");
+        Path path = Paths.get("./src/main/java/analizator/generated.txt");
         StringBuilder table = new StringBuilder();
         for (Map.Entry<String, StringBuilder> entry: states.entrySet()) {
             table.append("STATE:\n").append(entry.getKey()).append("\n").append(entry.getValue());
