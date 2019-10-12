@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -6,18 +5,18 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegexPreprocessor {
+class RegexPreprocessor {
 
-    private Map<String, String> definitions = new HashMap<>();
-
-    public String parse(String input) {
+    static String[] parse(String input) {
         Objects.requireNonNull(input, "Input can not be null.");
-        return Arrays.stream(parse(input.split("\\r?\\n"))).reduce((s1, s2) -> s1 + '\n' + s2).get();
+        return parse(input.split("\\r?\\n"));
     }
 
     // modifies the input, return is here purely because of parse(String)
-    public String[] parse(String[] input) {
+    static String[] parse(String[] input) {
         Objects.requireNonNull(input, "Input can not be null.");
+
+        Map<String, String> definitions = new HashMap<>();
 
         Function<String, Matcher> matcherFactory = Pattern.compile("(\\{[a-zA-Z]+})")::matcher;
 
