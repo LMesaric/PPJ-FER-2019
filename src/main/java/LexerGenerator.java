@@ -2,10 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 // S_starting_state
 // STATE:
@@ -39,7 +36,7 @@ public class LexerGenerator {
 
     private static void generateFinalTable(String[] input) throws IOException {
         // Maps each state to its description
-        Map<String, StringBuilder> states = new HashMap<>();
+        Map<String, StringBuilder> states = new LinkedHashMap<>();
         // Ignore all irrelevant lines
         String[] relevantInput = Arrays.copyOfRange(input, ignoreIrrelevantInput(input), input.length);
         for (int i = 0; i < relevantInput.length; i++) {
