@@ -21,6 +21,7 @@ import java.util.*;
 // ACTIONS:
 // <list of actions to be performed>
 // ...
+// ENDRULE
 // ENDSTATE
 // STATE:
 // ...
