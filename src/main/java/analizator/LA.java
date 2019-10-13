@@ -27,14 +27,12 @@ import java.util.*;
 // ...
 public class LA {
 
-    public static String DEFINITION_FILENAME = "./src/main/java/analizator/generated.txt";
-
     public static void main(String[] args) throws IOException {
         String inputText = new String(readAllFromStdin(), StandardCharsets.UTF_8);
         String startingState;
         Map<String, List<Rule>> stateRules;
 
-        try (BufferedReader reader = Files.newBufferedReader(Paths.get(DEFINITION_FILENAME))) {
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(Constants.DEFINITION_FILENAME))) {
             startingState = reader.readLine().trim();
             stateRules = loadStateRules(reader);
         }

@@ -7,8 +7,6 @@ import java.util.Set;
 
 public class Enka {
 
-    public static final char EPSILON = '$';
-
     private Map<Integer, State> states = new HashMap<>();
     private State startState = null;
     private State acceptableState = null;
@@ -78,7 +76,7 @@ public class Enka {
             State left = putIfAbsentAndReturn(stateIdLeft);
             int stateIdRight = Integer.parseInt(columns[2]);
             State right = putIfAbsentAndReturn(stateIdRight);
-            if (link == EPSILON) {
+            if (link == Constants.EPSILON) {
                 epsilonLinkState(left, right);
             } else {
                 charLinkState(left, right, link);

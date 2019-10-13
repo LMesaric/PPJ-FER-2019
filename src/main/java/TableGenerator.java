@@ -1,5 +1,3 @@
-import analizator.Enka;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,7 +68,7 @@ class TableGenerator {
     }
 
     private void epsilonLink(int left, int right) {
-        table.append(String.format("%d %d %d\n", (int) Enka.EPSILON, left, right));
+        table.append(String.format("%d %d %d\n", (int) Constants.EPSILON, left, right));
     }
 
     private void charLink(int left, int right, char link) {
@@ -113,7 +111,7 @@ class TableGenerator {
             } else {
                 a = generateStateId();
                 b = generateStateId();
-                if (c == Enka.EPSILON) {
+                if (c == Constants.EPSILON) {
                     epsilonLink(a, b);
                 } else {
                     charLink(a, b, c);
