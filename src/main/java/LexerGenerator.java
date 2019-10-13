@@ -7,14 +7,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-// State description:
+// S_starting_state
 // STATE:
-// <state name>
+// S_state
 // TABLE:
 // <enka table for regex>
 // ACTIONS:
 // <list of actions to be performed>
+// ENDRULE
 // TABLE:
+// <enka table for regex>
+// ACTIONS:
+// <list of actions to be performed>
+// ...
+// ENDRULE
+// ENDSTATE
+// STATE:
 // ...
 public class LexerGenerator {
 

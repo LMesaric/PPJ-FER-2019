@@ -40,6 +40,7 @@ public class LA {
         }
 
         Simulator simulator = new Simulator(startingState, stateRules, inputText, System.out::println, System.err::println);
+        simulator.simulate();
     }
 
     private static Map<String, List<Rule>> loadStateRules(BufferedReader reader) throws IOException {
