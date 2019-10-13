@@ -91,6 +91,8 @@ class TableGenerator {
                     link = '\t';
                 } else if (next == 'n') {
                     link = '\n';
+                } else if (next == 'r') {
+                    link = '\r';
                 } else if (next == '_') {
                     link = ' ';
                 } else {
