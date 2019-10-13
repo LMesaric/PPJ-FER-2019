@@ -23,7 +23,7 @@ import java.util.*;
 // ENDSTATE
 // STATE:
 // ...
-public class LexerGenerator {
+public class GLA {
 
     public static void main(String[] args) throws IOException {
         StringBuilder readInput = new StringBuilder();
