@@ -28,15 +28,17 @@ public class LA {
 
     public static String DEFINITION_FILENAME = "generated.txt";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String inputText = new String(readAllFromStdin(), StandardCharsets.UTF_8);
+        String startingState;
+        Map<String, List<Rule>> stateRules;
 
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(DEFINITION_FILENAME))) {
-            String startingState = reader.readLine().trim();
-            Map<String, List<Rule>> stateRules = loadStateRules(reader);
-        } catch (IOException e) {
-            e.printStackTrace();
+            startingState = reader.readLine().trim();
+            stateRules = loadStateRules(reader);
         }
+
+        Simulator simulator = new Simulator(startingState, stateRules, inputText, System.out::println, System.err::println);
     }
 
     private static Map<String, List<Rule>> loadStateRules(BufferedReader reader) throws IOException {
