@@ -2,19 +2,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
-// State description:
+// S_starting_state
 // STATE:
-// <state name>
+// S_state
 // TABLE:
 // <enka table for regex>
 // ACTIONS:
 // <list of actions to be performed>
+// ENDRULE
 // TABLE:
+// <enka table for regex>
+// ACTIONS:
+// <list of actions to be performed>
+// ...
+// ENDRULE
+// ENDSTATE
+// STATE:
 // ...
 public class LexerGenerator {
 
@@ -31,13 +36,24 @@ public class LexerGenerator {
 
     private static void generateFinalTable(String[] input) throws IOException {
         // Maps each state to its description
-        Map<String, StringBuilder> states = new HashMap<>();
+        Map<String, StringBuilder> states = new LinkedHashMap<>();
         // Ignore all irrelevant lines
         String[] relevantInput = Arrays.copyOfRange(input, ignoreIrrelevantInput(input), input.length);
         for (int i = 0; i < relevantInput.length; i++) {
             i = addState(states, relevantInput, i);
         }
-        createTable(states);
+
+        String startingState = getStartingState(input);
+        createTable(startingState, states);
+    }
+
+    private static String getStartingState(String[] input) {
+        for (String line : input) {
+            if (line.startsWith("%X")) {
+                return line.split("\\s")[1];
+            }
+        }
+        throw new IllegalStateException();
     }
 
     private static int ignoreIrrelevantInput(String[] input) {
@@ -68,16 +84,17 @@ public class LexerGenerator {
         }
 
         states.putIfAbsent(state, new StringBuilder());
-        states.get(state).append("TABLE:\n").append(table).append("ACTIONS:\n").append(actions);
+        states.get(state).append("TABLE:\n").append(table).append("ACTIONS:\n").append(actions).append("ENDRULE\n");
 
         return index;
     }
 
-    private static void createTable(Map<String, StringBuilder> states) throws IOException {
+    private static void createTable(String startingState, Map<String, StringBuilder> states) throws IOException {
         Path path = Paths.get("./src/main/java/analizator/generated.txt");
         StringBuilder table = new StringBuilder();
+        table.append(startingState + "\n");
         for (Map.Entry<String, StringBuilder> entry : states.entrySet()) {
-            table.append("STATE:\n").append(entry.getKey()).append("\n").append(entry.getValue());
+            table.append("STATE:\n").append(entry.getKey()).append("\n").append(entry.getValue()).append("ENDSTATE\n");
         }
         Files.write(path, table.toString().getBytes());
     }

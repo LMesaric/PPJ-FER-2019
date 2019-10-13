@@ -15,7 +15,10 @@ public class Enka {
 
     private Set<State> currentStates = new HashSet<>();
 
+    private EnkaStatus lastStatus = EnkaStatus.IN_PROGRESS;
+
     public void reset() {
+        lastStatus = EnkaStatus.IN_PROGRESS;
         currentStates.clear();
         currentStates.add(startState);
         doEpsilonTransitions();
@@ -25,12 +28,17 @@ public class Enka {
         doLinkTransitions(c);
         doEpsilonTransitions();
         if (currentStates.isEmpty()) {
-            return EnkaStatus.DENIED;
+            lastStatus = EnkaStatus.DENIED;
         } else if (currentStates.contains(acceptableState)) {
-            return EnkaStatus.ACCEPTED;
+            lastStatus =  EnkaStatus.ACCEPTED;
         } else {
-            return EnkaStatus.IN_PROGRESS;
+            lastStatus =  EnkaStatus.IN_PROGRESS;
         }
+        return lastStatus;
+    }
+
+    public EnkaStatus getLastStatus() {
+        return lastStatus;
     }
 
     private void doEpsilonTransitions() {
