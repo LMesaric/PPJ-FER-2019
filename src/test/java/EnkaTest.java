@@ -42,6 +42,13 @@ class EnkaTest {
 
         assertEquals(testEnka("(a|b|\\()((1|2|3)ab|c)c", "(cc"), EnkaStatus.ACCEPTED);
         assertEquals(testEnka("(a|b|\\()((1|2|3)ab|c)c", "(1abc"), EnkaStatus.ACCEPTED);
+
+        assertEquals(testEnka("1*2*", ""), EnkaStatus.ACCEPTED);
+        assertEquals(testEnka("1*2*", "112"), EnkaStatus.ACCEPTED);
+        assertEquals(testEnka("1*2*", "11"), EnkaStatus.ACCEPTED);
+        assertEquals(testEnka("1*2*", "22"), EnkaStatus.ACCEPTED);
+        assertEquals(testEnka("1*2*", "1"), EnkaStatus.ACCEPTED);
+        assertEquals(testEnka("1*2*", "2"), EnkaStatus.ACCEPTED);
     }
 
     private EnkaStatus testEnka(String expression, String simulate) throws IOException {
@@ -64,8 +71,8 @@ class EnkaTest {
     }
 
     private static EnkaStatus simulateEnka(Enka enka, String expression) {
-        EnkaStatus status = null;
         enka.reset();
+        EnkaStatus status = enka.getLastStatus();
         for (char c : expression.toCharArray()) {
             status = enka.performTransition(c);
         }
