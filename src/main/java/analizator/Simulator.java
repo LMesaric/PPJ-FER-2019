@@ -34,46 +34,52 @@ public class Simulator {
             rules.forEach(r -> r.getEnka().reset());
             int currPos = firstPos;
             int lastPos = -1;
-            Rule matchedRule = null;
+            Rule lastMatched = null;
 
             while (currPos < input.length) {
                 char c = input[currPos];
                 currPos++;
                 performTransitions(rules, c);
 
-                matchedRule = getFirstAccepted(rules);
-                if (matchedRule != null) {
+                Rule currentMatched = getFirstAccepted(rules);
+                if (currentMatched != null) {
+                    lastMatched = currentMatched;
                     lastPos = currPos;
                 } else if (isAllDenied(rules)) {
                     break;
                 }
             }
 
-            if (matchedRule == null) {
+            if (lastMatched == null) {
                 errorConsumer.accept(String.format("Error pos: %d, line: %d, char: %c", firstPos, line, input[firstPos]));
                 firstPos++;
             } else {
-                if (matchedRule.getTakeOnlyNChars() != null) {
-                    lastPos = firstPos + matchedRule.getTakeOnlyNChars() + 1;
+                if (lastMatched.getTakeOnlyNChars() != null) {
+                    lastPos = firstPos + lastMatched.getTakeOnlyNChars() + 1;
                 }
 
-                if (matchedRule.getTokenName() != null) {
+                if (lastMatched.getTokenName() != null) {
                     String str = new String(input, firstPos, lastPos - firstPos);
-                    outputConsumer.accept(String.format("%s %d %s", matchedRule.getTokenName(), line, str));
+                    outputConsumer.accept(String.format("%s %d %s", lastMatched.getTokenName(), line, str));
                 } else {
                     // Do nothing
+                    debug(String.format("DEBUG: POS: %d STATE: %s, str: %s", firstPos, currentState, new String(input, firstPos, lastPos - firstPos)));
                 }
 
-                if (matchedRule.getNextLexerState() != null) {
-                    currentState = matchedRule.getNextLexerState();
+                if (lastMatched.getNextLexerState() != null) {
+                    currentState = lastMatched.getNextLexerState();
                 }
-                if (matchedRule.isGoToNewLine()) {
+                if (lastMatched.isGoToNewLine()) {
                     line++;
                 }
                 firstPos = lastPos;
             }
 
         }
+    }
+
+    private void debug(String format) {
+        System.err.println(format);
     }
 
     private Rule getFirstAccepted(List<Rule> rules) {

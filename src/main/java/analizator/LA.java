@@ -27,7 +27,7 @@ import java.util.*;
 // ...
 public class LA {
 
-    public static String DEFINITION_FILENAME = "generated.txt";
+    public static String DEFINITION_FILENAME = "./src/main/java/analizator/generated.txt";
 
     public static void main(String[] args) throws IOException {
         String inputText = new String(readAllFromStdin(), StandardCharsets.UTF_8);
