@@ -49,13 +49,30 @@ public class Simulator {
                 }
             }
 
-            if (matchedRule != null) {
-                firstPos = lastPos;
-                // DO ACTIONS
-            } else {
+            if (matchedRule == null) {
                 errorConsumer.accept(String.format("Error pos: %d, line: %d, char: %c", firstPos, line, input[firstPos]));
                 firstPos++;
+            } else {
+                if (matchedRule.getTakeOnlyNChars() != null) {
+                    lastPos = firstPos + matchedRule.getTakeOnlyNChars() + 1;
+                }
+
+                if (matchedRule.getTokenName() != null) {
+                    String str = new String(input, firstPos, lastPos - firstPos);
+                    outputConsumer.accept(String.format("%s %d %s", matchedRule.getTokenName(), line, str));
+                } else {
+                    // Do nothing
+                }
+
+                if (matchedRule.getNextLexerState() != null) {
+                    currentState = matchedRule.getNextLexerState();
+                }
+                if (matchedRule.isGoToNewLine()) {
+                    line++;
+                }
+                firstPos = lastPos;
             }
+
         }
     }
 
