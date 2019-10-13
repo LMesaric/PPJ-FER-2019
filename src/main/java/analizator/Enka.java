@@ -18,6 +18,7 @@ public class Enka {
     private EnkaStatus lastStatus = EnkaStatus.IN_PROGRESS;
 
     public void reset() {
+        lastStatus = EnkaStatus.IN_PROGRESS;
         currentStates.clear();
         currentStates.add(startState);
         doEpsilonTransitions();
