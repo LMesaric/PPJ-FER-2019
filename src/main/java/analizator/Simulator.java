@@ -63,7 +63,7 @@ public class Simulator {
                     outputConsumer.accept(String.format("%s %d %s", lastMatched.getTokenName(), line, str));
                 } else {
                     // Do nothing
-                    debug(String.format("DEBUG: POS: %d STATE: %s, str: %s", firstPos, currentState, new String(input, firstPos, lastPos - firstPos)));
+                    //debug(String.format("DEBUG: POS: %d STATE: %s, str: %s", firstPos, currentState, new String(input, firstPos, lastPos - firstPos)));
                 }
 
                 if (lastMatched.getNextLexerState() != null) {
