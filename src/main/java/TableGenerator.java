@@ -68,7 +68,7 @@ class TableGenerator {
     }
 
     private void epsilonLink(int left, int right) {
-        table.append(String.format("%d %d %d\n", (int) Constants.EPSILON, left, right));
+        table.append(String.format("%d %d\n", left, right));
     }
 
     private void charLink(int left, int right, char link) {
