@@ -1,5 +1,6 @@
 import analizator.Enka;
 import analizator.EnkaStatus;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -11,7 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EnkaTest {
 
-    private Path path = Paths.get("./src/main/java/analizator/enkaTable.txt");
+    private static Path path = Paths.get("./src/test/java/enkaTable.txt");
+
+    @AfterAll
+    static void deleteGeneratedFile() throws IOException {
+        Files.deleteIfExists(path);
+    }
 
     @Test
     void test() throws IOException {
@@ -60,7 +66,7 @@ class EnkaTest {
     private static EnkaStatus simulateEnka(Enka enka, String expression) {
         EnkaStatus status = null;
         enka.reset();
-        for (char c: expression.toCharArray()) {
+        for (char c : expression.toCharArray()) {
             status = enka.performTransition(c);
         }
         return status;

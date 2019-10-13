@@ -2,7 +2,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 // State description:
 // STATE:
@@ -22,10 +25,8 @@ public class LexerGenerator {
                 readInput.append(sc.nextLine()).append("\n");
             }
         }
-        RegexPreprocessor rp = new RegexPreprocessor();
         // Expand regular expressions
-        String input = rp.parse(readInput.toString());
-        generateFinalTable(input.split("\n"));
+        generateFinalTable(RegexPreprocessor.parse(readInput.toString()));
     }
 
     private static void generateFinalTable(String[] input) throws IOException {
@@ -75,7 +76,7 @@ public class LexerGenerator {
     private static void createTable(Map<String, StringBuilder> states) throws IOException {
         Path path = Paths.get("./src/main/java/analizator/generated.txt");
         StringBuilder table = new StringBuilder();
-        for (Map.Entry<String, StringBuilder> entry: states.entrySet()) {
+        for (Map.Entry<String, StringBuilder> entry : states.entrySet()) {
             table.append("STATE:\n").append(entry.getKey()).append("\n").append(entry.getValue());
         }
         Files.write(path, table.toString().getBytes());
