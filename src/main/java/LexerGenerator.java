@@ -1,3 +1,5 @@
+import analizator.LA;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -90,9 +92,9 @@ public class LexerGenerator {
     }
 
     private static void createTable(String startingState, Map<String, StringBuilder> states) throws IOException {
-        Path path = Paths.get("./src/main/java/analizator/generated.txt");
+        Path path = Paths.get(LA.DEFINITION_FILENAME);
         StringBuilder table = new StringBuilder();
-        table.append(startingState + "\n");
+        table.append(startingState).append("\n");
         for (Map.Entry<String, StringBuilder> entry : states.entrySet()) {
             table.append("STATE:\n").append(entry.getKey()).append("\n").append(entry.getValue()).append("ENDSTATE\n");
         }
