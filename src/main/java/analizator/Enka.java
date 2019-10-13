@@ -22,11 +22,10 @@ public class Enka {
         currentStates.clear();
         currentStates.add(startState);
         doEpsilonTransitions();
+        setLastStatus();
     }
 
-    public EnkaStatus performTransition(char c) {
-        doLinkTransitions(c);
-        doEpsilonTransitions();
+    private void setLastStatus() {
         if (currentStates.isEmpty()) {
             lastStatus = EnkaStatus.DENIED;
         } else if (currentStates.contains(acceptableState)) {
@@ -34,6 +33,12 @@ public class Enka {
         } else {
             lastStatus =  EnkaStatus.IN_PROGRESS;
         }
+    }
+
+    public EnkaStatus performTransition(char c) {
+        doLinkTransitions(c);
+        doEpsilonTransitions();
+        setLastStatus();
         return lastStatus;
     }
 
