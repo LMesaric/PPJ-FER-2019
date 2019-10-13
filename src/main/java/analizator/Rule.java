@@ -2,7 +2,7 @@ package analizator;
 
 import java.util.List;
 
-public class Rule {
+class Rule {
 
     private Enka enka;
 
@@ -11,7 +11,7 @@ public class Rule {
     private String nextLexerState;
     private Integer takeOnlyNChars;
 
-    public Rule(Enka enka, List<String> actions) {
+    Rule(Enka enka, List<String> actions) {
         this.enka = enka;
         parseActions(actions);
     }
@@ -38,23 +38,23 @@ public class Rule {
     }
 
 
-    public Enka getEnka() {
+    Enka getEnka() {
         return enka;
     }
 
-    public String getTokenName() {
+    String getTokenName() {
         return tokenName;
     }
 
-    public boolean isGoToNewLine() {
+    boolean isGoToNewLine() {
         return goToNewLine;
     }
 
-    public String getNextLexerState() {
+    String getNextLexerState() {
         return nextLexerState;
     }
 
-    public Integer getTakeOnlyNChars() {
+    Integer getTakeOnlyNChars() {
         return takeOnlyNChars;
     }
 

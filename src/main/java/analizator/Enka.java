@@ -29,9 +29,9 @@ public class Enka {
         if (currentStates.isEmpty()) {
             lastStatus = EnkaStatus.DENIED;
         } else if (currentStates.contains(acceptableState)) {
-            lastStatus =  EnkaStatus.ACCEPTED;
+            lastStatus = EnkaStatus.ACCEPTED;
         } else {
-            lastStatus =  EnkaStatus.IN_PROGRESS;
+            lastStatus = EnkaStatus.IN_PROGRESS;
         }
     }
 

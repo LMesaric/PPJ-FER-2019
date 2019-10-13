@@ -63,7 +63,7 @@ public class LA {
             while (true) {
                 String ln = reader.readLine().trim();
                 if (ln.startsWith("ACTIONS")) break;
-                sb.append(ln + "\n");
+                sb.append(ln).append("\n");
             }
             sb.deleteCharAt(sb.length() - 1);
             Enka enka = new Enka();

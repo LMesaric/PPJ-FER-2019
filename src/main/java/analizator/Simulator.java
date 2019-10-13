@@ -12,8 +12,6 @@ class Simulator {
     private Consumer<String> outputConsumer;
     private Consumer<String> errorConsumer;
 
-    private String currentState;
-
 
     Simulator(String startingState, Map<String, List<Rule>> stateRules, String input,
               Consumer<String> outputConsumer, Consumer<String> errorConsumer) {
@@ -25,7 +23,7 @@ class Simulator {
     }
 
     void simulate() {
-        currentState = startingState;
+        String currentState = startingState;
         int firstPos = 0;
         int line = 1;
 
