@@ -117,6 +117,11 @@ class TableGenerator {
                     charLink(a, b, c);
                 }
             }
+            if (index + 1 < expression.length() && expression.charAt(index + 1) == '*') {
+                index++;
+                epsilonLink(a, b);
+                epsilonLink(b, a);
+            }
             epsilonLink(last, a);
             last = b;
         }
