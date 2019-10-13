@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class Simulator {
+class Simulator {
 
     private String startingState;
     private Map<String, List<Rule>> stateRules;
@@ -15,8 +15,8 @@ public class Simulator {
     private String currentState;
 
 
-    public Simulator(String startingState, Map<String, List<Rule>> stateRules, String input,
-                     Consumer<String> outputConsumer, Consumer<String> errorConsumer) {
+    Simulator(String startingState, Map<String, List<Rule>> stateRules, String input,
+              Consumer<String> outputConsumer, Consumer<String> errorConsumer) {
         this.startingState = startingState;
         this.stateRules = stateRules;
         this.input = input.toCharArray();
@@ -24,7 +24,7 @@ public class Simulator {
         this.errorConsumer = errorConsumer;
     }
 
-    public void simulate() {
+    void simulate() {
         currentState = startingState;
         int firstPos = 0;
         int line = 1;
@@ -55,7 +55,7 @@ public class Simulator {
                 firstPos++;
             } else {
                 if (lastMatched.getTakeOnlyNChars() != null) {
-                    lastPos = firstPos + lastMatched.getTakeOnlyNChars() + 1;
+                    lastPos = firstPos + lastMatched.getTakeOnlyNChars();
                 }
 
                 if (lastMatched.getTokenName() != null) {
