@@ -1,0 +1,22 @@
+%X S_poc S_preskoci
+%L A
+<S_poc>a
+{
+A
+UDJI_U_STANJE S_preskoci
+}
+<S_poc>\n
+{
+-
+NOVI_REDAK
+}
+<S_preskoci>a
+{
+-
+UDJI_U_STANJE S_poc
+}
+<S_preskoci>\n
+{
+-
+NOVI_REDAK
+}
