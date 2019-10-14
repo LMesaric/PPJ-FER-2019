@@ -19,10 +19,8 @@ class Evaluator {
     private static final String JAVA_PARAMS2 = "target/classes";
     private static final String GENERATOR_CLASS = "GLA";
     private static final String ANALYZER_CLASS = "analizator.LA";
-    private static final String GENERATED_DEFINITION = "generated.txt";
 
     private static final String TESTCASES_DIR = "testcases";
-    private static final String TMP_DIR = ".";
 
     @Test
     static void main(String[] args) throws IOException, InterruptedException {
@@ -32,44 +30,41 @@ class Evaluator {
             Path output = null;
             Path definition = null;
             for (Path file : Files.newDirectoryStream(test)) {
-                if (file.getFileName().toString().endsWith(".in")) input = file;
-                if (file.getFileName().toString().endsWith(".lan")) definition = file;
-                if (file.getFileName().toString().endsWith(".out")) output = file;
+                String fileName = file.getFileName().toString();
+                if (fileName.endsWith(".in")) input = file;
+                if (fileName.endsWith(".lan")) definition = file;
+                if (fileName.endsWith(".out")) output = file;
             }
 
-            evaluateTestCase(test.getFileName().toString(), definition, input, output);
+            evaluateTestCase(definition, input, output);
         }
     }
 
-    private static void evaluateTestCase(String testName, Path definition, Path input, Path output) throws IOException, InterruptedException {
-        ProcessBuilder genBuilder = new ProcessBuilder()
-                .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, GENERATOR_CLASS);
-                //.directory(Paths.get(TMP_DIR).toFile());
-
-        Process generator = genBuilder.start();
-        try (InputStream is = Files.newInputStream(definition)) {
+    private static void prepareProcess(Path path, Process process) throws IOException {
+        try (InputStream is = Files.newInputStream(path)) {
             byte[] buffer = new byte[1024];
             int len;
             while ((len = is.read(buffer)) != -1) {
-                generator.getOutputStream().write(buffer, 0, len);
+                process.getOutputStream().write(buffer, 0, len);
             }
         }
+    }
+
+    private static void evaluateTestCase(Path definition, Path input, Path output) throws IOException, InterruptedException {
+        ProcessBuilder genBuilder = new ProcessBuilder()
+                .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, GENERATOR_CLASS);
+
+        Process generator = genBuilder.start();
+        prepareProcess(definition, generator);
         generator.getOutputStream().close();
         generator.waitFor();
 
         ProcessBuilder laBuilder = new ProcessBuilder()
                 .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, ANALYZER_CLASS)
                 .redirectErrorStream(false);
-                //.directory(Paths.get(TMP_DIR).toFile());
 
         Process analyzer = laBuilder.start();
-        try (InputStream is = Files.newInputStream(input)) {
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = is.read(buffer)) != -1) {
-                analyzer.getOutputStream().write(buffer, 0, len);
-            }
-        }
+        prepareProcess(input, analyzer);
         analyzer.getOutputStream().close();
 
         List<String> excepted = Files.readAllLines(output);
@@ -96,7 +91,6 @@ class Evaluator {
             pass = false;
         }
 
-        System.out.println("TEST: " + testName + ": " + (pass ? "PASS" : "FAIL"));
         assertTrue(pass);
     }
 
