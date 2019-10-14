@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EvaluatorTest {
@@ -24,12 +23,6 @@ class EvaluatorTest {
     private static final String TESTCASES_DIR = "testcases";
 
     @Test
-    void testingTests() {
-        int a = 5;
-        assertEquals(5, a);
-    }
-
-
     void test() throws IOException, InterruptedException {
         Path testsDir = Paths.get(TESTCASES_DIR);
         for (Path test : Files.newDirectoryStream(testsDir)) {
