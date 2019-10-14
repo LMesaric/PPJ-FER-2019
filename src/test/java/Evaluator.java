@@ -1,3 +1,5 @@
+import org.junit.jupiter.api.Test;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +10,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Evaluator {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class Evaluator {
 
     private static final String JAVA_EXEC = "java";
     private static final String JAVA_PARAMS1 = "-cp";
@@ -20,7 +24,8 @@ public class Evaluator {
     private static final String TESTCASES_DIR = "testcases";
     private static final String TMP_DIR = ".";
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    static void main(String[] args) throws IOException, InterruptedException {
         Path testsDir = Paths.get(TESTCASES_DIR);
         for (Path test : Files.newDirectoryStream(testsDir)) {
             Path input = null;
@@ -92,6 +97,7 @@ public class Evaluator {
         }
 
         System.out.println("TEST: " + testName + ": " + (pass ? "PASS" : "FAIL"));
+        assertTrue(pass);
     }
 
 }
