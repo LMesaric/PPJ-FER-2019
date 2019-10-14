@@ -29,7 +29,7 @@ class Evaluator {
         assertEquals(5, a);
     }
 
-    @Test
+
     void test() throws IOException, InterruptedException {
         Path testsDir = Paths.get(TESTCASES_DIR);
         for (Path test : Files.newDirectoryStream(testsDir)) {
