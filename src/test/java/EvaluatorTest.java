@@ -20,7 +20,7 @@ class EvaluatorTest {
     private static final String GENERATOR_CLASS = "GLA";
     private static final String ANALYZER_CLASS = "analizator.LA";
 
-    private static final String TESTCASES_DIR = "testcases";
+    private static final String TESTCASES_DIR = "src/test/resources/testcases_GLA_LA";
 
     @Test
     void test() throws IOException, InterruptedException {
