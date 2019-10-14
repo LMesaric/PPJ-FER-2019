@@ -71,12 +71,16 @@ public class Enka {
         String[] rows = table.split("\n");
         for (String row : rows) {
             String[] columns = row.split(" ");
-            char link = (char) Integer.parseInt(columns[0]);
-            int stateIdLeft = Integer.parseInt(columns[1]);
+            int index = 0;
+            char link = Constants.EPSILON;
+            if (columns.length == 3) {
+                 link = (char) Integer.parseInt(columns[index++]);
+            }
+            int stateIdLeft = Integer.parseInt(columns[index++]);
             State left = putIfAbsentAndReturn(stateIdLeft);
-            int stateIdRight = Integer.parseInt(columns[2]);
+            int stateIdRight = Integer.parseInt(columns[index]);
             State right = putIfAbsentAndReturn(stateIdRight);
-            if (link == Constants.EPSILON) {
+            if (columns.length == 2) {
                 epsilonLinkState(left, right);
             } else {
                 charLinkState(left, right, link);
