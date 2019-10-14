@@ -1,0 +1,35 @@
+{space} \_
+{a} a
+{xyz} (x|y|z)abc
+{t} {xyz}{a}
+%X S_a
+%L A B C D T
+<S_a>\n
+{
+-
+NOVI_REDAK
+}
+<S_a>{space}
+{
+-
+}
+<S_a>{a}
+{
+A
+}
+<S_a>{xyz}
+{
+B
+}
+<S_a>{xyz}{xyz}
+{
+C
+}
+<S_a>o{xyz}*
+{
+D
+}
+<S_a>t{t}
+{
+T
+}

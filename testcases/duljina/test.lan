@@ -1,0 +1,15 @@
+%X S_jedan
+%L A_JED B_JED
+<S_jedan>aaa
+{
+A_JED
+}
+<S_jedan>aaaa
+{
+B_JED
+}
+<S_jedan>\n
+{
+-
+NOVI_REDAK
+}

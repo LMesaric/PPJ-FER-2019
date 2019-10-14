@@ -1,0 +1,22 @@
+%X S_a
+%L JEDAN DVA TRI
+<S_a>aa*
+{
+JEDAN
+VRATI_SE 1
+}
+<S_a>bb(bb)*
+{
+DVA
+VRATI_SE 2
+}
+<S_a>ccc(ccc)*
+{
+TRI
+VRATI_SE 3
+}
+<S_a>\n
+{
+-
+NOVI_REDAK
+}

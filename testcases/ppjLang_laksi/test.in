@@ -1,0 +1,69 @@
+#include <algorithm>
+#include <cassert>
+#include <cstdio>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <cstring>
+#include <map>
+#include <set>
+
+using namespace std;
+
+struct Journal {
+	int cCnt, pCnt;
+	string name;
+	Journal(int c, int p, const string &s): cCnt(c), pCnt(p), name(s) {}
+};
+bool operator<(const Journal &a, const Journal &b) {
+	if (a.cCnt*b.pCnt != b.cCnt*a.pCnt)
+		return a.cCnt*b.pCnt > b.cCnt*a.pCnt;
+	else if (a.pCnt != b.pCnt)
+		return a.pCnt > b.pCnt;
+	else
+		return a.name < b.name;
+}
+class AcademicJournal {
+	public:
+	vector <string> rankByImpact(vector <string> papers) {
+		map<string, int> pCnt, cCnt;
+		vector<string> name;
+		vector< set<int> > cites;
+
+		for (int i=0; i<(int)papers.size(); ++i) {
+			int x = papers[i].find('.');
+			name.push_back(papers[i].substr(0, x));
+			++pCnt[name.back()];
+
+			cites.push_back(set<int>());
+			if (x+1 < (int)papers[i].size()) {
+				istringstream is(papers[i].substr(x+1));
+				int t;
+				while (is >> t)
+					cites.back().insert(t);
+			}
+		}
+
+		for (int i=0; i<(int)papers.size(); ++i)
+			for (set<int>::const_iterator it=cites[i].begin(); it!=cites[i].end(); ++it)
+				if (name[*it] != name[i])
+					++cCnt[name[*it]];
+
+		set<Journal> S;
+		for (int i=0; i<(int)name.size(); ++i)
+			S.insert(Journal(cCnt[name[i]], pCnt[name[i]], name[i]));
+
+		vector<string> sol;
+		for (set<Journal>::const_iterator it=S.begin(); it!=S.end(); ++it)
+			sol.push_back(it->name);
+
+		return sol;
+	}
+};
+
+int main()
+    {
+    AcademicJournal ___test;
+    ___test.run_test(-1);
+    }

@@ -1,0 +1,32 @@
+%X S_prvi S_drugi S_treci
+%L X
+<S_prvi>x
+{
+-
+UDJI_U_STANJE S_drugi
+}
+<S_drugi>x
+{
+-
+UDJI_U_STANJE S_treci
+}
+<S_treci>x
+{
+X
+UDJI_U_STANJE S_prvi
+}
+<S_prvi>\n
+{
+-
+NOVI_REDAK
+}
+<S_drugi>\n
+{
+-
+NOVI_REDAK
+}
+<S_treci>\n
+{
+-
+NOVI_REDAK
+}

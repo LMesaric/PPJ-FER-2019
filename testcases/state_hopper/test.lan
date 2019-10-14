@@ -1,0 +1,68 @@
+%X S_a S_b S_acc S_dead S_nl
+%L OK FAIL
+<S_a>a
+{
+-
+UDJI_U_STANJE S_b
+}
+<S_a>b
+{
+-
+UDJI_U_STANJE S_dead
+}
+<S_a>k
+{
+FAIL
+UDJI_U_STANJE S_nl
+}
+<S_b>a
+{
+-
+UDJI_U_STANJE S_dead
+}
+<S_b>b
+{
+-
+UDJI_U_STANJE S_acc
+}
+<S_b>k
+{
+FAIL
+UDJI_U_STANJE S_nl
+}
+<S_acc>a
+{
+-
+UDJI_U_STANJE S_dead
+}
+<S_acc>b
+{
+-
+UDJI_U_STANJE S_dead
+}
+<S_acc>k
+{
+OK
+UDJI_U_STANJE S_nl
+}
+<S_dead>a
+{
+-
+UDJI_U_STANJE S_dead
+}
+<S_dead>b
+{
+-
+UDJI_U_STANJE S_dead
+}
+<S_dead>k
+{
+FAIL
+UDJI_U_STANJE S_nl
+}
+<S_nl>nl($|\n)
+{
+-
+NOVI_REDAK
+UDJI_U_STANJE S_a
+}

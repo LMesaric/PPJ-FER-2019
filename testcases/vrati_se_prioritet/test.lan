@@ -1,0 +1,16 @@
+%X S_a
+%L P Q
+<S_a>aaa
+{
+P
+}
+<S_a>aa*
+{
+Q
+VRATI_SE 1
+}
+<S_a>\n
+{
+-
+NOVI_REDAK
+}
