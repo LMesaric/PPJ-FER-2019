@@ -1,0 +1,41 @@
+void foo(int a) {
+    if (a > /* */ 12)
+        return; // bla
+    return a // + 123;
+}
+
+int main(void) {
+    int A[555123112];
+    int t[3] = {1,2,3};
+    const char x[] = "\"t e s\"t 2 \"";
+    i = 3*2+5-3|3&3^3; // $
+    
+    tmp[1] = 'b';
+    tmp[2] = '\n';
+    for (i=0; i<4; ++i) {
+        tmp[i] = (char)abc; /* komentar *
+                             * komentar *
+                             * komentar */
+        break;
+        continue;
+        return /* komentar */ xYz;
+    }
+    
+    if (1>=3 && ~i>2 || i<=12) {
+        fun(3);
+    } else {
+        fun(5);
+    }
+
+    tmp[0] = bar();
+    
+    while (1 == 1) {
+        break;
+    }
+    
+    return 0 - 0 + 1 - 1;
+}
+
+char bar(void) {
+    return 'a';
+}

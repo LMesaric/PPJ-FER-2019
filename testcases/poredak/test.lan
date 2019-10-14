@@ -1,0 +1,23 @@
+%X S_p
+%L UVIJEK NIKAD
+<S_p>abcd*
+{
+UVIJEK
+}
+<S_p>abcd*
+{
+NIKAD
+}
+<S_p>xyz*
+{
+UVIJEK
+}
+<S_p>xyz*
+{
+NIKAD
+}
+<S_p>\n
+{
+-
+NOVI_REDAK
+}

@@ -1,0 +1,11 @@
+%X S_stanje
+%L X
+<S_stanje>x
+{
+X
+}
+<S_stanje>\n
+{
+-
+NOVI_REDAK
+}
