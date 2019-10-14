@@ -23,7 +23,7 @@ class Evaluator {
     private static final String TESTCASES_DIR = "testcases";
 
     @Test
-    static void main(String[] args) throws IOException, InterruptedException {
+    void test() throws IOException, InterruptedException {
         Path testsDir = Paths.get(TESTCASES_DIR);
         for (Path test : Files.newDirectoryStream(testsDir)) {
             Path input = null;
@@ -36,7 +36,7 @@ class Evaluator {
                 if (fileName.endsWith(".out")) output = file;
             }
 
-            evaluateTestCase(definition, input, output);
+            assertTrue(evaluateTestCase(definition, input, output));
         }
     }
 
@@ -50,7 +50,7 @@ class Evaluator {
         }
     }
 
-    private static void evaluateTestCase(Path definition, Path input, Path output) throws IOException, InterruptedException {
+    private static boolean evaluateTestCase(Path definition, Path input, Path output) throws IOException, InterruptedException {
         ProcessBuilder genBuilder = new ProcessBuilder()
                 .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, GENERATOR_CLASS);
 
@@ -67,7 +67,7 @@ class Evaluator {
         prepareProcess(input, analyzer);
         analyzer.getOutputStream().close();
 
-        List<String> excepted = Files.readAllLines(output);
+        List<String> expected = Files.readAllLines(output);
         List<String> actual = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(analyzer.getInputStream()))) {
             while (true) {
@@ -78,20 +78,7 @@ class Evaluator {
             analyzer.waitFor();
         }
 
-        boolean pass;
-        if (excepted.size() == actual.size()) {
-            pass = true;
-            for (int i = 0; i < excepted.size(); i++) {
-                if (!excepted.get(i).trim().equals(actual.get(i).trim())) {
-                    pass = false;
-                    break;
-                }
-            }
-        } else {
-            pass = false;
-        }
-
-        assertTrue(pass);
+        return expected.equals(actual);
     }
 
 }
