@@ -1,0 +1,27 @@
+%X S_a
+%L A B C D
+<S_a>\n
+{
+-
+NOVI_REDAK
+}
+<S_a>\_
+{
+-
+}
+<S_a>x(a|b|c)*
+{
+A
+}
+<S_a>o(ab|bc|ca)*
+{
+B
+}
+<S_a>ab(abc|$)ccc
+{
+C
+}
+<S_a>ya((xx|yy)(dd|ad)|$)z
+{
+D
+}

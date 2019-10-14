@@ -1,0 +1,14 @@
+void foo(int a) {
+    if (a > 12 || a < 12)
+        return;
+    a = a + 3;
+    return;
+}
+
+int main(void) {
+    return bar() - 'a';
+}
+
+char bar(void) {
+    return 'a';
+}
