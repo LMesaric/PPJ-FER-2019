@@ -1,1 +1,3 @@
-testcases/* binary
+*.in binary
+*.lan binary
+*.out binary
