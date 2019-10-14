@@ -11,7 +11,8 @@ import java.util.List;
 public class Evaluator {
 
     private static final String JAVA_EXEC = "java";
-    private static final String JAVA_PARAMS = "-cp target/classes";
+    private static final String JAVA_PARAMS1 = "-cp";
+    private static final String JAVA_PARAMS2 = "target/classes";
     private static final String GENERATOR_CLASS = "GLA";
     private static final String ANALYZER_CLASS = "analizator.LA";
     private static final String GENERATED_DEFINITION = "generated.txt";
@@ -37,7 +38,7 @@ public class Evaluator {
 
     private static void evaluateTestCase(String testName, Path definition, Path input, Path output) throws IOException, InterruptedException {
         ProcessBuilder genBuilder = new ProcessBuilder()
-                .command(JAVA_EXEC, JAVA_PARAMS, GENERATOR_CLASS);
+                .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, GENERATOR_CLASS);
                 //.directory(Paths.get(TMP_DIR).toFile());
 
         Process generator = genBuilder.start();
@@ -52,7 +53,8 @@ public class Evaluator {
         generator.waitFor();
 
         ProcessBuilder laBuilder = new ProcessBuilder()
-                .command(JAVA_EXEC, JAVA_PARAMS, ANALYZER_CLASS);
+                .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, ANALYZER_CLASS)
+                .redirectErrorStream(false);
                 //.directory(Paths.get(TMP_DIR).toFile());
 
         Process analyzer = laBuilder.start();
@@ -80,7 +82,10 @@ public class Evaluator {
         if (excepted.size() == actual.size()) {
             pass = true;
             for (int i = 0; i < excepted.size(); i++) {
-                if (!excepted.get(i).trim().equals(actual.get(i).trim())) pass = false;
+                if (!excepted.get(i).trim().equals(actual.get(i).trim())) {
+                    pass = false;
+                    break;
+                }
             }
         } else {
             pass = false;
