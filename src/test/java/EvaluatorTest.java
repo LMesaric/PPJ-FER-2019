@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class Evaluator {
+class EvaluatorTest {
 
     private static final String JAVA_EXEC = "java";
     private static final String JAVA_PARAMS1 = "-cp";
