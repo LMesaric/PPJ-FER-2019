@@ -24,7 +24,11 @@ public class Sprut {
         System.out.println("SPRUT evaluator v1.0");
         System.out.println("Starting tests");
         System.out.println();
+
+        long testStart = System.nanoTime();
         testAll(false);
+        long testEnd = System.nanoTime();
+        System.out.printf("Total time time: %.3f s%n", (testEnd - testStart) / 1000000000.0);
     }
 
     public static void testAll(boolean runFromJunit) throws IOException, InterruptedException {
