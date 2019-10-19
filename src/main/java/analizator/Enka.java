@@ -1,9 +1,6 @@
 package analizator;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Enka {
 
@@ -45,12 +42,14 @@ public class Enka {
     }
 
     private void doEpsilonTransitions() {
-        int size = 0;
-        while (size != currentStates.size()) {
-            size = currentStates.size();
-            Set<State> currentStatesCopy = new HashSet<>(currentStates);
-            for (State state : currentStatesCopy) {
-                currentStates.addAll(state.epsilonTrans);
+        Deque<State> stack = new ArrayDeque<>(currentStates);
+
+        while (!stack.isEmpty()) {
+            State curr = stack.pop();
+            for (State state : curr.epsilonTrans) {
+                if (currentStates.add(state)) {
+                    stack.push(state);
+                }
             }
         }
     }
