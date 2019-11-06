@@ -1,3 +1,5 @@
+package lab1;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,8 +17,8 @@ public class Sprut {
     private static final String JAVA_EXEC = "java";
     private static final String JAVA_PARAMS1 = "-cp";
     private static final String JAVA_PARAMS2 = "target/classes";
-    private static final String GENERATOR_CLASS = "GLA";
-    private static final String ANALYZER_CLASS = "analizator.LA";
+    private static final String GENERATOR_CLASS = "lab1.GLA";
+    private static final String ANALYZER_CLASS = "lab1.analizator.LA";
 
     private static final String TESTCASES_DIR = "src/test/resources/testcases_GLA_LA";
 
@@ -31,7 +33,7 @@ public class Sprut {
         System.out.printf("Total time time: %.3f s%n", (testEnd - testStart) / 1000000000.0);
     }
 
-    public static void testAll(boolean runFromJunit) throws IOException, InterruptedException {
+    static void testAll(boolean runFromJunit) throws IOException, InterruptedException {
         Path testsDir = Paths.get(TESTCASES_DIR);
         int failed = 0;
         for (Path test : Files.newDirectoryStream(testsDir)) {

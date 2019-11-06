@@ -1,6 +1,8 @@
-import static org.junit.jupiter.api.Assertions.*;
+package lab1;
 
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class RegexPreprocessorTest {
 

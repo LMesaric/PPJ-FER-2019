@@ -1,5 +1,7 @@
-import analizator.Enka;
-import analizator.EnkaStatus;
+package lab1;
+
+import lab1.analizator.Enka;
+import lab1.analizator.EnkaStatus;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EnkaTest {
 
-    private static Path path = Paths.get("./src/test/java/enkaTable.txt");
+    private static Path path = Paths.get("./src/test/java/lab1/enkaTable.txt");
 
     @AfterAll
     static void deleteGeneratedFile() throws IOException {

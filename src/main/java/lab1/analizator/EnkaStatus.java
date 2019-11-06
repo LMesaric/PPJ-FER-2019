@@ -1,4 +1,4 @@
-package analizator;
+package lab1.analizator;
 
 public enum EnkaStatus {
 

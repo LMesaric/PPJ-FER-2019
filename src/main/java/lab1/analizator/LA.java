@@ -1,4 +1,4 @@
-package analizator;
+package lab1.analizator;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
