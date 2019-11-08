@@ -15,16 +15,19 @@ public class GSA {
     }
 
     private static void generateOutput(String[] readInput) {
-        String[] nonterminalSymbols = cleanSymbolInput(readInput[0]);
-        String[] terminalSymbols = cleanSymbolInput(readInput[1]);
-        String[] synchronizationalSymbols = cleanSymbolInput(readInput[2]);
+        Set<String> nonterminalSymbols = cleanSymbolInput(readInput[0]);
+        Set<String> terminalSymbols = cleanSymbolInput(readInput[1]);
+        Set<String> synchronizationalSymbols = cleanSymbolInput(readInput[2]);
 
         Map<String, List<String[]>> productions = parseProductions(readInput, 3);
     }
 
-    private static String[] cleanSymbolInput(String line) {
+    private static Set<String> cleanSymbolInput(String line) {
         String[] tmp = line.split(" ");
-        return Arrays.copyOfRange(tmp, 1, tmp.length);
+        Set<String> set = new HashSet<>();
+        for (int i = 1, limit = tmp.length; i < limit; i++)
+            set.add(tmp[i]);
+        return set;
     }
 
     private static Map<String, List<String[]>> parseProductions(
