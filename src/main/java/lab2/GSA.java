@@ -19,7 +19,7 @@ public class GSA {
         Set<String> terminalSymbols = cleanSymbolInput(readInput[1]);
         Set<String> synchronizationalSymbols = cleanSymbolInput(readInput[2]);
 
-        Map<String, List<String[]>> productions = parseProductions(readInput, 3);
+        Map<String, List<List<String>>> productions = parseProductions(readInput, 3);
     }
 
     private static Set<String> cleanSymbolInput(String line) {
@@ -30,17 +30,17 @@ public class GSA {
         return set;
     }
 
-    private static Map<String, List<String[]>> parseProductions(
+    private static Map<String, List<List<String>>> parseProductions(
             String[] input,
             @SuppressWarnings("SameParameterValue") int offset
     ) {
-        Map<String, List<String[]>> map = new HashMap<>();
+        Map<String, List<List<String>>> map = new HashMap<>();
         int i = offset, last = input.length;
         while (i < last) {
             String nonterminal = input[i++].trim();
-            List<String[]> rightSides = new ArrayList<>();
+            List<List<String>> rightSides = new ArrayList<>();
             while (i < last && input[i].charAt(0) == ' ') {
-                rightSides.add(input[i++].trim().split(" "));
+                rightSides.add(Arrays.asList(input[i++].trim().split(" ")));
             }
             if (map.containsKey(nonterminal)) {
                 map.get(nonterminal).addAll(rightSides);
