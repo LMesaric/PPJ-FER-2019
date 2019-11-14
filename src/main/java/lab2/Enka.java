@@ -4,18 +4,19 @@ import java.util.*;
 
 import static lab2.Constants.*;
 
+@SuppressWarnings("DuplicatedCode")
 public class Enka {
 
     private Map<Integer, State> states = new HashMap<>();
     private State initialState;
     private Set<State> currentStates = new HashSet<>();
 
-    public void performTransition(char c) {
+    public void performTransition(String c) {
         doLinkTransitions(c);
-        doEpsilonTransitions();
+        doEpsilonLinkTransitions();
     }
 
-    private void doEpsilonTransitions() {
+    private void doEpsilonLinkTransitions() {
         Deque<State> stack = new ArrayDeque<>(currentStates);
         while (!stack.isEmpty()) {
             State curr = stack.pop();
@@ -27,7 +28,7 @@ public class Enka {
         }
     }
 
-    private void doLinkTransitions(char c) {
+    private void doLinkTransitions(String c) {
         Set<State> newCurrentStates = new HashSet<>();
         for (State state : currentStates) {
             Set<State> newStates = state.linkTrans.get(c);
