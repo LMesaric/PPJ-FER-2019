@@ -2,6 +2,7 @@ package lab1.analizator;
 
 import java.util.*;
 
+@SuppressWarnings("DuplicatedCode")
 public class Enka {
 
     private Map<Integer, State> states = new HashMap<>();
