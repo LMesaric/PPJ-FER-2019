@@ -12,5 +12,5 @@ class Constants {
 
     static final String MARK = "*";
 
-    static final String END = "|";
+    static final String END = "#";
 }
