@@ -31,8 +31,6 @@ public class GSA {
         List<List<String>> production = new LinkedList<>();
         production.add(Collections.singletonList(start));
         productions.put(INITIAL_STATE, production);
-
-        new Enka(INITIAL_STATE, productions, nonterminalSymbols).build().print();
     }
 
     private static Set<String> cleanSymbolInput(String line) {
