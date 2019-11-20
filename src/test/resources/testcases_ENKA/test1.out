@@ -1,0 +1,47 @@
+trenutno stanje: <%> -> * <A>, { # }
+epsilon prijelazi prema:
+	<A> -> * <B> <A>, { # }
+	<A> -> *, { # }
+prijelazi prema:
+	<A>: <%> -> <A> *, { # }
+trenutno stanje: <%> -> <A> *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <A> -> * <B> <A>, { # }
+epsilon prijelazi prema:
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+prijelazi prema:
+	<B>: <A> -> <B> * <A>, { # }
+trenutno stanje: <A> -> *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <A> -> <B> * <A>, { # }
+epsilon prijelazi prema:
+	<A> -> * <B> <A>, { # }
+	<A> -> *, { # }
+prijelazi prema:
+	<A>: <A> -> <B> <A> *, { # }
+trenutno stanje: <B> -> * a <B>, { a b # }
+epsilon prijelazi prema:
+prijelazi prema:
+	a: <B> -> a * <B>, { a b # }
+trenutno stanje: <B> -> * b, { a b # }
+epsilon prijelazi prema:
+prijelazi prema:
+	b: <B> -> b *, { a b # }
+trenutno stanje: <A> -> <B> <A> *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <B> -> a * <B>, { a b # }
+epsilon prijelazi prema:
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+prijelazi prema:
+	<B>: <B> -> a <B> *, { a b # }
+trenutno stanje: <B> -> b *, { a b # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <B> -> a <B> *, { a b # }
+epsilon prijelazi prema:
+prijelazi prema:
