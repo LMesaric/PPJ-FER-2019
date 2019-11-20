@@ -12,8 +12,8 @@ class Enka {
     private final Map<String, List<List<String>>> productions;
     private final Set<String> nonterminalSymbols;
 
-    private Set<String> emptyNonterminalSymbols = new HashSet<>();
-    private Map<String, Set<String>> beginsWithTerminal = new HashMap<>();
+    private final Set<String> emptyNonterminalSymbols = new HashSet<>();
+    private final Map<String, Set<String>> beginsWithTerminal = new HashMap<>();
 
     Enka(String initialState, Map<String, List<List<String>>> productions, Set<String> nonterminalSymbols) {
         this.productions = productions;
@@ -22,11 +22,6 @@ class Enka {
         initialProduction.add(0, MARK);
         this.initialState = new EnkaState(initialState, initialProduction,
                 new HashSet<>(Collections.singletonList(END)));
-    }
-
-    private void reset() {
-        beginsWithTerminal = new HashMap<>();
-        emptyNonterminalSymbols = new HashSet<>();
     }
 
     void print() {
@@ -56,8 +51,7 @@ class Enka {
         }
     }
 
-    void build() {
-        reset();
+    Enka build() {
         findEmptyNonterminalSymbols();
         calculateBeginsWithTerminal();
         Set<EnkaState> visitedStates = new HashSet<>();
@@ -66,6 +60,7 @@ class Enka {
         while (!stack.isEmpty()) {
             findNewStates(stack.pop(), visitedStates, stack);
         }
+        return this;
     }
 
     private void findEmptyNonterminalSymbols() {
