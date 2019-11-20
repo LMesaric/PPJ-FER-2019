@@ -76,7 +76,7 @@ class Enka {
             for (String nonterminalSymbol : nonterminalSymbols) {
                 if (emptyNonterminalSymbols.contains(nonterminalSymbol)) continue;
                 for (List<String> production : productions.get(nonterminalSymbol)) {
-                    if (production.get(0).equals(EPSILON)) {
+                    if (production.isEmpty()) {
                         emptyNonterminalSymbols.add(nonterminalSymbol);
                         break;
                     }
@@ -164,11 +164,7 @@ class Enka {
         }
         for (List<String> rightSide : productions.get(link)) {
             List<String> newRightSide = new LinkedList<>(rightSide);
-            if (newRightSide.get(0).equals(EPSILON)) {
-                newRightSide = new LinkedList<>(Collections.singletonList("*"));
-            } else {
-                newRightSide.add(0, MARK);
-            }
+            newRightSide.add(0, MARK);
             EnkaState newState = new EnkaState(link, newRightSide, terminalSymbolsAfter);
             if (visitedStates.add(newState)) {
                 stack.push(newState);
