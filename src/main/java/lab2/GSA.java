@@ -2,6 +2,8 @@ package lab2;
 
 import java.util.*;
 
+import static lab2.Constants.INITIAL_STATE;
+
 public class GSA {
 
     public static void main(String[] args) {
@@ -15,11 +17,19 @@ public class GSA {
     }
 
     private static void generateOutput(String[] readInput) {
+        String start = readInput[0].split(" ")[1];
         Set<String> nonterminalSymbols = cleanSymbolInput(readInput[0]);
+        nonterminalSymbols.add(INITIAL_STATE);
         Set<String> terminalSymbols = cleanSymbolInput(readInput[1]);
         Set<String> synchronizationalSymbols = cleanSymbolInput(readInput[2]);
 
         Map<String, List<List<String>>> productions = parseProductions(readInput, 3);
+        List<List<String>> production = new LinkedList<>();
+        production.add(Collections.singletonList(start));
+        productions.put(INITIAL_STATE, production);
+        Enka enka = new Enka();
+        enka.build(productions, nonterminalSymbols);
+        enka.print();
     }
 
     private static Set<String> cleanSymbolInput(String line) {
