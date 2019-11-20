@@ -8,7 +8,7 @@ class Constants {
 
     static final String EPSILON = "$";
 
-    static final String INITIAL_STATE = "S\'";
+    static final String INITIAL_STATE = "<%>";
 
     static final String MARK = "*";
 
