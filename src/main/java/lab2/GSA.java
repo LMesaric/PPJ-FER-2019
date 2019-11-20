@@ -2,6 +2,7 @@ package lab2;
 
 import java.util.*;
 
+import static lab2.Constants.EPSILON;
 import static lab2.Constants.INITIAL_STATE;
 
 public class GSA {
@@ -54,7 +55,12 @@ public class GSA {
             String nonterminal = input[i++].trim();
             List<List<String>> rightSides = new ArrayList<>();
             while (i < last && input[i].charAt(0) == ' ') {
-                rightSides.add(Arrays.asList(input[i++].trim().split(" ")));
+                if (input[i].trim().equals(EPSILON)) {
+                    rightSides.add(Collections.emptyList());
+                } else {
+                    rightSides.add(Arrays.asList(input[i].trim().split(" ")));
+                }
+                i++;
             }
             if (map.containsKey(nonterminal)) {
                 map.get(nonterminal).addAll(rightSides);
