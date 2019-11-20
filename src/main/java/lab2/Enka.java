@@ -7,28 +7,45 @@ import static lab2.Constants.*;
 @SuppressWarnings("DuplicatedCode")
 class Enka {
 
-    private State initialState;
+    private final EnkaState initialState;
 
-    private Set<String> empty;
-    private Map<String, Set<String>> beginsWithTerminal;
+    private final Map<String, List<List<String>>> productions;
+    private final Set<String> nonterminalSymbols;
+
+    private Set<String> emptyNonterminalSymbols = new HashSet<>();
+    private Map<String, Set<String>> beginsWithTerminal = new HashMap<>();
+
+    Enka(String initialState, Map<String, List<List<String>>> productions, Set<String> nonterminalSymbols) {
+        this.productions = productions;
+        this.nonterminalSymbols = nonterminalSymbols;
+        List<String> initialProduction = new LinkedList<>(productions.get(initialState).get(0));
+        initialProduction.add(0, MARK);
+        this.initialState = new EnkaState(initialState, initialProduction,
+                new HashSet<>(Collections.singletonList(END)));
+    }
+
+    private void reset() {
+        beginsWithTerminal = new HashMap<>();
+        emptyNonterminalSymbols = new HashSet<>();
+    }
 
     void print() {
-        Set<State> visited = new HashSet<>(Collections.singletonList(initialState));
-        Deque<State> stack = new ArrayDeque<>(visited);
+        Set<EnkaState> visited = new HashSet<>(Collections.singletonList(initialState));
+        Deque<EnkaState> stack = new ArrayDeque<>(visited);
         while (!stack.isEmpty()) {
-            State state = stack.pop();
+            EnkaState state = stack.pop();
             System.out.println("State: " + state);
-            System.out.println("Epsilon:");
-            for (State s : state.epsilonTrans) {
+            System.out.println("Epsilon productions:");
+            for (EnkaState s : state.epsilonProductions) {
                 System.out.println(s);
                 if (visited.add(s)) {
                     stack.push(s);
                 }
             }
-            System.out.println("Link:");
-            for (Map.Entry<String, Set<State>> entry : state.linkTrans.entrySet()) {
-                System.out.println("Link word: " + entry.getKey());
-                for (State s : entry.getValue()) {
+            System.out.println("Link productions:");
+            for (Map.Entry<String, Set<EnkaState>> entry : state.symbolProductions.entrySet()) {
+                System.out.println("Link symbol: " + entry.getKey());
+                for (EnkaState s : entry.getValue()) {
                     System.out.println(s);
                     if (visited.add(s)) {
                         stack.push(s);
@@ -39,45 +56,39 @@ class Enka {
         }
     }
 
-    void build(Map<String, List<List<String>>> transitions, Set<String> nonterminal) {
-        beginsWithTerminal = new HashMap<>();
-        empty = new HashSet<>();
-        calculateEmptyNonterminals(transitions, nonterminal);
-        calculateBeginsWithTerminal(transitions, nonterminal);
-        List<String> initialProduction = new LinkedList<>(transitions.get(INITIAL_STATE).get(0));
-        initialProduction.add(0, MARK);
-        initialState = new State(INITIAL_STATE, initialProduction,
-                new HashSet<>(Collections.singletonList(EPSILON)));
-        Set<State> visited = new HashSet<>();
-        visited.add(initialState);
-        Deque<State> stack = new ArrayDeque<>(visited);
+    void build() {
+        reset();
+        findEmptyNonterminalSymbols();
+        calculateBeginsWithTerminal();
+        Set<EnkaState> visitedStates = new HashSet<>();
+        visitedStates.add(initialState);
+        Deque<EnkaState> stack = new ArrayDeque<>(visitedStates);
         while (!stack.isEmpty()) {
-            linkItems(transitions, stack.pop(), visited, stack, nonterminal);
+            findNewStates(stack.pop(), visitedStates, stack);
         }
     }
 
-    private void calculateEmptyNonterminals(Map<String, List<List<String>>> transitions, Set<String> nonterminal) {
-        Set<String> empty = new HashSet<>();
+    private void findEmptyNonterminalSymbols() {
         int size = -1;
-        while (size != empty.size()) {
-            size = empty.size();
-            for (String ch : nonterminal) {
-                if (empty.contains(ch)) continue;
-                List<List<String>> productions = transitions.get(ch);
-                for (List<String> production : productions) {
+        while (size != emptyNonterminalSymbols.size()) {
+            size = emptyNonterminalSymbols.size();
+            // TODO: possible optimization for iterating only over nonempty terminal symbols
+            for (String nonterminalSymbol : nonterminalSymbols) {
+                if (emptyNonterminalSymbols.contains(nonterminalSymbol)) continue;
+                for (List<String> production : productions.get(nonterminalSymbol)) {
                     if (production.get(0).equals(EPSILON)) {
-                        empty.add(ch);
+                        emptyNonterminalSymbols.add(nonterminalSymbol);
                         break;
                     }
                     boolean isEmpty = true;
                     for (String element : production) {
-                        if (!empty.contains(element)) {
+                        if (!emptyNonterminalSymbols.contains(element)) {
                             isEmpty = false;
                             break;
                         }
                     }
                     if (isEmpty) {
-                        empty.add(ch);
+                        emptyNonterminalSymbols.add(nonterminalSymbol);
                         break;
                     }
                 }
@@ -85,134 +96,138 @@ class Enka {
         }
     }
 
-    private void linkItems(Map<String, List<List<String>>> transitions, State currState, Set<State> visited,
-                           Deque<State> stack, Set<String> nonterminal) {
+    private void calculateBeginsWithTerminal() {
+        Set<String> visitedNonterminalSymbols = new HashSet<>();
+        for (String nonterminalSymbol : nonterminalSymbols) {
+            calculateBeginsWithTerminal(nonterminalSymbol, visitedNonterminalSymbols);
+        }
+    }
+
+    private void calculateBeginsWithTerminal(String nonterminalSymbol, Set<String> visitedNonterminalSymbols) {
+        if (!visitedNonterminalSymbols.add(nonterminalSymbol)) return;
+        beginsWithTerminal.putIfAbsent(nonterminalSymbol, new HashSet<>());
+        for (List<String> production : productions.get(nonterminalSymbol)) {
+            for (String element : production) {
+                if (nonterminalSymbols.contains(element)) {
+                    calculateBeginsWithTerminal(element, visitedNonterminalSymbols);
+                    beginsWithTerminal.get(nonterminalSymbol).addAll(beginsWithTerminal.get(element));
+                    if (!emptyNonterminalSymbols.contains(element)) break;
+                } else {
+                    beginsWithTerminal.get(nonterminalSymbol).add(element);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void findNewStates(EnkaState currState, Set<EnkaState> visited, Deque<EnkaState> stack) {
         int markIndex = currState.rightSide.indexOf(MARK);
         if (markIndex >= currState.rightSide.size() - 1) return;
         List<String> newRightSide = new LinkedList<>(currState.rightSide);
-        String link = newRightSide.get(markIndex + 1);
+        String symbolLink = newRightSide.get(markIndex + 1);
         Collections.swap(newRightSide, markIndex, markIndex + 1);
-        State newState = new State(currState.nonterminal, newRightSide, currState.charSet);
+        EnkaState newState = new EnkaState(currState.nonterminalSymbol, newRightSide, currState.terminalSymbolsAfter);
         if (visited.add(newState)) {
             stack.push(newState);
         } else {
-            for (State state : visited) {
+            // TODO: optimize this
+            for (EnkaState state : visited) {
                 if (newState.equals(state)) {
                     newState = state;
                     break;
                 }
             }
         }
-        linkState(currState, newState, link);
-        if (!nonterminal.contains(link)) return;
-        epsilonLinkItems(transitions, currState, link, markIndex, visited, stack);
+        symbolLinkStates(currState, newState, symbolLink);
+        if (nonterminalSymbols.contains(symbolLink)) {
+            findEpsilonProductions(currState, symbolLink, markIndex, visited, stack);
+        }
     }
 
-    private void epsilonLinkItems(Map<String, List<List<String>>> transitions, State currState, String link,
-                                  int markIndex, Set<State> visited, Deque<State> stack) {
-        Set<String> charSet = markIndex + 2 < currState.rightSide.size() ? beginsWithTerminal.get(currState.rightSide.get(markIndex + 2)) :
-                new HashSet<>(Collections.singletonList(EPSILON));
+    private void findEpsilonProductions(EnkaState currState, String link, int markIndex, Set<EnkaState> visitedStates, Deque<EnkaState> stack) {
+        Set<String> terminalSymbolsAfter = new HashSet<>();
         boolean isEmpty = true;
         for (int i = markIndex + 2; i < currState.rightSide.size(); i++) {
-            if (empty.contains(currState.rightSide.get(i))) {
+            String symbol = currState.rightSide.get(i);
+            if (nonterminalSymbols.contains(symbol)) {
+                terminalSymbolsAfter.addAll(beginsWithTerminal.get(symbol));
+            } else {
+                terminalSymbolsAfter.add(symbol);
+            }
+            if (!emptyNonterminalSymbols.contains(currState.rightSide.get(i))) {
                 isEmpty = false;
                 break;
             }
         }
         if (isEmpty) {
-            charSet.addAll(currState.charSet);
+            terminalSymbolsAfter.addAll(currState.terminalSymbolsAfter);
         }
-        for (List<String> right : transitions.get(link)) {
-            List<String> newRightSide = new LinkedList<>(right);
+        for (List<String> rightSide : productions.get(link)) {
+            List<String> newRightSide = new LinkedList<>(rightSide);
             if (newRightSide.get(0).equals(EPSILON)) {
                 newRightSide = new LinkedList<>(Collections.singletonList("*"));
             } else {
                 newRightSide.add(0, MARK);
             }
-            State newState = new State(link, newRightSide, charSet);
-            if (visited.add(newState)) {
+            EnkaState newState = new EnkaState(link, newRightSide, terminalSymbolsAfter);
+            if (visitedStates.add(newState)) {
                 stack.push(newState);
             } else {
-                for (State state : visited) {
+                // TODO: optimize this
+                for (EnkaState state : visitedStates) {
                     if (newState.equals(state)) {
                         newState = state;
                         break;
                     }
                 }
             }
-            epsilonLinkState(currState, newState);
+            epsilonLinkStates(currState, newState);
         }
     }
 
-    private void calculateBeginsWithTerminal(Map<String, List<List<String>>> transitions, Set<String> nonterminal) {
-        Set<String> visited = new HashSet<>();
-        for (String element : nonterminal) {
-            calculateBeginsWithTerminal(element, beginsWithTerminal, visited, transitions, empty, nonterminal);
-        }
+    private void epsilonLinkStates(EnkaState left, EnkaState right) {
+        left.epsilonProductions.add(right);
     }
 
-    private void calculateBeginsWithTerminal(String element, Map<String, Set<String>> beginsWithTerminal, Set<String> visited,
-                                             Map<String, List<List<String>>> transitions, Set<String> empty, Set<String> nonterminal) {
-        if (!visited.add(element)) return;
-        beginsWithTerminal.putIfAbsent(element, new HashSet<>());
-        for (List<String> production : transitions.get(element)) {
-            for (String el : production) {
-                if (nonterminal.contains(el)) {
-                    calculateBeginsWithTerminal(el, beginsWithTerminal, visited, transitions, empty, nonterminal);
-                    beginsWithTerminal.get(element).addAll(beginsWithTerminal.get(el));
-                    if (!empty.contains(el)) break;
-                } else {
-                    beginsWithTerminal.get(element).add(el);
-                    break;
-                }
-            }
-        }
+    private void symbolLinkStates(EnkaState left, EnkaState right, String link) {
+        left.symbolProductions.putIfAbsent(link, new HashSet<>());
+        left.symbolProductions.get(link).add(right);
     }
 
-    private void epsilonLinkState(State left, State right) {
-        left.epsilonTrans.add(right);
-    }
+    private static class EnkaState {
 
-    private void linkState(State left, State right, String link) {
-        if (!left.linkTrans.containsKey(link)) {
-            left.linkTrans.put(link, new HashSet<>());
-        }
-        left.linkTrans.get(link).add(right);
-    }
-
-    private static class State {
-
-        final String nonterminal;
+        final String nonterminalSymbol;
         final List<String> rightSide;
-        final Set<String> charSet;
-        Set<State> epsilonTrans = new HashSet<>();
-        Map<String, Set<State>> linkTrans = new HashMap<>();
+        final Set<String> terminalSymbolsAfter;
+        final Set<EnkaState> epsilonProductions = new HashSet<>();
+        final Map<String, Set<EnkaState>> symbolProductions = new HashMap<>();
 
-        State(String nonterminal, List<String> rightSide, Set<String> charSet) {
-            this.nonterminal = nonterminal;
+        EnkaState(String nonterminal, List<String> rightSide, Set<String> charSet) {
+            this.nonterminalSymbol = nonterminal;
             this.rightSide = rightSide;
-            this.charSet = charSet;
+            this.terminalSymbolsAfter = charSet;
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            State state = (State) o;
-            return nonterminal.equals(state.nonterminal) &&
+            EnkaState state = (EnkaState) o;
+            return nonterminalSymbol.equals(state.nonterminalSymbol) &&
                     rightSide.equals(state.rightSide) &&
-                    charSet.equals(state.charSet);
+                    terminalSymbolsAfter.equals(state.terminalSymbolsAfter);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(nonterminal, rightSide, charSet);
+            return Objects.hash(nonterminalSymbol, rightSide, terminalSymbolsAfter);
         }
 
         @Override
         public String toString() {
-            return nonterminal + "->" + Arrays.toString(rightSide.toArray()) + "{" + Arrays.toString(charSet.toArray()) + "}";
+            return nonterminalSymbol + "->" + Arrays.toString(rightSide.toArray()) + "{" + Arrays.toString(terminalSymbolsAfter.toArray()) + "}";
         }
+
     }
 
 }

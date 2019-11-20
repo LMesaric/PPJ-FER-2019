@@ -17,18 +17,22 @@ public class GSA {
     }
 
     private static void generateOutput(String[] readInput) {
-        String start = readInput[0].split(" ")[1];
         Set<String> nonterminalSymbols = cleanSymbolInput(readInput[0]);
-        nonterminalSymbols.add(INITIAL_STATE);
         Set<String> terminalSymbols = cleanSymbolInput(readInput[1]);
         Set<String> synchronizationalSymbols = cleanSymbolInput(readInput[2]);
-
         Map<String, List<List<String>>> productions = parseProductions(readInput, 3);
+
+        // Add new initial state
+        nonterminalSymbols.add(INITIAL_STATE);
+
+        // Create initial production
+        String start = readInput[0].split(" ")[1];
         List<List<String>> production = new LinkedList<>();
         production.add(Collections.singletonList(start));
         productions.put(INITIAL_STATE, production);
-        Enka enka = new Enka();
-        enka.build(productions, nonterminalSymbols);
+
+        Enka enka = new Enka(INITIAL_STATE, productions, nonterminalSymbols);
+        enka.build();
         enka.print();
     }
 
