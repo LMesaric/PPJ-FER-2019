@@ -24,31 +24,39 @@ class Enka {
                 new HashSet<>(Collections.singletonList(END)));
     }
 
-    void print() {
+    String print() {
         Set<EnkaState> visited = new HashSet<>(Collections.singletonList(initialState));
-        Deque<EnkaState> stack = new ArrayDeque<>(visited);
-        while (!stack.isEmpty()) {
-            EnkaState state = stack.pop();
-            System.out.println("State: " + state);
-            System.out.println("Epsilon productions:");
+        Queue<EnkaState> queue = new LinkedList<>(visited);
+        StringBuilder sb = new StringBuilder();
+        while (!queue.isEmpty()) {
+            EnkaState state = queue.remove();
+            sb.append("trenutno stanje: ").append(state).append("\n");
+            sb.append("epsilon prijelazi prema:\n");
             for (EnkaState s : state.epsilonProductions) {
-                System.out.println(s);
-                if (visited.add(s)) {
-                    stack.push(s);
-                }
+                sb.append("\t").append(s).append("\n");
             }
-            System.out.println("Link productions:");
+            sb.append("prijelazi prema:\n");
             for (Map.Entry<String, Set<EnkaState>> entry : state.symbolProductions.entrySet()) {
-                System.out.println("Link symbol: " + entry.getKey());
+                sb.append("\t").append(entry.getKey()).append(":");
                 for (EnkaState s : entry.getValue()) {
-                    System.out.println(s);
+                    sb.append(" ").append(s);
+                }
+                sb.append("\n");
+            }
+            for (Map.Entry<String, Set<EnkaState>> entry : state.symbolProductions.entrySet()) {
+                for (EnkaState s : entry.getValue()) {
                     if (visited.add(s)) {
-                        stack.push(s);
+                        queue.add(s);
                     }
                 }
             }
-            System.out.println();
+            for (EnkaState s : state.epsilonProductions) {
+                if (visited.add(s)) {
+                    queue.add(s);
+                }
+            }
         }
+        return sb.toString();
     }
 
     Enka build() {
@@ -122,10 +130,17 @@ class Enka {
         String symbolLink = newRightSide.get(markIndex + 1);
         Collections.swap(newRightSide, markIndex, markIndex + 1);
         EnkaState newState = new EnkaState(currState.nonterminalSymbol, newRightSide, currState.terminalSymbolsAfter);
-        if (!visitedStates.remove(newState)) {
+        if (visitedStates.add(newState)) {
             stack.push(newState);
+        } else {
+            // TODO: optimize this
+            for (EnkaState state : visitedStates) {
+                if (newState.equals(state)) {
+                    newState = state;
+                    break;
+                }
+            }
         }
-        visitedStates.add(newState);
         symbolLinkStates(currState, newState, symbolLink);
         if (nonterminalSymbols.contains(symbolLink)) {
             findEpsilonProductions(currState, symbolLink, markIndex, visitedStates, stack);
@@ -154,10 +169,17 @@ class Enka {
             List<String> newRightSide = new LinkedList<>(rightSide);
             newRightSide.add(0, MARK);
             EnkaState newState = new EnkaState(link, newRightSide, terminalSymbolsAfter);
-            if (!visitedStates.remove(newState)) {
+            if (visitedStates.add(newState)) {
                 stack.push(newState);
+            } else {
+                // TODO: optimize this
+                for (EnkaState state : visitedStates) {
+                    if (newState.equals(state)) {
+                        newState = state;
+                        break;
+                    }
+                }
             }
-            visitedStates.add(newState);
             epsilonLinkStates(currState, newState);
         }
     }
@@ -176,7 +198,7 @@ class Enka {
         final String nonterminalSymbol;
         final List<String> rightSide;
         final Set<String> terminalSymbolsAfter;
-        final Set<EnkaState> epsilonProductions = new HashSet<>();
+        final Set<EnkaState> epsilonProductions = new LinkedHashSet<>();
         final Map<String, Set<EnkaState>> symbolProductions = new HashMap<>();
 
         EnkaState(String nonterminal, List<String> rightSide, Set<String> charSet) {
@@ -202,7 +224,12 @@ class Enka {
 
         @Override
         public String toString() {
-            return nonterminalSymbol + "->" + Arrays.toString(rightSide.toArray()) + "{" + Arrays.toString(terminalSymbolsAfter.toArray()) + "}";
+            StringBuilder symb = new StringBuilder();
+            for (String symbol : terminalSymbolsAfter) {
+                symb.append(symbol).append(" ");
+            }
+            return nonterminalSymbol + " -> " + Arrays.toString(rightSide.toArray()).replace(",", "").replace("[", "")
+                    .replace("]", "") + ", { " + symb.toString() + "}";
         }
 
     }
