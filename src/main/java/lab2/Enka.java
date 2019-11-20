@@ -4,7 +4,7 @@ import java.util.*;
 
 import static lab2.Constants.*;
 
-@SuppressWarnings("DuplicatedCode")
+@SuppressWarnings({"DuplicatedCode"})
 class Enka {
 
     private final EnkaState initialState;
@@ -115,27 +115,20 @@ class Enka {
         }
     }
 
-    private void findNewStates(EnkaState currState, Set<EnkaState> visited, Deque<EnkaState> stack) {
+    private void findNewStates(EnkaState currState, Set<EnkaState> visitedStates, Deque<EnkaState> stack) {
         int markIndex = currState.rightSide.indexOf(MARK);
         if (markIndex >= currState.rightSide.size() - 1) return;
         List<String> newRightSide = new LinkedList<>(currState.rightSide);
         String symbolLink = newRightSide.get(markIndex + 1);
         Collections.swap(newRightSide, markIndex, markIndex + 1);
         EnkaState newState = new EnkaState(currState.nonterminalSymbol, newRightSide, currState.terminalSymbolsAfter);
-        if (visited.add(newState)) {
+        if (!visitedStates.remove(newState)) {
             stack.push(newState);
-        } else {
-            // TODO: optimize this
-            for (EnkaState state : visited) {
-                if (newState.equals(state)) {
-                    newState = state;
-                    break;
-                }
-            }
         }
+        visitedStates.add(newState);
         symbolLinkStates(currState, newState, symbolLink);
         if (nonterminalSymbols.contains(symbolLink)) {
-            findEpsilonProductions(currState, symbolLink, markIndex, visited, stack);
+            findEpsilonProductions(currState, symbolLink, markIndex, visitedStates, stack);
         }
     }
 
@@ -161,17 +154,10 @@ class Enka {
             List<String> newRightSide = new LinkedList<>(rightSide);
             newRightSide.add(0, MARK);
             EnkaState newState = new EnkaState(link, newRightSide, terminalSymbolsAfter);
-            if (visitedStates.add(newState)) {
+            if (!visitedStates.remove(newState)) {
                 stack.push(newState);
-            } else {
-                // TODO: optimize this
-                for (EnkaState state : visitedStates) {
-                    if (newState.equals(state)) {
-                        newState = state;
-                        break;
-                    }
-                }
             }
+            visitedStates.add(newState);
             epsilonLinkStates(currState, newState);
         }
     }
