@@ -11,4 +11,6 @@ class Constants {
     static final String INITIAL_STATE = "S\'";
 
     static final String MARK = "*";
+
+    static final String END = "|";
 }
