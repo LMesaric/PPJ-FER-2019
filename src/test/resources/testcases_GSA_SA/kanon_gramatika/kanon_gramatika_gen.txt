@@ -1,0 +1,186 @@
+<%> ::=  <A>
+<A> ::=  <B> <A>
+	| ""
+<B> ::=  a <B>
+	| b
+
+prazni nezavrsni znakovi:
+<%>
+<A>
+
+ZapocinjeIzravnoZnakom:
+    <%> <A> <B> a b
+<%>  1   1   0  0 0
+<A>  0   1   1  0 0
+<B>  0   0   1  1 1
+a    0   0   0  1 0
+b    0   0   0  0 1
+
+ZapocinjeZnakom:
+    <%> <A> <B> a b
+<%>  1   1   1  1 1
+<A>  0   1   1  1 1
+<B>  0   0   1  1 1
+a    0   0   0  1 0
+b    0   0   0  0 1
+
+ZAPOCINJE za znakove:
+<%>: a b 
+<A>: a b 
+<B>: a b 
+a: a 
+b: b 
+
+eNKA (11 stanja)
+trenutno stanje: <%> -> * <A>, { # }
+epsilon prijelazi prema:
+	<A> -> * <B> <A>, { # }
+	<A> -> *, { # }
+prijelazi prema:
+	<A>: <%> -> <A> *, { # }
+trenutno stanje: <%> -> <A> *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <A> -> * <B> <A>, { # }
+epsilon prijelazi prema:
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+prijelazi prema:
+	<B>: <A> -> <B> * <A>, { # }
+trenutno stanje: <A> -> *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <A> -> <B> * <A>, { # }
+epsilon prijelazi prema:
+	<A> -> * <B> <A>, { # }
+	<A> -> *, { # }
+prijelazi prema:
+	<A>: <A> -> <B> <A> *, { # }
+trenutno stanje: <B> -> * a <B>, { a b # }
+epsilon prijelazi prema:
+prijelazi prema:
+	a: <B> -> a * <B>, { a b # }
+trenutno stanje: <B> -> * b, { a b # }
+epsilon prijelazi prema:
+prijelazi prema:
+	b: <B> -> b *, { a b # }
+trenutno stanje: <A> -> <B> <A> *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <B> -> a * <B>, { a b # }
+epsilon prijelazi prema:
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+prijelazi prema:
+	<B>: <B> -> a <B> *, { a b # }
+trenutno stanje: <B> -> b *, { a b # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <B> -> a <B> *, { a b # }
+epsilon prijelazi prema:
+prijelazi prema:
+
+DKA (7 stanja)
+trenutno stanje: (0)
+<%> -> * <A>, { # }
+<A> -> * <B> <A>, { # }
+<A> -> *, { # }
+<B> -> * a <B>, { a b # }
+<B> -> * b, { a b # }
+
+prijelazi prema:
+	<A>: (1)
+	<%> -> <A> *, { # }
+
+	<B>: (2)
+	<A> -> * <B> <A>, { # }
+	<A> -> *, { # }
+	<A> -> <B> * <A>, { # }
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+
+	a: (3)
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+	<B> -> a * <B>, { a b # }
+
+	b: (4)
+	<B> -> b *, { a b # }
+
+trenutno stanje: (1)
+<%> -> <A> *, { # }
+
+prijelazi prema:
+trenutno stanje: (2)
+<A> -> * <B> <A>, { # }
+<A> -> *, { # }
+<A> -> <B> * <A>, { # }
+<B> -> * a <B>, { a b # }
+<B> -> * b, { a b # }
+
+prijelazi prema:
+	<A>: (5)
+	<A> -> <B> <A> *, { # }
+
+	<B>: (2)
+	<A> -> * <B> <A>, { # }
+	<A> -> *, { # }
+	<A> -> <B> * <A>, { # }
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+
+	a: (3)
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+	<B> -> a * <B>, { a b # }
+
+	b: (4)
+	<B> -> b *, { a b # }
+
+trenutno stanje: (3)
+<B> -> * a <B>, { a b # }
+<B> -> * b, { a b # }
+<B> -> a * <B>, { a b # }
+
+prijelazi prema:
+	<B>: (6)
+	<B> -> a <B> *, { a b # }
+
+	a: (3)
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+	<B> -> a * <B>, { a b # }
+
+	b: (4)
+	<B> -> b *, { a b # }
+
+trenutno stanje: (4)
+<B> -> b *, { a b # }
+
+prijelazi prema:
+trenutno stanje: (5)
+<A> -> <B> <A> *, { # }
+
+prijelazi prema:
+trenutno stanje: (6)
+<B> -> a <B> *, { a b # }
+
+prijelazi prema:
+
+LR(1) tablice
+                      Akcija                                     NovoStanje                  
+          a              b              #             <%>            <A>            <B>      
+0      Pomakni        Pomakni       Reduciraj          -            Stavi          Stavi     
+          3              4         <A> ::= ""                         1              2       
+1         -              -          Prihvati           -              -              -       
+                                                                                             
+2      Pomakni        Pomakni       Reduciraj          -            Stavi          Stavi     
+          3              4         <A> ::= ""                         5              2       
+3      Pomakni        Pomakni           -              -              -            Stavi     
+          3              4                                                           6       
+4     Reduciraj      Reduciraj      Reduciraj          -              -              -       
+      <B> ::= b      <B> ::= b      <B> ::= b                                                
+5         -              -          Reduciraj          -              -              -       
+                                 <A> ::= <B> <A>                                             
+6     Reduciraj      Reduciraj      Reduciraj          -              -              -       
+    <B> ::= a <B>  <B> ::= a <B>  <B> ::= a <B>                                              

@@ -1,0 +1,14 @@
+<A>
+ <B>
+  a 1 x x x
+  <B>
+   b 2 y y
+ <A>
+  <B>
+   a 3 xx xx
+   <B>
+    a 4 xx xx xx
+    <B>
+     b 4 y
+  <A>
+   $
