@@ -20,6 +20,8 @@ public class GSA {
     private static void generateOutput(String[] readInput) {
         Set<String> nonterminalSymbols = cleanSymbolInput(readInput[0]);
         Set<String> terminalSymbols = cleanSymbolInput(readInput[1]);
+        Set<String> symbols = new LinkedHashSet<>(nonterminalSymbols);
+        symbols.addAll(terminalSymbols);
         Set<String> synchronizationalSymbols = cleanSymbolInput(readInput[2]);
         Map<String, List<List<String>>> productions = parseProductions(readInput, 3);
 
@@ -31,11 +33,12 @@ public class GSA {
         List<List<String>> production = new LinkedList<>();
         production.add(Collections.singletonList(start));
         productions.put(INITIAL_STATE, production);
+        System.out.println(new DFA(new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols).build()).print());
     }
 
     private static Set<String> cleanSymbolInput(String line) {
         String[] tmp = line.split(" ");
-        Set<String> set = new HashSet<>();
+        Set<String> set = new LinkedHashSet<>();
         for (int i = 1, limit = tmp.length; i < limit; i++)
             set.add(tmp[i]);
         return set;
