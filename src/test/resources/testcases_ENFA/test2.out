@@ -1,0 +1,213 @@
+trenutno stanje: <%> -> * <expr>, { # }
+epsilon prijelazi prema:
+	<expr> -> * <atom>, { # }
+	<expr> -> * <expr> OP_MINUS <atom>, { # }
+prijelazi prema:
+	<expr>: <%> -> <expr> *, { # }
+trenutno stanje: <%> -> <expr> *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <expr> -> * <atom>, { # }
+epsilon prijelazi prema:
+	<atom> -> * OPERAND, { # }
+	<atom> -> * UMINUS <atom>, { # }
+	<atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { # }
+prijelazi prema:
+	<atom>: <expr> -> <atom> *, { # }
+trenutno stanje: <expr> -> * <expr> OP_MINUS <atom>, { # }
+epsilon prijelazi prema:
+	<expr> -> * <atom>, { OP_MINUS }
+	<expr> -> * <expr> OP_MINUS <atom>, { OP_MINUS }
+prijelazi prema:
+	<expr>: <expr> -> <expr> * OP_MINUS <atom>, { # }
+trenutno stanje: <expr> -> <atom> *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> * OPERAND, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+	OPERAND: <atom> -> OPERAND *, { # }
+trenutno stanje: <atom> -> * UMINUS <atom>, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+	UMINUS: <atom> -> UMINUS * <atom>, { # }
+trenutno stanje: <atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+	LIJEVA_ZAGRADA: <atom> -> LIJEVA_ZAGRADA * <expr> DESNA_ZAGRADA, { # }
+trenutno stanje: <expr> -> <expr> * OP_MINUS <atom>, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+	OP_MINUS: <expr> -> <expr> OP_MINUS * <atom>, { # }
+trenutno stanje: <expr> -> * <atom>, { OP_MINUS }
+epsilon prijelazi prema:
+	<atom> -> * OPERAND, { OP_MINUS }
+	<atom> -> * UMINUS <atom>, { OP_MINUS }
+	<atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { OP_MINUS }
+prijelazi prema:
+	<atom>: <expr> -> <atom> *, { OP_MINUS }
+trenutno stanje: <expr> -> * <expr> OP_MINUS <atom>, { OP_MINUS }
+epsilon prijelazi prema:
+	<expr> -> * <atom>, { OP_MINUS }
+	<expr> -> * <expr> OP_MINUS <atom>, { OP_MINUS }
+prijelazi prema:
+	<expr>: <expr> -> <expr> * OP_MINUS <atom>, { OP_MINUS }
+trenutno stanje: <atom> -> OPERAND *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> UMINUS * <atom>, { # }
+epsilon prijelazi prema:
+	<atom> -> * OPERAND, { # }
+	<atom> -> * UMINUS <atom>, { # }
+	<atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { # }
+prijelazi prema:
+	<atom>: <atom> -> UMINUS <atom> *, { # }
+trenutno stanje: <atom> -> LIJEVA_ZAGRADA * <expr> DESNA_ZAGRADA, { # }
+epsilon prijelazi prema:
+	<expr> -> * <atom>, { DESNA_ZAGRADA }
+	<expr> -> * <expr> OP_MINUS <atom>, { DESNA_ZAGRADA }
+prijelazi prema:
+	<expr>: <atom> -> LIJEVA_ZAGRADA <expr> * DESNA_ZAGRADA, { # }
+trenutno stanje: <expr> -> <expr> OP_MINUS * <atom>, { # }
+epsilon prijelazi prema:
+	<atom> -> * OPERAND, { # }
+	<atom> -> * UMINUS <atom>, { # }
+	<atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { # }
+prijelazi prema:
+	<atom>: <expr> -> <expr> OP_MINUS <atom> *, { # }
+trenutno stanje: <expr> -> <atom> *, { OP_MINUS }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> * OPERAND, { OP_MINUS }
+epsilon prijelazi prema:
+prijelazi prema:
+	OPERAND: <atom> -> OPERAND *, { OP_MINUS }
+trenutno stanje: <atom> -> * UMINUS <atom>, { OP_MINUS }
+epsilon prijelazi prema:
+prijelazi prema:
+	UMINUS: <atom> -> UMINUS * <atom>, { OP_MINUS }
+trenutno stanje: <atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { OP_MINUS }
+epsilon prijelazi prema:
+prijelazi prema:
+	LIJEVA_ZAGRADA: <atom> -> LIJEVA_ZAGRADA * <expr> DESNA_ZAGRADA, { OP_MINUS }
+trenutno stanje: <expr> -> <expr> * OP_MINUS <atom>, { OP_MINUS }
+epsilon prijelazi prema:
+prijelazi prema:
+	OP_MINUS: <expr> -> <expr> OP_MINUS * <atom>, { OP_MINUS }
+trenutno stanje: <atom> -> UMINUS <atom> *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> LIJEVA_ZAGRADA <expr> * DESNA_ZAGRADA, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+	DESNA_ZAGRADA: <atom> -> LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA *, { # }
+trenutno stanje: <expr> -> * <atom>, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+	<atom> -> * OPERAND, { DESNA_ZAGRADA }
+	<atom> -> * UMINUS <atom>, { DESNA_ZAGRADA }
+	<atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { DESNA_ZAGRADA }
+prijelazi prema:
+	<atom>: <expr> -> <atom> *, { DESNA_ZAGRADA }
+trenutno stanje: <expr> -> * <expr> OP_MINUS <atom>, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+	<expr> -> * <atom>, { OP_MINUS }
+	<expr> -> * <expr> OP_MINUS <atom>, { OP_MINUS }
+prijelazi prema:
+	<expr>: <expr> -> <expr> * OP_MINUS <atom>, { DESNA_ZAGRADA }
+trenutno stanje: <expr> -> <expr> OP_MINUS <atom> *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> OPERAND *, { OP_MINUS }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> UMINUS * <atom>, { OP_MINUS }
+epsilon prijelazi prema:
+	<atom> -> * OPERAND, { OP_MINUS }
+	<atom> -> * UMINUS <atom>, { OP_MINUS }
+	<atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { OP_MINUS }
+prijelazi prema:
+	<atom>: <atom> -> UMINUS <atom> *, { OP_MINUS }
+trenutno stanje: <atom> -> LIJEVA_ZAGRADA * <expr> DESNA_ZAGRADA, { OP_MINUS }
+epsilon prijelazi prema:
+	<expr> -> * <atom>, { DESNA_ZAGRADA }
+	<expr> -> * <expr> OP_MINUS <atom>, { DESNA_ZAGRADA }
+prijelazi prema:
+	<expr>: <atom> -> LIJEVA_ZAGRADA <expr> * DESNA_ZAGRADA, { OP_MINUS }
+trenutno stanje: <expr> -> <expr> OP_MINUS * <atom>, { OP_MINUS }
+epsilon prijelazi prema:
+	<atom> -> * OPERAND, { OP_MINUS }
+	<atom> -> * UMINUS <atom>, { OP_MINUS }
+	<atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { OP_MINUS }
+prijelazi prema:
+	<atom>: <expr> -> <expr> OP_MINUS <atom> *, { OP_MINUS }
+trenutno stanje: <atom> -> LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA *, { # }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <expr> -> <atom> *, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> * OPERAND, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+prijelazi prema:
+	OPERAND: <atom> -> OPERAND *, { DESNA_ZAGRADA }
+trenutno stanje: <atom> -> * UMINUS <atom>, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+prijelazi prema:
+	UMINUS: <atom> -> UMINUS * <atom>, { DESNA_ZAGRADA }
+trenutno stanje: <atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+prijelazi prema:
+	LIJEVA_ZAGRADA: <atom> -> LIJEVA_ZAGRADA * <expr> DESNA_ZAGRADA, { DESNA_ZAGRADA }
+trenutno stanje: <expr> -> <expr> * OP_MINUS <atom>, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+prijelazi prema:
+	OP_MINUS: <expr> -> <expr> OP_MINUS * <atom>, { DESNA_ZAGRADA }
+trenutno stanje: <atom> -> UMINUS <atom> *, { OP_MINUS }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> LIJEVA_ZAGRADA <expr> * DESNA_ZAGRADA, { OP_MINUS }
+epsilon prijelazi prema:
+prijelazi prema:
+	DESNA_ZAGRADA: <atom> -> LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA *, { OP_MINUS }
+trenutno stanje: <expr> -> <expr> OP_MINUS <atom> *, { OP_MINUS }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> OPERAND *, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> UMINUS * <atom>, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+	<atom> -> * OPERAND, { DESNA_ZAGRADA }
+	<atom> -> * UMINUS <atom>, { DESNA_ZAGRADA }
+	<atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { DESNA_ZAGRADA }
+prijelazi prema:
+	<atom>: <atom> -> UMINUS <atom> *, { DESNA_ZAGRADA }
+trenutno stanje: <atom> -> LIJEVA_ZAGRADA * <expr> DESNA_ZAGRADA, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+	<expr> -> * <atom>, { DESNA_ZAGRADA }
+	<expr> -> * <expr> OP_MINUS <atom>, { DESNA_ZAGRADA }
+prijelazi prema:
+	<expr>: <atom> -> LIJEVA_ZAGRADA <expr> * DESNA_ZAGRADA, { DESNA_ZAGRADA }
+trenutno stanje: <expr> -> <expr> OP_MINUS * <atom>, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+	<atom> -> * OPERAND, { DESNA_ZAGRADA }
+	<atom> -> * UMINUS <atom>, { DESNA_ZAGRADA }
+	<atom> -> * LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA, { DESNA_ZAGRADA }
+prijelazi prema:
+	<atom>: <expr> -> <expr> OP_MINUS <atom> *, { DESNA_ZAGRADA }
+trenutno stanje: <atom> -> LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA *, { OP_MINUS }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> UMINUS <atom> *, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> LIJEVA_ZAGRADA <expr> * DESNA_ZAGRADA, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+prijelazi prema:
+	DESNA_ZAGRADA: <atom> -> LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA *, { DESNA_ZAGRADA }
+trenutno stanje: <expr> -> <expr> OP_MINUS <atom> *, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+prijelazi prema:
+trenutno stanje: <atom> -> LIJEVA_ZAGRADA <expr> DESNA_ZAGRADA *, { DESNA_ZAGRADA }
+epsilon prijelazi prema:
+prijelazi prema:
