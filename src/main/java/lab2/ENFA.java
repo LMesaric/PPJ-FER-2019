@@ -9,6 +9,8 @@ class ENFA {
 
     private final State initialState;
 
+    private final Set<String> symbols;
+
     private final Map<String, List<List<String>>> productions;
     private final Set<String> nonterminalSymbols;
 
@@ -17,13 +19,55 @@ class ENFA {
 
     private final Map<String, Set<String>> graph = new HashMap<>();
 
-    ENFA(String initialState, Map<String, List<List<String>>> productions, Set<String> nonterminalSymbols) {
+    private Set<State> currentStates = new LinkedHashSet<>();
+
+    ENFA(String initialState, Map<String, List<List<String>>> productions, Set<String> symbols, Set<String> nonterminalSymbols) {
         this.productions = productions;
+        this.symbols = symbols;
         this.nonterminalSymbols = nonterminalSymbols;
         List<String> initialProduction = new LinkedList<>(productions.get(initialState).get(0));
         initialProduction.add(0, MARK);
         this.initialState = new State(initialState, initialProduction,
                 new HashSet<>(Collections.singletonList(END)));
+    }
+
+    Set<State> reset() {
+        currentStates.clear();
+        currentStates.add(initialState);
+        doEpsilonTransitions();
+        return currentStates;
+    }
+
+    Set<State> performTransitionFrom(Collection<State> states, String symbol) {
+        currentStates.clear();
+        currentStates.addAll(states);
+        doSymbolTransitions(symbol);
+        doEpsilonTransitions();
+        return currentStates;
+    }
+
+    private void doEpsilonTransitions() {
+        Queue<State> queue = new LinkedList<>(currentStates);
+        while (!queue.isEmpty()) {
+            State curr = queue.remove();
+            for (State state : curr.epsilonTransitions) {
+                if (currentStates.add(state)) {
+                    queue.add(state);
+                }
+            }
+        }
+    }
+
+    private void doSymbolTransitions(String symbol) {
+        Set<State> newCurrentStates = new LinkedHashSet<>();
+        for (State state : currentStates) {
+            Set<State> newStates = state.symbolTransitions.get(symbol);
+            if (newStates != null) {
+                newCurrentStates.addAll(newStates);
+            }
+        }
+        currentStates = newCurrentStates;
+        doEpsilonTransitions();
     }
 
     String print() {
@@ -34,25 +78,25 @@ class ENFA {
             State state = queue.remove();
             sb.append("trenutno stanje: ").append(state).append("\n");
             sb.append("epsilon prijelazi prema:\n");
-            for (State s : state.epsilonProductions) {
+            for (State s : state.epsilonTransitions) {
                 sb.append("\t").append(s).append("\n");
             }
             sb.append("prijelazi prema:\n");
-            for (Map.Entry<String, Set<State>> entry : state.symbolProductions.entrySet()) {
+            for (Map.Entry<String, Set<State>> entry : state.symbolTransitions.entrySet()) {
                 sb.append("\t").append(entry.getKey()).append(":");
                 for (State s : entry.getValue()) {
                     sb.append(" ").append(s);
                 }
                 sb.append("\n");
             }
-            for (Map.Entry<String, Set<State>> entry : state.symbolProductions.entrySet()) {
+            for (Map.Entry<String, Set<State>> entry : state.symbolTransitions.entrySet()) {
                 for (State s : entry.getValue()) {
                     if (visited.add(s)) {
                         queue.add(s);
                     }
                 }
             }
-            for (State s : state.epsilonProductions) {
+            for (State s : state.epsilonTransitions) {
                 if (visited.add(s)) {
                     queue.add(s);
                 }
@@ -206,12 +250,16 @@ class ENFA {
     }
 
     private void epsilonLinkStates(State left, State right) {
-        left.epsilonProductions.add(right);
+        left.epsilonTransitions.add(right);
     }
 
     private void symbolLinkStates(State left, State right, String link) {
-        left.symbolProductions.putIfAbsent(link, new HashSet<>());
-        left.symbolProductions.get(link).add(right);
+        left.symbolTransitions.putIfAbsent(link, new HashSet<>());
+        left.symbolTransitions.get(link).add(right);
+    }
+
+    public Set<String> getSymbols() {
+        return symbols;
     }
 
     static class State {
@@ -219,8 +267,8 @@ class ENFA {
         final String nonterminalSymbol;
         final List<String> rightSide;
         final Set<String> terminalSymbolsAfter;
-        final Set<State> epsilonProductions = new LinkedHashSet<>();
-        final Map<String, Set<State>> symbolProductions = new HashMap<>();
+        final Set<State> epsilonTransitions = new LinkedHashSet<>();
+        final Map<String, Set<State>> symbolTransitions = new HashMap<>();
 
         State(String nonterminal, List<String> rightSide, Set<String> charSet) {
             this.nonterminalSymbol = nonterminal;
