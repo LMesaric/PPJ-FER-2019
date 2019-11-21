@@ -12,7 +12,7 @@ import static lab2.Constants.EPSILON;
 import static lab2.Constants.INITIAL_STATE;
 import static org.junit.jupiter.api.Assertions.*;
 
-class EnkaBuildTest {
+class ENFABuildTest {
 
     private static final String TESTCASES_DIR = "src/test/resources/testcases_ENKA/";
 
@@ -37,7 +37,7 @@ class EnkaBuildTest {
         production.add(Collections.singletonList(start));
         productions.put(INITIAL_STATE, production);
 
-        String s = new Enka(INITIAL_STATE, productions, nonterminalSymbols).build().print();
+        String s = new ENFA(INITIAL_STATE, productions, nonterminalSymbols).build().print();
         String[] arr1 = s.split("\n");
         String[] arr2 = new String(Files.readAllBytes(pathOut)).split("\n");
         for (int i = 0; i < arr2.length; i++) {
