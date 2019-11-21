@@ -1,0 +1,85 @@
+trenutno stanje: (0)
+<%> -> * <A>, { # }
+<A> -> * <B> <A>, { # }
+<A> -> *, { # }
+<B> -> * a <B>, { a b # }
+<B> -> * b, { a b # }
+
+prijelazi prema:
+	<A>: (1)
+	<%> -> <A> *, { # }
+
+	<B>: (2)
+	<A> -> * <B> <A>, { # }
+	<A> -> *, { # }
+	<A> -> <B> * <A>, { # }
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+
+	a: (3)
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+	<B> -> a * <B>, { a b # }
+
+	b: (4)
+	<B> -> b *, { a b # }
+
+trenutno stanje: (1)
+<%> -> <A> *, { # }
+
+prijelazi prema:
+trenutno stanje: (2)
+<A> -> * <B> <A>, { # }
+<A> -> *, { # }
+<A> -> <B> * <A>, { # }
+<B> -> * a <B>, { a b # }
+<B> -> * b, { a b # }
+
+prijelazi prema:
+	<A>: (5)
+	<A> -> <B> <A> *, { # }
+
+	<B>: (2)
+	<A> -> * <B> <A>, { # }
+	<A> -> *, { # }
+	<A> -> <B> * <A>, { # }
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+
+	a: (3)
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+	<B> -> a * <B>, { a b # }
+
+	b: (4)
+	<B> -> b *, { a b # }
+
+trenutno stanje: (3)
+<B> -> * a <B>, { a b # }
+<B> -> * b, { a b # }
+<B> -> a * <B>, { a b # }
+
+prijelazi prema:
+	<B>: (6)
+	<B> -> a <B> *, { a b # }
+
+	a: (3)
+	<B> -> * a <B>, { a b # }
+	<B> -> * b, { a b # }
+	<B> -> a * <B>, { a b # }
+
+	b: (4)
+	<B> -> b *, { a b # }
+
+trenutno stanje: (4)
+<B> -> b *, { a b # }
+
+prijelazi prema:
+trenutno stanje: (5)
+<A> -> <B> <A> *, { # }
+
+prijelazi prema:
+trenutno stanje: (6)
+<B> -> a <B> *, { a b # }
+
+prijelazi prema:
