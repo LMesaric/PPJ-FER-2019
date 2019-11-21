@@ -15,6 +15,8 @@ class Enka {
     private final Set<String> emptyNonterminalSymbols = new HashSet<>();
     private final Map<String, Set<String>> beginsWithTerminal = new HashMap<>();
 
+    private final Map<String, Set<String>> graph = new HashMap<>();
+
     Enka(String initialState, Map<String, List<List<String>>> productions, Set<String> nonterminalSymbols) {
         this.productions = productions;
         this.nonterminalSymbols = nonterminalSymbols;
@@ -100,24 +102,43 @@ class Enka {
     }
 
     private void calculateBeginsWithTerminal() {
-        Set<String> visitedNonterminalSymbols = new HashSet<>();
         for (String nonterminalSymbol : nonterminalSymbols) {
-            calculateBeginsWithTerminal(nonterminalSymbol, visitedNonterminalSymbols);
+            createGraph(nonterminalSymbol);
+        }
+        for (String nonterminalSymbol : nonterminalSymbols) {
+            bfs(nonterminalSymbol);
         }
     }
 
-    private void calculateBeginsWithTerminal(String nonterminalSymbol, Set<String> visitedNonterminalSymbols) {
-        if (!visitedNonterminalSymbols.add(nonterminalSymbol)) return;
-        beginsWithTerminal.putIfAbsent(nonterminalSymbol, new HashSet<>());
+    private void createGraph(String nonterminalSymbol) {
+        graph.put(nonterminalSymbol, new HashSet<>());
         for (List<String> production : productions.get(nonterminalSymbol)) {
             for (String element : production) {
-                if (nonterminalSymbols.contains(element)) {
-                    calculateBeginsWithTerminal(element, visitedNonterminalSymbols);
-                    beginsWithTerminal.get(nonterminalSymbol).addAll(beginsWithTerminal.get(element));
-                    if (!emptyNonterminalSymbols.contains(element)) break;
+                graph.get(nonterminalSymbol).add(element);
+                if (!emptyNonterminalSymbols.contains(element)) break;
+            }
+        }
+    }
+
+    private void bfs(String currNonterminalSymbol) {
+        beginsWithTerminal.put(currNonterminalSymbol, new HashSet<>());
+        Set<String> visitedNonterminalSymbols = new HashSet<>();
+        visitedNonterminalSymbols.add(currNonterminalSymbol);
+        Queue<String> queue = new LinkedList<>(visitedNonterminalSymbols);
+        while (!queue.isEmpty()) {
+            String nonterminalSymbol = queue.remove();
+            for (String symbol : graph.get(nonterminalSymbol)) {
+                if (symbol.equals(currNonterminalSymbol)) continue;
+                if (nonterminalSymbols.contains(symbol)) {
+                    if (beginsWithTerminal.containsKey(symbol)) {
+                        beginsWithTerminal.get(currNonterminalSymbol).addAll(beginsWithTerminal.get(symbol));
+                        visitedNonterminalSymbols.add(symbol);
+                    }
+                    if (visitedNonterminalSymbols.add(symbol)) {
+                        queue.add(symbol);
+                    }
                 } else {
-                    beginsWithTerminal.get(nonterminalSymbol).add(element);
-                    break;
+                    beginsWithTerminal.get(currNonterminalSymbol).add(symbol);
                 }
             }
         }
