@@ -9,7 +9,7 @@ class ENFA {
 
     private final State initialState;
 
-    private final Set<String> symbols;
+    private final List<String> symbols;
 
     private final Map<String, List<List<String>>> productions;
     private final Set<String> nonterminalSymbols;
@@ -21,7 +21,7 @@ class ENFA {
 
     private Set<State> currentStates = new LinkedHashSet<>();
 
-    ENFA(String initialState, Map<String, List<List<String>>> productions, Set<String> symbols, Set<String> nonterminalSymbols) {
+    ENFA(String initialState, Map<String, List<List<String>>> productions, List<String> symbols, Set<String> nonterminalSymbols) {
         this.productions = productions;
         this.symbols = symbols;
         this.nonterminalSymbols = nonterminalSymbols;
@@ -29,6 +29,18 @@ class ENFA {
         initialProduction.add(0, MARK);
         this.initialState = new State(initialState, initialProduction,
                 new HashSet<>(Collections.singletonList(END)));
+        build();
+    }
+
+    private void build() {
+        findEmptyNonterminalSymbols();
+        calculateBeginsWithTerminal();
+        Set<State> visitedStates = new HashSet<>();
+        visitedStates.add(initialState);
+        Deque<State> stack = new ArrayDeque<>(visitedStates);
+        while (!stack.isEmpty()) {
+            findNewStates(stack.pop(), visitedStates, stack);
+        }
     }
 
     Set<State> reset() {
@@ -61,9 +73,9 @@ class ENFA {
     private void doSymbolTransitions(String symbol) {
         Set<State> newCurrentStates = new LinkedHashSet<>();
         for (State state : currentStates) {
-            Set<State> newStates = state.symbolTransitions.get(symbol);
-            if (newStates != null) {
-                newCurrentStates.addAll(newStates);
+            State newState = state.symbolTransition.get(symbol);
+            if (newState != null) {
+                newCurrentStates.add(newState);
             }
         }
         currentStates = newCurrentStates;
@@ -82,18 +94,15 @@ class ENFA {
                 sb.append("\t").append(s).append("\n");
             }
             sb.append("prijelazi prema:\n");
-            for (Map.Entry<String, Set<State>> entry : state.symbolTransitions.entrySet()) {
+            for (Map.Entry<String, State> entry : state.symbolTransition.entrySet()) {
                 sb.append("\t").append(entry.getKey()).append(":");
-                for (State s : entry.getValue()) {
-                    sb.append(" ").append(s);
-                }
+                sb.append(" ").append(entry.getValue());
                 sb.append("\n");
             }
-            for (Map.Entry<String, Set<State>> entry : state.symbolTransitions.entrySet()) {
-                for (State s : entry.getValue()) {
-                    if (visited.add(s)) {
-                        queue.add(s);
-                    }
+            for (Map.Entry<String, State> entry : state.symbolTransition.entrySet()) {
+                State s = entry.getValue();
+                if (visited.add(s)) {
+                    queue.add(s);
                 }
             }
             for (State s : state.epsilonTransitions) {
@@ -103,18 +112,6 @@ class ENFA {
             }
         }
         return sb.toString();
-    }
-
-    ENFA build() {
-        findEmptyNonterminalSymbols();
-        calculateBeginsWithTerminal();
-        Set<State> visitedStates = new HashSet<>();
-        visitedStates.add(initialState);
-        Deque<State> stack = new ArrayDeque<>(visitedStates);
-        while (!stack.isEmpty()) {
-            findNewStates(stack.pop(), visitedStates, stack);
-        }
-        return this;
     }
 
     private void findEmptyNonterminalSymbols() {
@@ -166,8 +163,9 @@ class ENFA {
 
     private void bfs(String currNonterminalSymbol) {
         beginsWithTerminal.put(currNonterminalSymbol, new HashSet<>());
-        Queue<String> queue = new LinkedList<>();
-        queue.add(currNonterminalSymbol);
+        Set<String> visitedNonterminalSymbols = new HashSet<>();
+        visitedNonterminalSymbols.add(currNonterminalSymbol);
+        Queue<String> queue = new LinkedList<>(visitedNonterminalSymbols);
         while (!queue.isEmpty()) {
             String nonterminalSymbol = queue.remove();
             for (String symbol : graph.get(nonterminalSymbol)) {
@@ -175,7 +173,9 @@ class ENFA {
                 if (nonterminalSymbols.contains(symbol)) {
                     if (beginsWithTerminal.containsKey(symbol)) {
                         beginsWithTerminal.get(currNonterminalSymbol).addAll(beginsWithTerminal.get(symbol));
-                    } else if (!beginsWithTerminal.get(currNonterminalSymbol).contains(symbol)) {
+                        visitedNonterminalSymbols.add(symbol);
+                    }
+                    if (visitedNonterminalSymbols.add(symbol)) {
                         queue.add(symbol);
                     }
                 } else {
@@ -251,11 +251,10 @@ class ENFA {
     }
 
     private void symbolLinkStates(State left, State right, String link) {
-        left.symbolTransitions.putIfAbsent(link, new HashSet<>());
-        left.symbolTransitions.get(link).add(right);
+        left.symbolTransition.put(link, right);
     }
 
-    Set<String> getSymbols() {
+    List<String> getSymbols() {
         return symbols;
     }
 
@@ -265,12 +264,16 @@ class ENFA {
         final List<String> rightSide;
         final Set<String> terminalSymbolsAfter;
         final Set<State> epsilonTransitions = new LinkedHashSet<>();
-        final Map<String, Set<State>> symbolTransitions = new HashMap<>();
+        final Map<String, State> symbolTransition = new HashMap<>();
+        final boolean acceptable;
+        final boolean reducible;
 
         State(String nonterminal, List<String> rightSide, Set<String> charSet) {
             this.nonterminalSymbol = nonterminal;
             this.rightSide = rightSide;
             this.terminalSymbolsAfter = charSet;
+            acceptable = nonterminalSymbol.equals(INITIAL_STATE) && rightSide.get(rightSide.size() - 1).equals("*");
+            reducible = rightSide.get(rightSide.size() - 1).equals("*");
         }
 
         @Override
@@ -290,12 +293,12 @@ class ENFA {
 
         @Override
         public String toString() {
-            StringBuilder symb = new StringBuilder();
+            StringBuilder result = new StringBuilder();
             for (String symbol : terminalSymbolsAfter) {
-                symb.append(symbol).append(" ");
+                result.append(symbol).append(" ");
             }
             return nonterminalSymbol + " -> " + Arrays.toString(rightSide.toArray()).replace(",", "").replace("[", "")
-                    .replace("]", "") + ", { " + symb.toString() + "}";
+                    .replace("]", "") + ", { " + result.toString() + "}";
         }
 
     }
