@@ -99,7 +99,7 @@ public class GSA {
                     } else if (action instanceof Move) {
                         sb.append(printCentered("Pomakni " + ((Move) action).newState, space));
                     } else if (action instanceof Reduce) {
-                        sb.append(printCentered(((Reduce)action).production.toString(), space));
+                        sb.append(printCentered(((Reduce) action).production.toString(), space));
                     } else {
                         throw new IllegalStateException("Wrong object type!");
                     }
@@ -133,7 +133,7 @@ public class GSA {
         return sb.toString();
     }
 
-    private static Set<String> cleanSymbolInput(String line) {
+    static Set<String> cleanSymbolInput(String line) {
         String[] tmp = line.split(" ");
         Set<String> set = new LinkedHashSet<>();
         for (int i = 1, limit = tmp.length; i < limit; i++) {
@@ -142,9 +142,7 @@ public class GSA {
         return set;
     }
 
-    private static Map<String, List<List<String>>> parseProductions(
-            String[] input,
-            @SuppressWarnings("SameParameterValue") int offset
+    static Map<String, List<List<String>>> parseProductions(String[] input, @SuppressWarnings("SameParameterValue") int offset
     ) {
         Map<String, List<List<String>>> map = new HashMap<>();
         int i = offset, last = input.length;
