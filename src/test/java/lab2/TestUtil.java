@@ -21,7 +21,7 @@ class TestUtil {
         String[] readInput = new String(Files.readAllBytes(pathIn)).split("\n");
         Set<String> nonterminalSymbols = cleanSymbolInput(readInput[0]);
         Set<String> terminalSymbols = cleanSymbolInput(readInput[1]);
-        Set<String> symbols = new LinkedHashSet<>(nonterminalSymbols);
+        List<String> symbols = new LinkedList<>(nonterminalSymbols);
         symbols.addAll(terminalSymbols);
         Set<String> synchronizationalSymbols = cleanSymbolInput(readInput[2]);
         Map<String, List<List<String>>> productions = parseProductions(readInput, 3);
@@ -31,14 +31,15 @@ class TestUtil {
         production.add(Collections.singletonList(start));
         productions.put(INITIAL_STATE, production);
 
-        return new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols).build();
+        return new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols);
     }
 
     private static Set<String> cleanSymbolInput(String line) {
         String[] tmp = line.trim().split(" ");
         Set<String> set = new LinkedHashSet<>();
-        for (int i = 1, limit = tmp.length; i < limit; i++)
+        for (int i = 1, limit = tmp.length; i < limit; i++) {
             set.add(tmp[i]);
+        }
         return set;
     }
 
