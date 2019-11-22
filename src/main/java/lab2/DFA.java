@@ -12,7 +12,7 @@ class DFA {
     private final Set<State> states = new TreeSet<>();
 
     DFA(ENFA enfa) {
-        initialState = new State(enfa.reset());
+        initialState = new State(enfa.reset(), false);
         states.add(initialState);
         buildFromENFA(enfa);
     }
@@ -40,11 +40,15 @@ class DFA {
                 State newState;
                 List<ENFA.State> items = new LinkedList<>(enfa.performTransitionFrom(currentState.states, symbol));
                 if (items.isEmpty()) continue;
+                boolean acceptable = false;
+                for (ENFA.State item : items) {
+                    acceptable |= item.acceptable;
+                }
                 Optional<State> optionalState = states.stream().filter(s -> s.states.equals(items)).findAny();
                 if (optionalState.isPresent()) {
                     newState = optionalState.get();
                 } else {
-                    newState = new State(items);
+                    newState = new State(items, acceptable);
                     states.add(newState);
                     queue.add(newState);
                 }
@@ -57,19 +61,26 @@ class DFA {
         left.symbolTransitions.put(link, right);
     }
 
+    Set<State> getStates() {
+        return states;
+    }
+
     static class State implements Comparable<State> {
 
         static int nextId = 0;
 
-        private final int id;
+        final int id;
 
-        private final List<ENFA.State> states = new LinkedList<>();
+        final List<ENFA.State> states = new LinkedList<>();
 
-        private final Map<String, State> symbolTransitions = new LinkedHashMap<>();
+        final Map<String, State> symbolTransitions = new LinkedHashMap<>();
 
-        private State(Collection<ENFA.State> states) {
+        final boolean acceptable;
+
+        private State(Collection<ENFA.State> states, boolean acceptable) {
             id = nextId++;
             this.states.addAll(states);
+            this.acceptable = acceptable;
         }
 
         @Override
