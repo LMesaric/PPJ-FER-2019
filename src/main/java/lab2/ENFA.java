@@ -166,9 +166,8 @@ class ENFA {
 
     private void bfs(String currNonterminalSymbol) {
         beginsWithTerminal.put(currNonterminalSymbol, new HashSet<>());
-        Set<String> visitedNonterminalSymbols = new HashSet<>();
-        visitedNonterminalSymbols.add(currNonterminalSymbol);
-        Queue<String> queue = new LinkedList<>(visitedNonterminalSymbols);
+        Queue<String> queue = new LinkedList<>();
+        queue.add(currNonterminalSymbol);
         while (!queue.isEmpty()) {
             String nonterminalSymbol = queue.remove();
             for (String symbol : graph.get(nonterminalSymbol)) {
@@ -176,9 +175,7 @@ class ENFA {
                 if (nonterminalSymbols.contains(symbol)) {
                     if (beginsWithTerminal.containsKey(symbol)) {
                         beginsWithTerminal.get(currNonterminalSymbol).addAll(beginsWithTerminal.get(symbol));
-                        visitedNonterminalSymbols.add(symbol);
-                    }
-                    if (visitedNonterminalSymbols.add(symbol)) {
+                    } else if (!beginsWithTerminal.get(currNonterminalSymbol).contains(symbol)) {
                         queue.add(symbol);
                     }
                 } else {
@@ -258,7 +255,7 @@ class ENFA {
         left.symbolTransitions.get(link).add(right);
     }
 
-    public Set<String> getSymbols() {
+    Set<String> getSymbols() {
         return symbols;
     }
 
