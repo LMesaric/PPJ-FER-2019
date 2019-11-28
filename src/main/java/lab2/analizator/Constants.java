@@ -6,5 +6,11 @@ class Constants {
 
     static final String NEW_STATE_TABLE_PATH = "./src/main/java/lab2/analizator/newState.ser";
 
-    static final char EPSILON = '$';
+    static final String EPSILON = "$";
+
+    static final String INITIAL_STATE = "<%>";
+
+    static final String MARK = "*";
+
+    static final String END = "#";
 }
