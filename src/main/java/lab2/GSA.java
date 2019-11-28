@@ -42,30 +42,64 @@ public class GSA {
         printTables(dfa, terminalSymbols, nonterminalSymbols);
     }
 
+    static Set<String> cleanSymbolInput(String line) {
+        String[] tmp = line.split(" ");
+        Set<String> set = new LinkedHashSet<>();
+        for (int i = 1, limit = tmp.length; i < limit; i++) {
+            set.add(tmp[i]);
+        }
+        return set;
+    }
+
+    static Map<String, List<List<String>>> parseProductions(String[] input, @SuppressWarnings("SameParameterValue") int offset) {
+        Map<String, List<List<String>>> map = new HashMap<>();
+        int i = offset, last = input.length;
+        while (i < last) {
+            String nonterminal = input[i++].trim();
+            List<List<String>> rightSides = new ArrayList<>();
+            while (i < last && input[i].charAt(0) == ' ') {
+                if (input[i].trim().equals(EPSILON)) {
+                    rightSides.add(Collections.emptyList());
+                } else {
+                    rightSides.add(Arrays.asList(input[i].trim().split(" ")));
+                }
+                i++;
+            }
+            if (map.containsKey(nonterminal)) {
+                map.get(nonterminal).addAll(rightSides);
+            } else {
+                map.put(nonterminal, rightSides);
+            }
+        }
+        return map;
+    }
+
     private static void generateTables(DFA dfa, Set<String> terminalSymbols, Set<String> nonterminalSymbols) {
         terminalSymbols.add(END);
         for (DFA.State state : dfa.getStates()) {
             actionTable.put(state.id, new HashMap<>());
             newStateTable.put(state.id, new HashMap<>());
+            // Fill action table row
             for (String terminalSymbol : terminalSymbols) {
-                Production production = null;
-                for (ENFA.State enfaState : state.states) {
-                    if (enfaState.reducible && enfaState.terminalSymbolsAfter.contains(terminalSymbol)) {
-                        production = new Production(enfaState.nonterminalSymbol, enfaState.rightSide.subList(0, enfaState.rightSide.size() - 1));
-                    }
-                }
+                // Determine whether there is transition for the current symbol
                 DFA.State newState = state.symbolTransitions.get(terminalSymbol);
                 if (newState != null) {
                     actionTable.get(state.id).put(terminalSymbol, new Move(newState.id));
                 } else {
-                    if (production != null) {
-                        actionTable.get(state.id).put(terminalSymbol, new Reduce(production));
+                    // Determine whether there is reduction for the current symbol
+                    for (ENFA.State enfaState : state.states) {
+                        if (enfaState.reducible && enfaState.terminalSymbolsAfter.contains(terminalSymbol)) {
+                            Production production = new Production(enfaState.nonterminalSymbol,
+                                    enfaState.rightSide.subList(0, enfaState.rightSide.size() - 1));
+                            actionTable.get(state.id).put(terminalSymbol, new Reduce(production));
+                        }
                     }
                 }
             }
             if (state.acceptable) {
                 actionTable.get(state.id).put(END, new Accept());
             }
+            // Fill newState table row
             for (String symbol : nonterminalSymbols) {
                 DFA.State newState = state.symbolTransitions.get(symbol);
                 if (newState != null) {
@@ -131,38 +165,6 @@ public class GSA {
             sb.append(" ");
         }
         return sb.toString();
-    }
-
-    static Set<String> cleanSymbolInput(String line) {
-        String[] tmp = line.split(" ");
-        Set<String> set = new LinkedHashSet<>();
-        for (int i = 1, limit = tmp.length; i < limit; i++) {
-            set.add(tmp[i]);
-        }
-        return set;
-    }
-
-    static Map<String, List<List<String>>> parseProductions(String[] input, @SuppressWarnings("SameParameterValue") int offset) {
-        Map<String, List<List<String>>> map = new HashMap<>();
-        int i = offset, last = input.length;
-        while (i < last) {
-            String nonterminal = input[i++].trim();
-            List<List<String>> rightSides = new ArrayList<>();
-            while (i < last && input[i].charAt(0) == ' ') {
-                if (input[i].trim().equals(EPSILON)) {
-                    rightSides.add(Collections.emptyList());
-                } else {
-                    rightSides.add(Arrays.asList(input[i].trim().split(" ")));
-                }
-                i++;
-            }
-            if (map.containsKey(nonterminal)) {
-                map.get(nonterminal).addAll(rightSides);
-            } else {
-                map.put(nonterminal, rightSides);
-            }
-        }
-        return map;
     }
 
 }
