@@ -10,6 +10,8 @@ public class GSA {
 
     private static final Map<Integer, Map<String, Put>> newStateTable = new HashMap<>();
 
+    static final List<Production> productionsOrder = new LinkedList<>();
+
     public static void main(String[] args) {
         StringBuilder readInput = new StringBuilder();
         try (Scanner sc = new Scanner(System.in)) {
@@ -22,22 +24,25 @@ public class GSA {
 
     private static void generateOutput(String[] readInput) {
         Set<String> nonterminalSymbols = cleanSymbolInput(readInput[0]);
+        // Add new initial state
+        nonterminalSymbols.add(INITIAL_STATE);
+
         Set<String> terminalSymbols = cleanSymbolInput(readInput[1]);
         List<String> symbols = new LinkedList<>(nonterminalSymbols);
         symbols.addAll(terminalSymbols);
-        Set<String> synchronizationalSymbols = cleanSymbolInput(readInput[2]);
-        Map<String, List<List<String>>> productions = parseProductions(readInput, 3);
 
-        // Add new initial state
-        nonterminalSymbols.add(INITIAL_STATE);
+        Set<String> synchronizationalSymbols = cleanSymbolInput(readInput[2]);
 
         // Create initial production
         String start = readInput[0].split(" ")[1];
         List<List<String>> production = new LinkedList<>();
         production.add(Collections.singletonList(start));
+        productionsOrder.add(new Production(INITIAL_STATE, Collections.singletonList(start)));
+
+        Map<String, List<List<String>>> productions = parseProductions(readInput, 3);
         productions.put(INITIAL_STATE, production);
 
-        DFA dfa = new DFA(new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols));
+        DFA dfa = new DFA(new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols, productionsOrder));
         generateTables(dfa, terminalSymbols, nonterminalSymbols);
         printTables(dfa, terminalSymbols, nonterminalSymbols);
     }
@@ -58,11 +63,14 @@ public class GSA {
             String nonterminal = input[i++].trim();
             List<List<String>> rightSides = new ArrayList<>();
             while (i < last && input[i].charAt(0) == ' ') {
+                List<String> rightSide;
                 if (input[i].trim().equals(EPSILON)) {
-                    rightSides.add(Collections.emptyList());
+                    rightSide = Collections.emptyList();
                 } else {
-                    rightSides.add(Arrays.asList(input[i].trim().split(" ")));
+                    rightSide = Arrays.asList(input[i].trim().split(" "));
                 }
+                rightSides.add(rightSide);
+                productionsOrder.add(new Production(nonterminal, rightSide));
                 i++;
             }
             if (map.containsKey(nonterminal)) {
@@ -87,8 +95,8 @@ public class GSA {
                     actionTable.get(state.id).put(terminalSymbol, new Move(newState.id));
                 } else {
                     // Determine whether there is reduction for the current symbol
-                    for (ENFA.State enfaState : state.states) {
-                        if (enfaState.reducible && enfaState.terminalSymbolsAfter.contains(terminalSymbol)) {
+                    for (ENFA.State enfaState : state.reducibleStates) {
+                        if (enfaState.terminalSymbolsAfter.contains(terminalSymbol)) {
                             Production production = new Production(enfaState.nonterminalSymbol,
                                     enfaState.rightSide.subList(0, enfaState.rightSide.size() - 1));
                             actionTable.get(state.id).put(terminalSymbol, new Reduce(production));
@@ -110,7 +118,7 @@ public class GSA {
     }
 
     private static void printTables(DFA dfa, Set<String> terminalSymbols, Set<String> nonterminalSymbols) {
-        int space = 15;
+        int space = 20;
         StringBuilder sb = new StringBuilder();
         sb.append(printCentered("Stanje", space));
         for (String symbol : terminalSymbols) {
