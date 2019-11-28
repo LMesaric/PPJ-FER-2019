@@ -15,9 +15,16 @@ class Production {
         this.right = new LinkedList<>(right);
     }
 
+    String getNonterminalSymbol() {
+        return nonterminalSymbol;
+    }
+
+    List<String> getRight() {
+        return right;
+    }
+
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
         return nonterminalSymbol + " -> " + Arrays.toString(right.toArray()).replace(",", "").replace("[", "")
                 .replace("]", "");
     }
