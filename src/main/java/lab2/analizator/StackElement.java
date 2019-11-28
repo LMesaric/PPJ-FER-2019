@@ -6,27 +6,17 @@ class StackElement {
 
     private final String symbol;
     private final int state;
-    private final boolean type; // true for symbol, false for state
 
-    public StackElement(String symbol) {
-        this.symbol = symbol;
-        state = 0;  // dummy
-        type = true;
-    }
-
-    public StackElement(int state) {
+    StackElement(String symbol, int state) {
+        this.symbol = Objects.requireNonNull(symbol);
         this.state = state;
-        symbol = null;  // dummy
-        type = false;
     }
 
-    public String getSymbol() {
-        if (!type) throw new RuntimeException("Cannot get symbol of state element: " + state);
+    String getSymbol() {
         return symbol;
     }
 
-    public int getState() {
-        if (type) throw new RuntimeException("Cannot get state of symbol element: " + symbol);
+    int getState() {
         return state;
     }
 
@@ -37,14 +27,23 @@ class StackElement {
 
         StackElement that = (StackElement) o;
 
-        if (type != that.type) return false;
-        if (type) return Objects.equals(symbol, that.symbol);
-        else return state == that.state;
+        if (state != that.state) return false;
+        return symbol.equals(that.symbol);
     }
 
     @Override
     public int hashCode() {
-        if (type) return Objects.requireNonNull(symbol).hashCode();
-        else return state;
+        int result = symbol.hashCode();
+        result = 31 * result + state;
+        return result;
     }
+
+    @Override
+    public String toString() {
+        return "StackElement{" +
+                "symbol='" + symbol + '\'' +
+                ", state=" + state +
+                '}';
+    }
+
 }
