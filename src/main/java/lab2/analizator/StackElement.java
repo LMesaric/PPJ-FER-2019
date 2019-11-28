@@ -4,20 +4,12 @@ import java.util.Objects;
 
 class StackElement {
 
-    private final String symbol;
-    private final int state;
+    final String symbol;
+    final int state;
 
     StackElement(String symbol, int state) {
         this.symbol = Objects.requireNonNull(symbol);
         this.state = state;
-    }
-
-    String getSymbol() {
-        return symbol;
-    }
-
-    int getState() {
-        return state;
     }
 
     @Override
