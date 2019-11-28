@@ -6,6 +6,8 @@ class Constants {
 
     static final String NEW_STATE_TABLE_PATH = "./src/main/java/lab2/analizator/newState.ser";
 
+    static final String SYNCHRONIZATIONAL_SYMBOLS_PATH = "./src/main/java/lab2/analizator/synchronizational.ser";
+
     static final String EPSILON = "$";
 
     static final String INITIAL_STATE = "<%>";
