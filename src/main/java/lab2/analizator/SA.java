@@ -18,8 +18,7 @@ public class SA {
         }
 
         Map<Integer, Map<String, Object>> actionTable = ObjectReaderUtil.readMapFromFile(Constants.ACTION_TABLE_PATH);
-        Map<Integer, Map<String, Object>> newStateTable = ObjectReaderUtil.readMapFromFile(Constants.NEW_STATE_TABLE_PATH);
-        //TODO newStateTable must be Map<Integer, Map<String, Put>>
+        Map<Integer, Map<String, Put>> newStateTable = ObjectReaderUtil.readMapFromFile(Constants.NEW_STATE_TABLE_PATH);
     }
 
     private static byte[] readAllFromStdin() {
