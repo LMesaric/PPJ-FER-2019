@@ -2,8 +2,6 @@ package lab2;
 
 import java.util.*;
 
-//TODO: Fix ordering
-
 @SuppressWarnings("DuplicatedCode")
 class DFA {
 
@@ -12,7 +10,17 @@ class DFA {
     private final Set<State> states = new TreeSet<>();
 
     DFA(ENFA enfa) {
-        initialState = new State(enfa.reset(), false);
+        List<ENFA.State> items = new LinkedList<>(enfa.reset());
+        List<ENFA.State> nonReducibleStates = new LinkedList<>();
+        Set<ENFA.State> reducibleStates = new TreeSet<>();
+        for (ENFA.State item : items) {
+            if (item.reducible) {
+                reducibleStates.add(item);
+            } else {
+                nonReducibleStates.add(item);
+            }
+        }
+        initialState = new State(nonReducibleStates, reducibleStates, false);
         states.add(initialState);
         buildFromENFA(enfa);
     }
@@ -36,19 +44,28 @@ class DFA {
         queue.add(initialState);
         while (!queue.isEmpty()) {
             State currentState = queue.remove();
+            if (currentState.nonReducibleStates.isEmpty()) continue;
             for (String symbol : enfa.getSymbols()) {
-                State newState;
-                List<ENFA.State> items = new LinkedList<>(enfa.performTransitionFrom(currentState.states, symbol));
+                List<ENFA.State> items = new LinkedList<>(enfa.performTransitionFrom(currentState.nonReducibleStates, symbol));
                 if (items.isEmpty()) continue;
+                Set<ENFA.State> nonReducibleStates = new HashSet<>();
+                Set<ENFA.State> reducibleStates = new TreeSet<>();
                 boolean acceptable = false;
                 for (ENFA.State item : items) {
                     acceptable |= item.acceptable;
+                    if (item.reducible) {
+                        reducibleStates.add(item);
+                    } else {
+                        nonReducibleStates.add(item);
+                    }
                 }
-                Optional<State> optionalState = states.stream().filter(s -> s.states.equals(items)).findAny();
+                Optional<State> optionalState = states.stream().filter(s -> s.nonReducibleStates.equals(nonReducibleStates)
+                        && s.reducibleStates.equals(reducibleStates)).findAny();
+                State newState;
                 if (optionalState.isPresent()) {
                     newState = optionalState.get();
                 } else {
-                    newState = new State(items, acceptable);
+                    newState = new State(nonReducibleStates, reducibleStates, acceptable);
                     states.add(newState);
                     queue.add(newState);
                 }
@@ -71,15 +88,18 @@ class DFA {
 
         final int id;
 
-        final List<ENFA.State> states = new LinkedList<>();
+        final Set<ENFA.State> nonReducibleStates = new HashSet<>();
+
+        final Set<ENFA.State> reducibleStates = new TreeSet<>();
 
         final Map<String, State> symbolTransitions = new LinkedHashMap<>();
 
         final boolean acceptable;
 
-        private State(Collection<ENFA.State> states, boolean acceptable) {
+        private State(Collection<ENFA.State> nonReducibleStates, Collection<ENFA.State> reducibleStates, boolean acceptable) {
             id = nextId++;
-            this.states.addAll(states);
+            this.nonReducibleStates.addAll(nonReducibleStates);
+            this.reducibleStates.addAll(reducibleStates);
             this.acceptable = acceptable;
         }
 
@@ -98,7 +118,8 @@ class DFA {
 
         String toString(String prefix) {
             StringBuilder sb = new StringBuilder();
-            states.forEach(s -> sb.append(prefix).append(s.toString()).append("\n"));
+            nonReducibleStates.forEach(s -> sb.append(prefix).append(s.toString()).append("\n"));
+            reducibleStates.forEach(s -> sb.append(prefix).append(s.toString()).append("\n"));
             return sb.toString();
         }
 
@@ -111,6 +132,7 @@ class DFA {
         public int compareTo(State o) {
             return Integer.compare(id, o.id);
         }
+
     }
 
 }
