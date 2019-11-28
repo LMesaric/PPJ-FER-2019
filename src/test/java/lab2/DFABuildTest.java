@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 import static lab2.TestUtil.TESTCASES_DIR_DFA;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DFABuildTest {
 
