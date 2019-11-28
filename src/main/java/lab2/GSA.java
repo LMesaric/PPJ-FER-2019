@@ -47,19 +47,19 @@ public class GSA {
         for (DFA.State state : dfa.getStates()) {
             actionTable.put(state.id, new HashMap<>());
             newStateTable.put(state.id, new HashMap<>());
-            for (String symbol : terminalSymbols) {
+            for (String terminalSymbol : terminalSymbols) {
                 Production production = null;
                 for (ENFA.State enfaState : state.states) {
-                    if (enfaState.reducible && enfaState.terminalSymbolsAfter.contains(symbol)) {
+                    if (enfaState.reducible && enfaState.terminalSymbolsAfter.contains(terminalSymbol)) {
                         production = new Production(enfaState.nonterminalSymbol, enfaState.rightSide.subList(0, enfaState.rightSide.size() - 1));
                     }
                 }
-                DFA.State newState = state.symbolTransitions.get(symbol);
+                DFA.State newState = state.symbolTransitions.get(terminalSymbol);
                 if (newState != null) {
-                    actionTable.get(state.id).put(symbol, new Move(newState.id));
+                    actionTable.get(state.id).put(terminalSymbol, new Move(newState.id));
                 } else {
                     if (production != null) {
-                        actionTable.get(state.id).put(symbol, new Reduce(production));
+                        actionTable.get(state.id).put(terminalSymbol, new Reduce(production));
                     }
                 }
             }
@@ -142,8 +142,7 @@ public class GSA {
         return set;
     }
 
-    static Map<String, List<List<String>>> parseProductions(String[] input, @SuppressWarnings("SameParameterValue") int offset
-    ) {
+    static Map<String, List<List<String>>> parseProductions(String[] input, @SuppressWarnings("SameParameterValue") int offset) {
         Map<String, List<List<String>>> map = new HashMap<>();
         int i = offset, last = input.length;
         while (i < last) {
