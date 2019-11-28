@@ -8,7 +8,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 class ObjectWriteReadTest {
 
@@ -21,18 +24,30 @@ class ObjectWriteReadTest {
 
     @Test
     void test() throws IOException {
-        Map<String, Set<String>> mapOne = createExampleMap();
+        Map<Integer, Map<String, Object>> mapOne = createExampleMap();
         ObjectWriterUtil.writeObjectToFile(mapOne, path);
-        Map<String, Set<String>> mapRead = ObjectReaderUtil.readMapFromFile(path);
+        Map<Integer, Map<String, Object>> mapRead = ObjectReaderUtil.readMapFromFile(path);
         Assertions.assertEquals(mapRead, createExampleMap());
     }
 
-    private Map<String, Set<String>> createExampleMap() {
-        Map<String, Set<String>> map = new HashMap<>();
-        map.put("<A>", new HashSet<>(Arrays.asList("a", "c", "<D>")));
-        map.put("<C>", new HashSet<>(Arrays.asList("b", "i")));
-        map.put("<E>", new HashSet<>(Arrays.asList("<V>", "u", "l", "<P>")));
-        map.put("x", new HashSet<>());
+    private Map<Integer, Map<String, Object>> createExampleMap() {
+        Map<Integer, Map<String, Object>> map = new HashMap<>();
+
+        map.put(7, new HashMap<>());
+        map.get(7).put("a", new Move(3));
+        map.get(7).put("cx", new Put(1));
+
+        map.put(1, new HashMap<>());
+        map.get(1).put("b", new Accept());
+        map.get(1).put("Du", new Move(17));
+        map.get(1).put("tkv", new Reduce(new Production("<X>", Arrays.asList("a", "<U>", "oub"))));
+
+        map.put(3, new HashMap<>());
+        map.get(3).put("oof", new Put(6));
+        map.get(3).put("oeuf", new Reduce(new Production("<Z>", Collections.emptyList())));
+
+        map.put(6, new HashMap<>());    // empty
+
         return map;
     }
 

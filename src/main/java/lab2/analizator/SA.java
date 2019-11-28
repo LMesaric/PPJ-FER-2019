@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class SA {
 
@@ -18,8 +17,9 @@ public class SA {
             inputTokens.add(LexicalToken.fromLine(line));
         }
 
-        Map<String, Set<String>> actionTable = ObjectReaderUtil.readMapFromFile(Constants.ACTION_TABLE_PATH);
-        Map<String, Set<String>> newStateTable = ObjectReaderUtil.readMapFromFile(Constants.NEW_STATE_TABLE_PATH);
+        Map<Integer, Map<String, Object>> actionTable = ObjectReaderUtil.readMapFromFile(Constants.ACTION_TABLE_PATH);
+        Map<Integer, Map<String, Object>> newStateTable = ObjectReaderUtil.readMapFromFile(Constants.NEW_STATE_TABLE_PATH);
+        //TODO newStateTable must be Map<Integer, Map<String, Put>>
     }
 
     private static byte[] readAllFromStdin() {
