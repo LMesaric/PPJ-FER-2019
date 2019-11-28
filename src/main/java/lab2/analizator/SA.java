@@ -36,4 +36,10 @@ public class SA {
         }
     }
 
+    private Object getFromTable(Map<Integer, Map<String, Object>> map, Integer state, String symbol) {
+        Map<String, Object> row = map.get(state);
+        if (row == null) return null;
+        return row.get(symbol);
+    }
+
 }
