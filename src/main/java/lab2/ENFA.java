@@ -39,9 +39,9 @@ class ENFA {
     private void build() {
         findEmptyNonterminalSymbols();
         calculateBeginsWithTerminal();
-        Set<State> visitedStates = new HashSet<>();
-        visitedStates.add(initialState);
-        Deque<State> stack = new ArrayDeque<>(visitedStates);
+        Map<State, State> visitedStates = new HashMap<>();
+        visitedStates.put(initialState, initialState);
+        Deque<State> stack = new ArrayDeque<>(visitedStates.values());
         while (!stack.isEmpty()) {
             findNewStates(stack.pop(), visitedStates, stack);
         }
@@ -121,7 +121,6 @@ class ENFA {
         int size = -1;
         while (size != emptyNonterminalSymbols.size()) {
             size = emptyNonterminalSymbols.size();
-            // TODO: possible optimization for iterating only over nonempty terminal symbols
             for (String nonterminalSymbol : nonterminalSymbols) {
                 if (emptyNonterminalSymbols.contains(nonterminalSymbol)) continue;
                 for (List<String> production : productions.get(nonterminalSymbol)) {
@@ -188,23 +187,16 @@ class ENFA {
         }
     }
 
-    private void findNewStates(State currState, Set<State> visitedStates, Deque<State> stack) {
+    private void findNewStates(State currState, Map<State, State> visitedStates, Deque<State> stack) {
         int markIndex = currState.rightSide.indexOf(MARK);
         if (markIndex >= currState.rightSide.size() - 1) return;
         List<String> newRightSide = new LinkedList<>(currState.rightSide);
         String symbolLink = newRightSide.get(markIndex + 1);
         Collections.swap(newRightSide, markIndex, markIndex + 1);
         State newState = new State(currState.nonterminalSymbol, newRightSide, currState.terminalSymbolsAfter);
-        if (visitedStates.add(newState)) {
+        newState = visitedStates.getOrDefault(newState, newState);
+        if (visitedStates.putIfAbsent(newState, newState) == null) {
             stack.push(newState);
-        } else {
-            // TODO: optimize this
-            for (State state : visitedStates) {
-                if (newState.equals(state)) {
-                    newState = state;
-                    break;
-                }
-            }
         }
         symbolLinkStates(currState, newState, symbolLink);
         if (nonterminalSymbols.contains(symbolLink)) {
@@ -212,7 +204,7 @@ class ENFA {
         }
     }
 
-    private void findEpsilonProductions(State currState, String link, int markIndex, Set<State> visitedStates, Deque<State> stack) {
+    private void findEpsilonProductions(State currState, String link, int markIndex, Map<State, State> visitedStates, Deque<State> stack) {
         Set<String> terminalSymbolsAfter = new HashSet<>();
         boolean isEmpty = true;
         for (int i = markIndex + 2; i < currState.rightSide.size(); i++) {
@@ -234,16 +226,9 @@ class ENFA {
             List<String> newRightSide = new LinkedList<>(rightSide);
             newRightSide.add(0, MARK);
             State newState = new State(link, newRightSide, terminalSymbolsAfter);
-            if (visitedStates.add(newState)) {
+            newState = visitedStates.getOrDefault(newState, newState);
+            if (visitedStates.putIfAbsent(newState, newState) == null) {
                 stack.push(newState);
-            } else {
-                // TODO: optimize this
-                for (State state : visitedStates) {
-                    if (newState.equals(state)) {
-                        newState = state;
-                        break;
-                    }
-                }
             }
             epsilonLinkStates(currState, newState);
         }

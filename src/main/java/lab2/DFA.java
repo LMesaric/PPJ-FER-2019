@@ -11,7 +11,7 @@ class DFA {
 
     DFA(ENFA enfa) {
         List<ENFA.State> items = new LinkedList<>(enfa.reset());
-        List<ENFA.State> nonReducibleStates = new LinkedList<>();
+        Set<ENFA.State> nonReducibleStates = new HashSet<>();
         Set<ENFA.State> reducibleStates = new TreeSet<>();
         for (ENFA.State item : items) {
             if (item.reducible) {
@@ -23,20 +23,6 @@ class DFA {
         initialState = new State(nonReducibleStates, reducibleStates, false);
         states.add(initialState);
         buildFromENFA(enfa);
-    }
-
-    String print() {
-        StringBuilder sb = new StringBuilder();
-        for (State state : states) {
-            sb.append("trenutno stanje: (").append(state.id).append(")\n");
-            sb.append(state);
-            sb.append("\nprijelazi prema:\n");
-            for (Map.Entry<String, State> entry : state.symbolTransitions.entrySet()) {
-                sb.append("\t").append(entry.getKey()).append(": (").append(entry.getValue().id).append(")\n");
-                sb.append(entry.getValue().toString("\t")).append("\n");
-            }
-        }
-        return sb.toString();
     }
 
     private void buildFromENFA(ENFA enfa) {
@@ -80,6 +66,20 @@ class DFA {
 
     Set<State> getStates() {
         return states;
+    }
+
+    String print() {
+        StringBuilder sb = new StringBuilder();
+        for (State state : states) {
+            sb.append("trenutno stanje: (").append(state.id).append(")\n");
+            sb.append(state);
+            sb.append("\nprijelazi prema:\n");
+            for (Map.Entry<String, State> entry : state.symbolTransitions.entrySet()) {
+                sb.append("\t").append(entry.getKey()).append(": (").append(entry.getValue().id).append(")\n");
+                sb.append(entry.getValue().toString("\t")).append("\n");
+            }
+        }
+        return sb.toString();
     }
 
     static class State implements Comparable<State> {
