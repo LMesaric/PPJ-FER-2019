@@ -35,7 +35,7 @@ class DFA {
                 List<ENFA.State> items = new LinkedList<>(enfa.performTransitionFrom(currentState.nonReducibleStates, symbol));
                 if (items.isEmpty()) continue;
                 Set<ENFA.State> nonReducibleStates = new HashSet<>();
-                Set<ENFA.State> reducibleStates = new TreeSet<>();
+                Set<ENFA.State> reducibleStates = new HashSet<>();
                 boolean acceptable = false;
                 for (ENFA.State item : items) {
                     acceptable |= item.acceptable;
@@ -45,11 +45,16 @@ class DFA {
                         nonReducibleStates.add(item);
                     }
                 }
-                Optional<State> optionalState = states.stream().filter(s -> s.nonReducibleStates.equals(nonReducibleStates)
-                        && s.reducibleStates.equals(reducibleStates)).findAny();
+                State optionalState = null;
+                for (State state : states) {
+                    if (state.nonReducibleStates.equals(nonReducibleStates) && new HashSet<>(state.reducibleStates).equals(reducibleStates)) {
+                        optionalState = state;
+                        break;
+                    }
+                }
                 State newState;
-                if (optionalState.isPresent()) {
-                    newState = optionalState.get();
+                if (optionalState != null) {
+                    newState = optionalState;
                 } else {
                     newState = new State(nonReducibleStates, reducibleStates, acceptable);
                     states.add(newState);
@@ -90,7 +95,7 @@ class DFA {
 
         final Set<ENFA.State> nonReducibleStates = new HashSet<>();
 
-        final Set<ENFA.State> reducibleStates = new TreeSet<>();
+        final Set<ENFA.State> reducibleStates = new HashSet<>();
 
         final Map<String, State> symbolTransitions = new LinkedHashMap<>();
 
