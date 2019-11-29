@@ -104,7 +104,8 @@ public class GSA {
                     actionTable.get(state.id).put(terminalSymbol, new Move(newState.id));
                 } else {
                     // Determine whether there is reduction for the current symbol
-                    for (ENFA.State enfaState : state.reducibleStates) {
+                    Set<ENFA.State> reductions = new TreeSet<>(state.reducibleStates);
+                    for (ENFA.State enfaState : reductions) {
                         if (enfaState.terminalSymbolsAfter.contains(terminalSymbol)) {
                             Production production = new Production(enfaState.nonterminalSymbol,
                                     enfaState.rightSide.subList(0, enfaState.rightSide.size() - 1));
