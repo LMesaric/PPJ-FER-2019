@@ -1,0 +1,18 @@
+<A>
+ <B>
+  b 1 b
+  <C>
+   c 2 c
+   a 3 a
+  <D>
+   d 4 d
+   <D>
+    d 5 d
+    <D>
+     $
+  <E>
+   c 6 c
+ <C>
+  c 7 c
+  a 8 a
+ c 9 c
