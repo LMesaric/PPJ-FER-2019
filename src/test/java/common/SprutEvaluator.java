@@ -116,12 +116,12 @@ public class SprutEvaluator {
         print("Generator time: %.3f s", getTimeInSeconds(generatorStart, generatorEnd));
         print("Analyzer time: %.3f s", getTimeInSeconds(analyzerStart, analyzerEnd));
         //System.out.println("Analyzer stderr:");
-        //stderr.forEach(s -> print("\t" + s));
+        //stderr.forEach(s -> outputConsumer.accept("\t" + s));
         if (!isExpected) {
             print("Expected:");
-            expected.forEach(s -> print("\t" + s));
+            expected.forEach(s -> outputConsumer.accept("\t" + s));
             print("Actual:");
-            stdout.forEach(s -> print("\t" + s));
+            stdout.forEach(s -> outputConsumer.accept("\t" + s));
         }
         print("--------------------");
         print("");
