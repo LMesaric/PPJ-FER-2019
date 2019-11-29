@@ -3,13 +3,13 @@ package lab2;
 import java.io.Serializable;
 
 // Two exact copies of Move class exist purely because of the way online evaluator is set up.
-class Move implements Serializable {
+public class Move implements Serializable {
 
     private static final long serialVersionUID = 2376271043341233867L;
 
-    final int newState;
+    public final int newState;
 
-    Move(int newState) {
+    public Move(int newState) {
         this.newState = newState;
     }
 

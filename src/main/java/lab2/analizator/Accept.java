@@ -3,7 +3,7 @@ package lab2.analizator;
 import java.io.Serializable;
 
 // Two exact copies of Accept class exist purely because of the way online evaluator is set up.
-class Accept implements Serializable {
+public class Accept implements Serializable {
 
     private static final long serialVersionUID = -828272784335020914L;
 

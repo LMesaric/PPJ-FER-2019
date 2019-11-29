@@ -1,15 +1,17 @@
 package lab2.analizator;
 
+import lab2.Production;
+
 import java.io.Serializable;
 
 // Two exact copies of Reduce class exist purely because of the way online evaluator is set up.
-class Reduce implements Serializable {
+public class Reduce implements Serializable {
 
     private static final long serialVersionUID = 4014673952837465316L;
 
-    final Production production;
+    public final Production production;
 
-    Reduce(Production production) {
+    public Reduce(Production production) {
         this.production = production;
     }
 

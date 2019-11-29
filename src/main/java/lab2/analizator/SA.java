@@ -1,5 +1,7 @@
 package lab2.analizator;
 
+import lab2.Put;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
