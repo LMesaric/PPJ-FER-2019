@@ -5,11 +5,23 @@ import java.util.Objects;
 class StackElement {
 
     final String symbol;
-    final int state;
+    int state;
+    final Node node;
+
+    StackElement(String symbol) {
+        this(symbol, 0);
+    }
 
     StackElement(String symbol, int state) {
         this.symbol = Objects.requireNonNull(symbol);
         this.state = state;
+        this.node = new Node(symbol);
+    }
+
+    StackElement(LexicalToken token, int state) {
+        this.symbol = token.uniformSign;
+        this.state = state;
+        this.node = new Node(token.toString());
     }
 
     @Override
