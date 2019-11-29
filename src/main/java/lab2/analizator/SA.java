@@ -14,9 +14,12 @@ public class SA {
     public static void main(String[] args) throws IOException {
         String inputText = new String(readAllFromStdin(), StandardCharsets.UTF_8);
 
-        List<LexicalToken> inputTokens = new ArrayList<>();
-        for (String line : inputText.split("\\r?\\n")) {
-            inputTokens.add(LexicalToken.fromLine(line));
+        // force get() in O(1)
+        ArrayList<LexicalToken> inputTokens = new ArrayList<>();
+        if (!inputText.trim().isEmpty()) {
+            for (String line : inputText.split("\\r?\\n")) {
+                inputTokens.add(LexicalToken.fromLine(line));
+            }
         }
 
         Map<Integer, Map<String, Object>> actionTable = ObjectReaderUtil.readMapFromFile(Constants.ACTION_TABLE_PATH);
