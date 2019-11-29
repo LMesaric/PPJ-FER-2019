@@ -1,0 +1,40 @@
+<A>
+ <B>
+  b 1 abc
+  <C>
+   c 1 asd
+   a 1 qw
+  <D>
+   d 1 er
+   <D>
+    d 1 sda
+    <D>
+     $
+  <E>
+   e 1 32
+   <A>
+    <B>
+     b 1 b
+     <C>
+      c 2 c
+      a 3 a
+     <D>
+      d 4 d
+      <D>
+       d 5 d
+       <D>
+        $
+     <E>
+      c 6 c
+    <C>
+     c 7 c
+     a 8 a
+    c 9 c
+   f 10 aaa
+ <C>
+  <D>
+   $
+  a 11 zxc
+  <B>
+   $
+ c 12 ytr

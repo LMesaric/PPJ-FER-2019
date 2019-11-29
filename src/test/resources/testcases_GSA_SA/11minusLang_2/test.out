@@ -1,0 +1,103 @@
+<expr>
+ <expr>
+  <expr>
+   <expr>
+    <expr>
+     <expr>
+      <expr>
+       <expr>
+        <expr>
+         <atom>
+          LIJEVA_ZAGRADA 2 (
+          <expr>
+           <atom>
+            OPERAND 2 3
+          DESNA_ZAGRADA 2 )
+        OP_MINUS 2 -
+        <atom>
+         UMINUS 2 -
+         <atom>
+          OPERAND 2 0x43
+       OP_MINUS 2 -
+       <atom>
+        UMINUS 2 -
+        <atom>
+         UMINUS 2 -
+         <atom>
+          OPERAND 2 0x12
+      OP_MINUS 2 -
+      <atom>
+       UMINUS 2 -
+       <atom>
+        OPERAND 2 0x12
+     OP_MINUS 2 -
+     <atom>
+      LIJEVA_ZAGRADA 2 (
+      <expr>
+       <expr>
+        <atom>
+         OPERAND 4 3
+       OP_MINUS 4 -
+       <atom>
+        UMINUS 4 -
+        <atom>
+         UMINUS 4 -
+         <atom>
+          UMINUS 4 -
+          <atom>
+           UMINUS 4 -
+           <atom>
+            UMINUS 4 -
+            <atom>
+             UMINUS 4 -
+             <atom>
+              UMINUS 4 -
+              <atom>
+               UMINUS 4 -
+               <atom>
+                UMINUS 5 -
+                <atom>
+                 UMINUS 5 -
+                 <atom>
+                  OPERAND 5 076
+      DESNA_ZAGRADA 5 )
+    OP_MINUS 6 -
+    <atom>
+     UMINUS 6 -
+     <atom>
+      LIJEVA_ZAGRADA 6 (
+      <expr>
+       <atom>
+        OPERAND 6 0x3
+      DESNA_ZAGRADA 6 )
+   OP_MINUS 6 -
+   <atom>
+    UMINUS 6 -
+    <atom>
+     UMINUS 6 -
+     <atom>
+      UMINUS 6 -
+      <atom>
+       UMINUS 6 -
+       <atom>
+        UMINUS 6 -
+        <atom>
+         UMINUS 6 -
+         <atom>
+          UMINUS 6 -
+          <atom>
+           LIJEVA_ZAGRADA 6 (
+           <expr>
+            <expr>
+             <atom>
+              OPERAND 6 3
+            OP_MINUS 6 -
+            <atom>
+             OPERAND 6 5
+           DESNA_ZAGRADA 6 )
+  OP_MINUS 6 -
+  <atom>
+   OPERAND 6 12
+ OP_MINUS 6 -
+ <atom>
+  OPERAND 6 0x32
