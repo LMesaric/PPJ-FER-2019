@@ -1,7 +1,6 @@
 package lab2.analizator;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,8 +28,7 @@ class Production implements Serializable {
 
     @Override
     public String toString() {
-        return nonterminalSymbol + " -> " + Arrays.toString(right.toArray()).replace(",", "").replace("[", "")
-                .replace("]", "");
+        return nonterminalSymbol + " -> " + String.join(" ", right);
     }
 
     @Override
