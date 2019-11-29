@@ -34,7 +34,7 @@ public class GSA {
         Set<String> synchronizationalSymbols = cleanSymbolInput(readInput[2]);
 
         // Create initial production
-        String start = readInput[0].split(" ")[1];
+        String start = readInput[0].split(" ", 3)[1];
         List<List<String>> production = new LinkedList<>();
         production.add(Collections.singletonList(start));
         productionsOrder.add(new Production(INITIAL_STATE, Collections.singletonList(start)));
