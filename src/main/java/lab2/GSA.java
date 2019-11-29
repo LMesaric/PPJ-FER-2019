@@ -109,6 +109,7 @@ public class GSA {
                             Production production = new Production(enfaState.nonterminalSymbol,
                                     enfaState.rightSide.subList(0, enfaState.rightSide.size() - 1));
                             actionTable.get(state.id).put(terminalSymbol, new Reduce(production));
+                            break;
                         }
                     }
                 }
