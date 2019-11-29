@@ -1,12 +1,11 @@
 package lab2;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 // Two exact copies of Production class exist purely because of the way online evaluator is set up.
-class Production implements Serializable {
+public class Production implements Serializable {
 
     private static final long serialVersionUID = 8637858053063664899L;
 
@@ -14,23 +13,22 @@ class Production implements Serializable {
 
     private final List<String> right;
 
-    Production(String nonterminalSymbol, List<String> right) {
+    public Production(String nonterminalSymbol, List<String> right) {
         this.nonterminalSymbol = nonterminalSymbol;
         this.right = new LinkedList<>(right);
     }
 
-    String getNonterminalSymbol() {
+    public String getNonterminalSymbol() {
         return nonterminalSymbol;
     }
 
-    List<String> getRight() {
+    public List<String> getRight() {
         return right;
     }
 
     @Override
     public String toString() {
-        return nonterminalSymbol + " -> " + Arrays.toString(right.toArray()).replace(",", "").replace("[", "")
-                .replace("]", "");
+        return nonterminalSymbol + " -> " + String.join(" ", right);
     }
 
     @Override

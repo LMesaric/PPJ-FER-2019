@@ -3,6 +3,8 @@
 *.txt
 !src/test/resources/**/*.txt
 
+*.ser
+
 # Created by https://www.gitignore.io/api/java,maven,eclipse,intellij
 # Edit at https://www.gitignore.io/?templates=java,maven,eclipse,intellij
 

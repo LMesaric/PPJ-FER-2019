@@ -1,5 +1,6 @@
 package lab2;
 
+import java.io.IOException;
 import java.util.*;
 
 import static lab2.Constants.*;
@@ -34,7 +35,7 @@ public class GSA {
         Set<String> synchronizationalSymbols = cleanSymbolInput(readInput[2]);
 
         // Create initial production
-        String start = readInput[0].split(" ")[1];
+        String start = readInput[0].split(" ", 3)[1];
         List<List<String>> production = new LinkedList<>();
         production.add(Collections.singletonList(start));
         productionsOrder.add(new Production(INITIAL_STATE, Collections.singletonList(start)));
@@ -44,7 +45,15 @@ public class GSA {
 
         DFA dfa = new DFA(new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols, productionsOrder));
         generateTables(dfa, terminalSymbols, nonterminalSymbols);
-        printTables(dfa, terminalSymbols, nonterminalSymbols);
+
+        printTables(dfa, terminalSymbols, nonterminalSymbols);  //TODO Remove this line before final upload
+        try {
+            ObjectWriterUtil.writeObjectToFile(actionTable, ACTION_TABLE_PATH);
+            ObjectWriterUtil.writeObjectToFile(newStateTable, NEW_STATE_TABLE_PATH);
+            ObjectWriterUtil.writeObjectToFile(synchronizationalSymbols, SYNCHRONIZATIONAL_SYMBOLS_PATH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     static Set<String> cleanSymbolInput(String line) {

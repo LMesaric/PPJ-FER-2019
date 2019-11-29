@@ -3,13 +3,13 @@ package lab2.analizator;
 import java.io.Serializable;
 
 // Two exact copies of Put class exist purely because of the way online evaluator is set up.
-class Put implements Serializable {
+public class Put implements Serializable {
 
     private static final long serialVersionUID = 6718678492959180447L;
 
-    final int newState;
+    public final int newState;
 
-    Put(int newState) {
+    public Put(int newState) {
         this.newState = newState;
     }
 
