@@ -1,5 +1,7 @@
 package lab2.analizator;
 
+import java.util.Objects;
+
 public class LexicalToken {
 
     String uniformSign;
@@ -7,15 +9,20 @@ public class LexicalToken {
     String originalCode;
 
     public LexicalToken(String uniformSign, int lineNumber, String originalCode) {
-        this.uniformSign = uniformSign;
+        this.uniformSign = Objects.requireNonNull(uniformSign);
         this.lineNumber = lineNumber;
-        this.originalCode = originalCode;
+        this.originalCode = Objects.requireNonNull(originalCode);
     }
 
     public static LexicalToken fromLine(String input) {
         input = input.trim();
         String[] parts = input.split(" ", 3);
         return new LexicalToken(parts[0], Integer.parseInt(parts[1]), parts[2]);
+    }
+
+    @Override
+    public String toString() {
+        return uniformSign + " " + lineNumber + " " + originalCode;
     }
 
     @Override
