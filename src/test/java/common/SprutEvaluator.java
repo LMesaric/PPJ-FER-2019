@@ -18,7 +18,7 @@ public class SprutEvaluator {
     private static final String JAVA_PARAMS1 = "-cp";
     private static final String JAVA_PARAMS2 = "target/classes";
     private static final int BUFFER_LENGTH = 1024;
-    private static final int MAX_TIMEOUT_MS = 10000;
+    private static final int MAX_TIMEOUT_MS = 5000;
 
     private Consumer<String> outputConsumer;
     private Consumer<String> errorConsumer;
@@ -72,6 +72,9 @@ public class SprutEvaluator {
 
     private boolean evaluateTestCase(String caseName, Path definition, Path input, Path output)
             throws IOException, InterruptedException {
+        print("--------------------");
+        print("TEST %s", caseName);
+
         ProcessBuilder genBuilder = new ProcessBuilder()
                 .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, generatorClass);
 
@@ -79,7 +82,12 @@ public class SprutEvaluator {
         Process generator = genBuilder.start();
         injectFileAsStdinToProcess(definition, generator);
         generator.getOutputStream().close();
-        generator.waitFor();
+        generator.waitFor(MAX_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        if (generator.isAlive()) {
+            print("Generator Time Limit Exceeded.\n");
+            generator.destroy();
+            return false;
+        }
         long generatorEnd = System.nanoTime();
 
         ProcessBuilder laBuilder = new ProcessBuilder()
@@ -94,13 +102,17 @@ public class SprutEvaluator {
         List<String> expected = Files.readAllLines(output);
         List<String> stdout = readLinesFromInputStream(analyzer.getInputStream());
         List<String> stderr = readLinesFromInputStream(analyzer.getErrorStream());
-        analyzer.waitFor();
+        analyzer.waitFor(MAX_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        if (analyzer.isAlive()) {
+            print("Analyzer Time Limit Exceeded.\n");
+            analyzer.destroy();
+            return false;
+        }
         long analyzerEnd = System.nanoTime();
 
         boolean isExpected = expected.equals(stdout);
 
-        print("--------------------");
-        print("TEST %s: %s", caseName, isExpected ? "PASS" : "FAIL");
+        print("Status: %s", isExpected ? "PASS" : "FAIL");
         print("Generator time: %.3f s", getTimeInSeconds(generatorStart, generatorEnd));
         print("Analyzer time: %.3f s", getTimeInSeconds(analyzerStart, analyzerEnd));
         //System.out.println("Analyzer stderr:");
@@ -108,7 +120,7 @@ public class SprutEvaluator {
         if (!isExpected) {
             print("Expected:");
             expected.forEach(s -> print("\t" + s));
-            System.out.println("Actual:");
+            print("Actual:");
             stdout.forEach(s -> print("\t" + s));
         }
         print("--------------------");
