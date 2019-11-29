@@ -17,10 +17,10 @@ public class Sprut {
     private static final String JAVA_EXEC = "java";
     private static final String JAVA_PARAMS1 = "-cp";
     private static final String JAVA_PARAMS2 = "target/classes";
-    private static final String GENERATOR_CLASS = "lab1.GLA";
-    private static final String ANALYZER_CLASS = "lab1.analizator.LA";
+    private static final String GENERATOR_CLASS = "lab2.GSA";
+    private static final String ANALYZER_CLASS = "lab2.analizator.SA";
 
-    private static final String TESTCASES_DIR = "src/test/resources/testcases_GLA_LA";
+    private static final String TESTCASES_DIR = "src/test/resources/testcases_GSA_SA";
 
     public static void main(String[] args) throws IOException, InterruptedException {
         System.out.println("SPRUT evaluator v1.0");
