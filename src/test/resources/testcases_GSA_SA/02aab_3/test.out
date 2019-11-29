@@ -1,0 +1,71 @@
+<S>
+ <B>
+  b 1 b
+ <S>
+  <B>
+   b 1 b
+  <S>
+   <B>
+    b 1 b
+   <S>
+    <B>
+     b 1 b
+    <S>
+     <A>
+      a 1 a
+     <A>
+      a 1 a
+     <S>
+      <A>
+       a 1 a
+      <A>
+       a 1 a
+      <S>
+       <A>
+        a 1 a
+       <A>
+        a 2 a
+       <S>
+        <B>
+         b 3 b
+        <S>
+         <B>
+          b 3 b
+         <S>
+          <B>
+           b 3 b
+          <S>
+           <B>
+            b 3 b
+           <S>
+            <B>
+             b 3 b
+            <S>
+             <B>
+              b 4 b
+             <S>
+              <A>
+               a 5 a
+              <A>
+               a 5 a
+              <S>
+               <A>
+                a 5 a
+               <A>
+                a 5 a
+               <S>
+                <A>
+                 a 5 a
+                <A>
+                 a 6 a
+                <S>
+                 <A>
+                  a 6 a
+                 <A>
+                  a 6 a
+                 <S>
+                  <B>
+                   b 7 b
+                  <S>
+                   <B>
+                    b 12 b
