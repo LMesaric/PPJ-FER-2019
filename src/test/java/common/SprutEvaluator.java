@@ -18,7 +18,7 @@ public class SprutEvaluator {
     private static final String JAVA_PARAMS1 = "-cp";
     private static final String JAVA_PARAMS2 = "target/classes";
     private static final int BUFFER_LENGTH = 1024;
-    private static final int MAX_TIMEOUT_MS = 5000;
+    private static final int MAX_TIMEOUT_MS = 30000;
 
     private Consumer<String> outputConsumer;
     private Consumer<String> errorConsumer;
