@@ -100,9 +100,11 @@ class LR {
             errorToken = new LexicalToken("EOF", lineNum, "EOF");
         }
         errorConsumer.accept("Line: " + errorToken.lineNumber);
-        // TODO OUTPUT EXPECTED UNIFORM SYMBOLS
+        errorConsumer.accept("Acceptable symbols: "
+                + String.join(", ", actionTable.get(stack.getFirst().state).keySet()));
         errorConsumer.accept("Received: " + errorToken.uniformSign);
         errorConsumer.accept("Original code: " + errorToken.originalCode);
+        errorConsumer.accept("");
 
         for (; currentTokenIndex < INDEX_OF_LINE_END; currentTokenIndex++)
             if (synchronizationalSymbols.contains(getCurrentInputSymbol()))
