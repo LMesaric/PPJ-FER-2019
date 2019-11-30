@@ -30,7 +30,7 @@ class TestUtil {
         production.add(Collections.singletonList(start));
         productions.put(INITIAL_STATE, production);
 
-        return new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols, GSA.productionsOrder);
+        return new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols);
     }
 
 }
