@@ -40,10 +40,12 @@ public class SA {
         }
     }
 
-    private Object getFromTable(Map<Integer, Map<String, Object>> map, Integer state, String symbol) {
-        Map<String, Object> row = map.get(state);
-        if (row == null) return null;
-        return row.get(symbol);
+    private static void buildTreeDFS(Node root, int depth, StringBuilder output) {
+        for (int i = 0; i < depth; i++)
+            output.append(' ');
+        output.append(root.text).append('\n');
+        for (Node child : root.children)
+            buildTreeDFS(child, depth + 1, output);
     }
 
 }
