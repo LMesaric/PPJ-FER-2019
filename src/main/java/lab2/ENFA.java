@@ -11,8 +11,6 @@ class ENFA {
 
     private final List<String> symbols;
 
-    private final List<Production> productionsOrder;
-
     private final Map<String, List<List<String>>> productions;
     private final Set<String> nonterminalSymbols;
 
@@ -23,8 +21,7 @@ class ENFA {
 
     private Set<State> currentStates = new LinkedHashSet<>();
 
-    ENFA(String initialState, Map<String, List<List<String>>> productions, List<String> symbols, Set<String> nonterminalSymbols,
-         List<Production> productionsOrder) {
+    ENFA(String initialState, Map<String, List<List<String>>> productions, List<String> symbols, Set<String> nonterminalSymbols) {
         this.productions = productions;
         this.symbols = symbols;
         this.nonterminalSymbols = nonterminalSymbols;
@@ -32,7 +29,6 @@ class ENFA {
         initialProduction.add(0, MARK);
         this.initialState = new State(initialState, initialProduction,
                 new HashSet<>(Collections.singletonList(END)));
-        this.productionsOrder = productionsOrder;
         build();
     }
 
@@ -246,7 +242,7 @@ class ENFA {
         return symbols;
     }
 
-    class State implements Comparable<State> {
+    static class State {
 
         final String nonterminalSymbol;
         final List<String> rightSide;
@@ -287,24 +283,6 @@ class ENFA {
             }
             return nonterminalSymbol + " -> " + Arrays.toString(rightSide.toArray()).replace(",", "").replace("[", "")
                     .replace("]", "") + ", { " + result.toString() + "}";
-        }
-
-        @Override
-        public int compareTo(State o) {
-            if (equals(o)) return 0;
-            else if (!reducible && !o.reducible) return 0;
-            else if (reducible && !o.reducible) return -1;
-            else if (!reducible) return 1;
-            List<String> rightSideThis = rightSide.subList(0, rightSide.size() - 1);
-            List<String> rightSideOther = o.rightSide.subList(0, o.rightSide.size() - 1);
-            for (Production production : productionsOrder) {
-                if (production.getNonterminalSymbol().equals(nonterminalSymbol) && production.getRight().equals(rightSideThis)) {
-                    return -1;
-                } else if (production.getNonterminalSymbol().equals(o.nonterminalSymbol) && production.getRight().equals(rightSideOther)) {
-                    return 1;
-                }
-            }
-            return 0;
         }
 
     }
