@@ -6,9 +6,7 @@ import java.util.*;
 public class GSA {
 
     private static final Map<Integer, Map<String, Object>> actionTable = new HashMap<>();
-
     private static final Map<Integer, Map<String, Put>> newStateTable = new HashMap<>();
-
     private static final List<Production> productionsOrder = new LinkedList<>();
 
     public static void main(String[] args) {
@@ -128,6 +126,7 @@ public class GSA {
 
     private static class ReducibleStateComparator implements Comparator<ENFA.State> {
 
+        @SuppressWarnings("ComparatorMethodParameterNotUsed")
         @Override
         public int compare(ENFA.State o1, ENFA.State o2) {
             if (o1.equals(o2)) {

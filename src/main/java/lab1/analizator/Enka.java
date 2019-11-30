@@ -5,7 +5,7 @@ import java.util.*;
 @SuppressWarnings("DuplicatedCode")
 public class Enka {
 
-    private Map<Integer, State> states = new HashMap<>();
+    private final Map<Integer, State> states = new HashMap<>();
     private State startState = null;
     private State acceptableState = null;
 
@@ -108,9 +108,9 @@ public class Enka {
 
     private static class State {
 
-        int id;
-        Set<State> epsilonTrans = new HashSet<>();
-        Map<Character, Set<State>> charTrans = new HashMap<>();
+        final int id;
+        final Set<State> epsilonTrans = new HashSet<>();
+        final Map<Character, Set<State>> charTrans = new HashMap<>();
 
         State(int id) {
             this.id = id;

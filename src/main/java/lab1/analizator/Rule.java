@@ -4,7 +4,7 @@ import java.util.List;
 
 class Rule {
 
-    private Enka enka;
+    private final Enka enka;
 
     private String tokenName;
     private boolean goToNewLine = false;

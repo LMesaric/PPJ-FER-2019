@@ -4,7 +4,7 @@ import common.SprutEvaluator;
 
 import java.io.IOException;
 
-public class Sprut {
+class Sprut {
 
     static final String GENERATOR_CLASS = "lab2.GSA";
     static final String ANALYZER_CLASS = "lab2.analizator.SA";

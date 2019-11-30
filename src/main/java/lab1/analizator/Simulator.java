@@ -6,11 +6,11 @@ import java.util.function.Consumer;
 
 class Simulator {
 
-    private String startingState;
-    private Map<String, List<Rule>> stateRules;
-    private char[] input;
-    private Consumer<String> outputConsumer;
-    private Consumer<String> errorConsumer;
+    private final String startingState;
+    private final Map<String, List<Rule>> stateRules;
+    private final char[] input;
+    private final Consumer<String> outputConsumer;
+    private final Consumer<String> errorConsumer;
 
 
     Simulator(String startingState, Map<String, List<Rule>> stateRules, String input,
@@ -59,9 +59,6 @@ class Simulator {
                 if (lastMatched.getTokenName() != null) {
                     String str = new String(input, firstPos, lastPos - firstPos);
                     outputConsumer.accept(String.format("%s %d %s", lastMatched.getTokenName(), line, str));
-                } else {
-                    // Do nothing
-                    //debug(String.format("DEBUG: POS: %d STATE: %s, str: %s", firstPos, currentState, new String(input, firstPos, lastPos - firstPos)));
                 }
 
                 if (lastMatched.getNextLexerState() != null) {
@@ -74,10 +71,6 @@ class Simulator {
             }
 
         }
-    }
-
-    private void debug(String format) {
-        System.err.println(format);
     }
 
     private Rule getFirstAccepted(List<Rule> rules) {

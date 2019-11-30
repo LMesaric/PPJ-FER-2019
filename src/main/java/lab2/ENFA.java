@@ -16,7 +16,8 @@ class ENFA {
     private final Map<String, Set<String>> beginsWithTerminal = new HashMap<>();
     private final Map<String, Set<String>> graph = new HashMap<>();
 
-    private Set<State> currentStates = new LinkedHashSet<>(); // Used for simulating ENFA
+    // Used for simulating ENFA
+    private Set<State> currentStates = new LinkedHashSet<>();
 
     ENFA(String initialState, Map<String, List<List<String>>> productions, List<String> symbols, Set<String> nonterminalSymbols) {
         this.initialState = getInitialState(initialState, productions);

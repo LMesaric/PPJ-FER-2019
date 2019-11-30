@@ -15,7 +15,7 @@ import java.util.Map;
 
 class ObjectWriteReadTest {
 
-    private static String path = "./src/test/java/lab2/serialized.ser";
+    private static final String path = "./src/test/java/lab2/serialized.ser";
 
     @AfterAll
     static void deleteGeneratedFile() throws IOException {

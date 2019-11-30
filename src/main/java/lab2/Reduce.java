@@ -17,9 +17,7 @@ public class Reduce implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Reduce reduce = (Reduce) o;
-
         return production.equals(reduce.production);
     }
 

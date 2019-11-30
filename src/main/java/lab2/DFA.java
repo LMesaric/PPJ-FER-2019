@@ -6,7 +6,6 @@ import java.util.*;
 class DFA {
 
     private final State initialState;
-
     private final Set<State> states = new TreeSet<>();
 
     DFA(ENFA enfa) {
@@ -73,6 +72,7 @@ class DFA {
         return states;
     }
 
+    @SuppressWarnings("unused")
     String print() {
         StringBuilder sb = new StringBuilder();
         for (State state : states) {
@@ -94,9 +94,7 @@ class DFA {
         final int id;
 
         final Set<ENFA.State> nonReducibleStates = new HashSet<>();
-
         final Set<ENFA.State> reducibleStates = new HashSet<>();
-
         final Map<String, State> symbolTransitions = new LinkedHashMap<>();
 
         final boolean acceptable;

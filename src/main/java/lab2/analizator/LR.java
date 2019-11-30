@@ -35,17 +35,15 @@ class LR {
 
     Node parse() {
         stack.push(new StackElement(Constants.STACK_END, 0));
-        while (true) {
+        while (true)
             if (parseOneIteration()) break;
-        }
         return stack.getFirst().node;
     }
 
     private boolean parseOneIteration() {
         Object o = getFromActionTable(stack.getFirst().state, getCurrentInputSymbol());
-        if (o == null) {
+        if (o == null)
             return recoverFromError();
-        }
 
         if (o instanceof Move) {
             Move m = (Move) o;
@@ -110,10 +108,8 @@ class LR {
             if (synchronizationalSymbols.contains(getCurrentInputSymbol()))
                 break;
 
-        while (stack.size() > 1
-                && null == getFromActionTable(stack.getFirst().state, getCurrentInputSymbol())) {
+        while (stack.size() > 1 && null == getFromActionTable(stack.getFirst().state, getCurrentInputSymbol()))
             stack.pop();
-        }
 
         return stack.size() <= 0;
     }

@@ -17,9 +17,7 @@ public class Move implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Move move = (Move) o;
-
         return newState == move.newState;
     }
 

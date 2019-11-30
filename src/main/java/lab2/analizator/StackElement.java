@@ -28,9 +28,7 @@ class StackElement {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         StackElement that = (StackElement) o;
-
         if (state != that.state) return false;
         return symbol.equals(that.symbol);
     }
@@ -44,10 +42,7 @@ class StackElement {
 
     @Override
     public String toString() {
-        return "StackElement{" +
-                "symbol='" + symbol + '\'' +
-                ", state=" + state +
-                '}';
+        return String.format("StackElement{symbol='%s', state=%d}", symbol, state);
     }
 
 }

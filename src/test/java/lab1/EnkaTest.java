@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EnkaTest {
 
-    private static Path path = Paths.get("./src/test/java/lab1/enkaTable.txt");
+    private static final Path path = Paths.get("./src/test/java/lab1/enkaTable.txt");
 
     @AfterAll
     static void deleteGeneratedFile() throws IOException {

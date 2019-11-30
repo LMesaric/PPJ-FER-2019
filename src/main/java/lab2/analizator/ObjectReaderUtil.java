@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.util.Map;
 import java.util.Set;
 
+@SuppressWarnings("WeakerAccess")
 public class ObjectReaderUtil {
 
     @SuppressWarnings("unchecked")

@@ -17,9 +17,7 @@ public class Put implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Put put = (Put) o;
-
         return newState == put.newState;
     }
 

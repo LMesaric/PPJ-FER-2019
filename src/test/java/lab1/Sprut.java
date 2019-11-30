@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class Sprut {
+class Sprut {
 
     private static final String JAVA_EXEC = "java";
     private static final String JAVA_PARAMS1 = "-cp";

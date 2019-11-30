@@ -10,7 +10,6 @@ public class Production implements Serializable {
     private static final long serialVersionUID = 8637858053063664899L;
 
     private final String nonterminalSymbol;
-
     private final List<String> right;
 
     public Production(String nonterminalSymbol, List<String> right) {
@@ -35,9 +34,7 @@ public class Production implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Production that = (Production) o;
-
         if (!nonterminalSymbol.equals(that.nonterminalSymbol)) return false;
         return right.equals(that.right);
     }

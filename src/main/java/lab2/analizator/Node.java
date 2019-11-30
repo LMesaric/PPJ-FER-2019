@@ -22,8 +22,4 @@ class Node {
         children.add(0, Objects.requireNonNull(child));
     }
 
-    void addChildLast(Node child) {
-        children.add(Objects.requireNonNull(child));
-    }
-
 }

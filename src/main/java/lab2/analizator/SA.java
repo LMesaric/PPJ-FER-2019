@@ -17,9 +17,8 @@ public class SA {
         // force get() in O(1)
         ArrayList<LexicalToken> inputTokens = new ArrayList<>();
         if (!inputText.trim().isEmpty()) {
-            for (String line : inputText.split("\\r?\\n")) {
+            for (String line : inputText.split("\\r?\\n"))
                 inputTokens.add(LexicalToken.fromLine(line));
-            }
         }
 
         Map<Integer, Map<String, Object>> actionTable = ObjectReaderUtil.readMapFromFile(Constants.ACTION_TABLE_PATH);
@@ -35,11 +34,9 @@ public class SA {
     private static byte[] readAllFromStdin() {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[32 * 1024];
-
             int bytesRead;
-            while ((bytesRead = System.in.read(buffer)) > 0) {
+            while ((bytesRead = System.in.read(buffer)) > 0)
                 baos.write(buffer, 0, bytesRead);
-            }
             return baos.toByteArray();
         } catch (IOException e) {
             throw new RuntimeException(e);

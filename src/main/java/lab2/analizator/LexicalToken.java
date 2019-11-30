@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class LexicalToken {
 
-    String uniformSign;
-    int lineNumber;
-    String originalCode;
+    final String uniformSign;
+    final int lineNumber;
+    final String originalCode;
 
     public LexicalToken(String uniformSign, int lineNumber, String originalCode) {
         this.uniformSign = Objects.requireNonNull(uniformSign);
@@ -22,16 +22,14 @@ public class LexicalToken {
 
     @Override
     public String toString() {
-        return uniformSign + " " + lineNumber + " " + originalCode;
+        return String.format("%s %d %s", uniformSign, lineNumber, originalCode);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         LexicalToken that = (LexicalToken) o;
-
         if (lineNumber != that.lineNumber) return false;
         if (!uniformSign.equals(that.uniformSign)) return false;
         return originalCode.equals(that.originalCode);

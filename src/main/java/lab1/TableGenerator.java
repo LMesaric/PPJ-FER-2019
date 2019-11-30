@@ -7,7 +7,7 @@ class TableGenerator {
 
     private int stateId;
 
-    private StringBuilder table = new StringBuilder();
+    private final StringBuilder table = new StringBuilder();
 
     private void reset() {
         stateId = 0;
@@ -145,8 +145,8 @@ class TableGenerator {
 
     private static class Pair {
 
-        int left;
-        int right;
+        final int left;
+        final int right;
 
         Pair(int left, int right) {
             this.left = left;

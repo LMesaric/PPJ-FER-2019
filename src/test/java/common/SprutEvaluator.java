@@ -20,14 +20,14 @@ public class SprutEvaluator {
     private static final int BUFFER_LENGTH = 1024;
     private static final int MAX_TIMEOUT_MS = 15000;
 
-    private Consumer<String> outputConsumer;
-    private Consumer<String> errorConsumer;
-    private Path testsDirectory;
-    private String generatorClass;
-    private String analyzerClass;
-    private String inputRegex;
-    private String definitionRegex;
-    private String outputRegex;
+    private final Consumer<String> outputConsumer;
+    // private final Consumer<String> errorConsumer;
+    private final Path testsDirectory;
+    private final String generatorClass;
+    private final String analyzerClass;
+    private final String inputRegex;
+    private final String definitionRegex;
+    private final String outputRegex;
 
     public SprutEvaluator(Consumer<String> outputConsumer, String testsDirectory,
                           String generatorClass, String analyzerClass,
