@@ -1,6 +1,7 @@
 package lab2;
 
 // Two exact copies of Constants class exist purely because of the way online evaluator is set up.
+@SuppressWarnings("unused")
 class Constants {
     static final String ACTION_TABLE_PATH = "./src/main/java/lab2/analizator/action.ser";
 
