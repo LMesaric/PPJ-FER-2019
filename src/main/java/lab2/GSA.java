@@ -43,7 +43,7 @@ public class GSA {
         Map<String, List<List<String>>> productions = parseProductions(readInput, 3);
         productions.put(INITIAL_STATE, production);
 
-        DFA dfa = new DFA(new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols, productionsOrder));
+        DFA dfa = new DFA(new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols));
         generateTables(dfa, terminalSymbols, nonterminalSymbols);
 
 //        printTables(dfa, terminalSymbols, nonterminalSymbols);  //TODO Remove this line before final upload
@@ -126,6 +126,27 @@ public class GSA {
                 }
             }
         }
+    }
+
+    private static class ReducibleStateComparator implements Comparator<ENFA.State> {
+
+        @Override
+        public int compare(ENFA.State o1, ENFA.State o2) {
+            if (o1.equals(o2)) {
+                throw new RuntimeException();
+            }
+            List<String> rightSideThis = o1.rightSide.subList(0, o1.rightSide.size() - 1);
+            List<String> rightSideOther = o2.rightSide.subList(0, o2.rightSide.size() - 1);
+            for (Production production : productionsOrder) {
+                if (production.getNonterminalSymbol().equals(o1.nonterminalSymbol) && production.getRight().equals(rightSideThis)) {
+                    return -1;
+                } else if (production.getNonterminalSymbol().equals(o2.nonterminalSymbol) && production.getRight().equals(rightSideOther)) {
+                    return 1;
+                }
+            }
+            throw new RuntimeException();
+        }
+
     }
 
     private static void printTables(DFA dfa, Set<String> terminalSymbols, Set<String> nonterminalSymbols) {
