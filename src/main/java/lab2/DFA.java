@@ -12,7 +12,7 @@ class DFA {
     DFA(ENFA enfa) {
         List<ENFA.State> items = new LinkedList<>(enfa.reset());
         Set<ENFA.State> nonReducibleStates = new HashSet<>();
-        Set<ENFA.State> reducibleStates = new TreeSet<>();
+        Set<ENFA.State> reducibleStates = new HashSet<>();
         for (ENFA.State item : items) {
             if (item.reducible) {
                 reducibleStates.add(item);
@@ -47,7 +47,7 @@ class DFA {
                 }
                 State optionalState = null;
                 for (State state : states) {
-                    if (state.nonReducibleStates.equals(nonReducibleStates) && new HashSet<>(state.reducibleStates).equals(reducibleStates)) {
+                    if (state.nonReducibleStates.equals(nonReducibleStates) && state.reducibleStates.equals(reducibleStates)) {
                         optionalState = state;
                         break;
                     }
