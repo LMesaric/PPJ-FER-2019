@@ -3,8 +3,6 @@ package lab2;
 import java.io.IOException;
 import java.util.*;
 
-import static lab2.Constants.*;
-
 public class GSA {
 
     private static final Map<Integer, Map<String, Object>> actionTable = new HashMap<>();
@@ -26,7 +24,7 @@ public class GSA {
     private static void generateOutput(String[] readInput) {
         Set<String> nonterminalSymbols = cleanSymbolInput(readInput[0]);
         // Add new initial state
-        nonterminalSymbols.add(INITIAL_STATE);
+        nonterminalSymbols.add(Constants.INITIAL_STATE);
 
         Set<String> terminalSymbols = cleanSymbolInput(readInput[1]);
         List<String> symbols = new LinkedList<>(nonterminalSymbols);
@@ -38,19 +36,19 @@ public class GSA {
         String start = readInput[0].split(" ", 3)[1];
         List<List<String>> production = new LinkedList<>();
         production.add(Collections.singletonList(start));
-        productionsOrder.add(new Production(INITIAL_STATE, Collections.singletonList(start)));
+        productionsOrder.add(new Production(Constants.INITIAL_STATE, Collections.singletonList(start)));
 
         Map<String, List<List<String>>> productions = parseProductions(readInput, 3);
-        productions.put(INITIAL_STATE, production);
+        productions.put(Constants.INITIAL_STATE, production);
 
-        DFA dfa = new DFA(new ENFA(INITIAL_STATE, productions, symbols, nonterminalSymbols, productionsOrder));
+        DFA dfa = new DFA(new ENFA(Constants.INITIAL_STATE, productions, symbols, nonterminalSymbols, productionsOrder));
         generateTables(dfa, terminalSymbols, nonterminalSymbols);
 
         // printTables(dfa, terminalSymbols, nonterminalSymbols);
         try {
-            ObjectWriterUtil.writeObjectToFile(actionTable, ACTION_TABLE_PATH);
-            ObjectWriterUtil.writeObjectToFile(newStateTable, NEW_STATE_TABLE_PATH);
-            ObjectWriterUtil.writeObjectToFile(synchronizationalSymbols, SYNCHRONIZATIONAL_SYMBOLS_PATH);
+            ObjectWriterUtil.writeObjectToFile(actionTable, Constants.ACTION_TABLE_PATH);
+            ObjectWriterUtil.writeObjectToFile(newStateTable, Constants.NEW_STATE_TABLE_PATH);
+            ObjectWriterUtil.writeObjectToFile(synchronizationalSymbols, Constants.SYNCHRONIZATIONAL_SYMBOLS_PATH);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,7 +71,7 @@ public class GSA {
             List<List<String>> rightSides = new ArrayList<>();
             while (i < last && input[i].charAt(0) == ' ') {
                 List<String> rightSide;
-                if (input[i].trim().equals(EPSILON)) {
+                if (input[i].trim().equals(Constants.EPSILON)) {
                     rightSide = Collections.emptyList();
                 } else {
                     rightSide = Arrays.asList(input[i].trim().split(" "));
@@ -92,7 +90,7 @@ public class GSA {
     }
 
     private static void generateTables(DFA dfa, Set<String> terminalSymbols, Set<String> nonterminalSymbols) {
-        terminalSymbols.add(END);
+        terminalSymbols.add(Constants.END);
         for (DFA.State state : dfa.getStates()) {
             actionTable.put(state.id, new HashMap<>());
             newStateTable.put(state.id, new HashMap<>());
@@ -116,7 +114,7 @@ public class GSA {
                 }
             }
             if (state.acceptable) {
-                actionTable.get(state.id).put(END, new Accept());
+                actionTable.get(state.id).put(Constants.END, new Accept());
             }
             // Fill newState table row
             for (String symbol : nonterminalSymbols) {
