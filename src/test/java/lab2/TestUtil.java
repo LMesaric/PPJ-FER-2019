@@ -13,7 +13,6 @@ import static lab2.GSA.parseProductions;
 class TestUtil {
 
     static final String TESTCASES_DIR_ENFA = "src/test/resources/testcases_ENFA/";
-    static final String TESTCASES_DIR_DFA = "src/test/resources/testcases_DFA/";
 
     static ENFA createENFA(String fileName) throws IOException {
         Path pathIn = Paths.get(TESTCASES_DIR_ENFA + fileName + ".in");
