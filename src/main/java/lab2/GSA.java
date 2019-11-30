@@ -9,7 +9,7 @@ public class GSA {
 
     private static final Map<Integer, Map<String, Put>> newStateTable = new HashMap<>();
 
-    static final List<Production> productionsOrder = new LinkedList<>();
+    private static final List<Production> productionsOrder = new LinkedList<>();
 
     public static void main(String[] args) {
         StringBuilder readInput = new StringBuilder();
@@ -44,7 +44,6 @@ public class GSA {
         DFA dfa = new DFA(new ENFA(Constants.INITIAL_STATE, productions, symbols, nonterminalSymbols));
         generateTables(dfa, terminalSymbols, nonterminalSymbols);
 
-        // printTables(dfa, terminalSymbols, nonterminalSymbols);
         try {
             ObjectWriterUtil.writeObjectToFile(actionTable, Constants.ACTION_TABLE_PATH);
             ObjectWriterUtil.writeObjectToFile(newStateTable, Constants.NEW_STATE_TABLE_PATH);
@@ -102,7 +101,8 @@ public class GSA {
                     actionTable.get(state.id).put(terminalSymbol, new Move(newState.id));
                 } else {
                     // Determine whether there is reduction for the current symbol
-                    Set<ENFA.State> reductions = new TreeSet<>(state.reducibleStates);
+                    List<ENFA.State> reductions = new LinkedList<>(state.reducibleStates);
+                    reductions.sort(new ReducibleStateComparator());
                     for (ENFA.State enfaState : reductions) {
                         if (enfaState.terminalSymbolsAfter.contains(terminalSymbol)) {
                             Production production = new Production(enfaState.nonterminalSymbol,
@@ -147,6 +147,7 @@ public class GSA {
 
     }
 
+    @SuppressWarnings("unused")
     private static void printTables(DFA dfa, Set<String> terminalSymbols, Set<String> nonterminalSymbols) {
         int space = 20;
         StringBuilder sb = new StringBuilder();

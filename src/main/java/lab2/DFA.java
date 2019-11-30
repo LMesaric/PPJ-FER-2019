@@ -10,52 +10,39 @@ class DFA {
     private final Set<State> states = new TreeSet<>();
 
     DFA(ENFA enfa) {
-        List<ENFA.State> items = new LinkedList<>(enfa.reset());
-        Set<ENFA.State> nonReducibleStates = new HashSet<>();
-        Set<ENFA.State> reducibleStates = new HashSet<>();
-        for (ENFA.State item : items) {
-            if (item.reducible) {
-                reducibleStates.add(item);
-            } else {
-                nonReducibleStates.add(item);
-            }
-        }
-        initialState = new State(nonReducibleStates, reducibleStates, false);
-        states.add(initialState);
-        buildFromENFA(enfa);
+        this.initialState = getInitialState(enfa);
+        this.states.add(initialState);
+        build(enfa);
     }
 
-    private void buildFromENFA(ENFA enfa) {
+    private State getInitialState(ENFA enfa) {
+        Set<ENFA.State> items = enfa.reset();
+        Set<ENFA.State> nonReducibleStates = new HashSet<>();
+        Set<ENFA.State> reducibleStates = new HashSet<>();
+        calculateStateType(items, nonReducibleStates, reducibleStates);
+        return new State(nonReducibleStates, reducibleStates, false);
+    }
+
+    private void build(ENFA enfa) {
         Queue<State> queue = new LinkedList<>();
         queue.add(initialState);
         while (!queue.isEmpty()) {
             State currentState = queue.remove();
             if (currentState.nonReducibleStates.isEmpty()) continue;
             for (String symbol : enfa.getSymbols()) {
-                List<ENFA.State> items = new LinkedList<>(enfa.performTransitionFrom(currentState.nonReducibleStates, symbol));
+                Set<ENFA.State> items = enfa.performTransitionFrom(currentState.nonReducibleStates, symbol);
                 if (items.isEmpty()) continue;
                 Set<ENFA.State> nonReducibleStates = new HashSet<>();
                 Set<ENFA.State> reducibleStates = new HashSet<>();
-                boolean acceptable = false;
-                for (ENFA.State item : items) {
-                    acceptable |= item.acceptable;
-                    if (item.reducible) {
-                        reducibleStates.add(item);
-                    } else {
-                        nonReducibleStates.add(item);
-                    }
-                }
-                State optionalState = null;
+                boolean acceptable = calculateStateType(items, nonReducibleStates, reducibleStates);
+                State newState = null;
                 for (State state : states) {
                     if (state.nonReducibleStates.equals(nonReducibleStates) && state.reducibleStates.equals(reducibleStates)) {
-                        optionalState = state;
+                        newState = state;
                         break;
                     }
                 }
-                State newState;
-                if (optionalState != null) {
-                    newState = optionalState;
-                } else {
+                if (newState == null) {
                     newState = new State(nonReducibleStates, reducibleStates, acceptable);
                     states.add(newState);
                     queue.add(newState);
@@ -63,6 +50,19 @@ class DFA {
                 symbolLinkStates(currentState, newState, symbol);
             }
         }
+    }
+
+    private boolean calculateStateType(Set<ENFA.State> items, Set<ENFA.State> nonReducibleStates, Set<ENFA.State> reducibleStates) {
+        boolean acceptable = false;
+        for (ENFA.State item : items) {
+            acceptable |= item.acceptable;
+            if (item.reducible) {
+                reducibleStates.add(item);
+            } else {
+                nonReducibleStates.add(item);
+            }
+        }
+        return acceptable;
     }
 
     private void symbolLinkStates(State left, State right, String link) {
@@ -102,7 +102,7 @@ class DFA {
         final boolean acceptable;
 
         private State(Collection<ENFA.State> nonReducibleStates, Collection<ENFA.State> reducibleStates, boolean acceptable) {
-            id = nextId++;
+            this.id = nextId++;
             this.nonReducibleStates.addAll(nonReducibleStates);
             this.reducibleStates.addAll(reducibleStates);
             this.acceptable = acceptable;
