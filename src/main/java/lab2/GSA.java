@@ -126,7 +126,6 @@ public class GSA {
 
     private static class ReducibleStateComparator implements Comparator<ENFA.State> {
 
-        @SuppressWarnings("ComparatorMethodParameterNotUsed")
         @Override
         public int compare(ENFA.State o1, ENFA.State o2) {
             if (o1.equals(o2)) {
