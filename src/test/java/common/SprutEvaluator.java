@@ -18,7 +18,7 @@ public class SprutEvaluator {
     private static final String JAVA_PARAMS1 = "-cp";
     private static final String JAVA_PARAMS2 = "target/classes";
     private static final int BUFFER_LENGTH = 1024;
-    private static final int MAX_TIMEOUT_MS = 30000;
+    private static final int MAX_TIMEOUT_MS = 15000;
 
     private Consumer<String> outputConsumer;
     private Consumer<String> errorConsumer;
@@ -115,8 +115,8 @@ public class SprutEvaluator {
         print("Status: %s", isExpected ? "PASS" : "FAIL");
         print("Generator time: %.3f s", getTimeInSeconds(generatorStart, generatorEnd));
         print("Analyzer time: %.3f s", getTimeInSeconds(analyzerStart, analyzerEnd));
-        //System.out.println("Analyzer stderr:");
-        //stderr.forEach(s -> outputConsumer.accept("\t" + s));
+        System.out.println("Analyzer stderr:");
+        stderr.forEach(s -> outputConsumer.accept("\t" + s));
         if (!isExpected) {
             print("Expected:");
             expected.forEach(s -> outputConsumer.accept("\t" + s));

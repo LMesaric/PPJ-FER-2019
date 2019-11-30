@@ -16,5 +16,5 @@ class Constants {
 
     static final String END = "#";
 
-    static final String STACK_END = "£";
+    static final String STACK_END = "&";
 }

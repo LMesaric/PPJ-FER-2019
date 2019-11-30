@@ -2,8 +2,6 @@ package lab2;
 
 import java.util.*;
 
-import static lab2.Constants.*;
-
 @SuppressWarnings({"DuplicatedCode"})
 class ENFA {
 
@@ -26,7 +24,7 @@ class ENFA {
         this.symbols = symbols;
         this.nonterminalSymbols = nonterminalSymbols;
         List<String> initialProduction = new LinkedList<>(productions.get(initialState).get(0));
-        initialProduction.add(0, MARK);
+        initialProduction.add(0, Constants.MARK);
         this.initialState = new State(initialState, initialProduction,
                 new HashSet<>(Collections.singletonList(END)));
         build();
@@ -184,7 +182,7 @@ class ENFA {
     }
 
     private void findNewStates(State currState, Map<State, State> visitedStates, Deque<State> stack) {
-        int markIndex = currState.rightSide.indexOf(MARK);
+        int markIndex = currState.rightSide.indexOf(Constants.MARK);
         if (markIndex >= currState.rightSide.size() - 1) return;
         List<String> newRightSide = new LinkedList<>(currState.rightSide);
         String symbolLink = newRightSide.get(markIndex + 1);
@@ -220,7 +218,7 @@ class ENFA {
         }
         for (List<String> rightSide : productions.get(link)) {
             List<String> newRightSide = new LinkedList<>(rightSide);
-            newRightSide.add(0, MARK);
+            newRightSide.add(0, Constants.MARK);
             State newState = new State(link, newRightSide, terminalSymbolsAfter);
             newState = visitedStates.getOrDefault(newState, newState);
             if (visitedStates.putIfAbsent(newState, newState) == null) {
@@ -256,7 +254,7 @@ class ENFA {
             this.nonterminalSymbol = nonterminal;
             this.rightSide = rightSide;
             this.terminalSymbolsAfter = charSet;
-            acceptable = nonterminalSymbol.equals(INITIAL_STATE) && rightSide.get(rightSide.size() - 1).equals("*");
+            acceptable = nonterminalSymbol.equals(Constants.INITIAL_STATE) && rightSide.get(rightSide.size() - 1).equals("*");
             reducible = rightSide.get(rightSide.size() - 1).equals("*");
         }
 

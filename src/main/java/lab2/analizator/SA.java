@@ -6,21 +6,30 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SA {
 
     public static void main(String[] args) throws IOException {
         String inputText = new String(readAllFromStdin(), StandardCharsets.UTF_8);
 
-        List<LexicalToken> inputTokens = new ArrayList<>();
-        for (String line : inputText.split("\\r?\\n")) {
-            inputTokens.add(LexicalToken.fromLine(line));
+        // force get() in O(1)
+        ArrayList<LexicalToken> inputTokens = new ArrayList<>();
+        if (!inputText.trim().isEmpty()) {
+            for (String line : inputText.split("\\r?\\n")) {
+                inputTokens.add(LexicalToken.fromLine(line));
+            }
         }
 
         Map<Integer, Map<String, Object>> actionTable = ObjectReaderUtil.readMapFromFile(Constants.ACTION_TABLE_PATH);
         Map<Integer, Map<String, Put>> newStateTable = ObjectReaderUtil.readMapFromFile(Constants.NEW_STATE_TABLE_PATH);
+        Set<String> synchronizationalSymbols = ObjectReaderUtil.readSetFromFile(Constants.SYNCHRONIZATIONAL_SYMBOLS_PATH);
+
+        Node root = new LR(inputTokens, actionTable, newStateTable, synchronizationalSymbols).parse();
+        StringBuilder sb = new StringBuilder();
+        buildTreeDFS(root, 0, sb);
+        System.out.print(sb.toString());
     }
 
     private static byte[] readAllFromStdin() {
@@ -37,10 +46,12 @@ public class SA {
         }
     }
 
-    private Object getFromTable(Map<Integer, Map<String, Object>> map, Integer state, String symbol) {
-        Map<String, Object> row = map.get(state);
-        if (row == null) return null;
-        return row.get(symbol);
+    private static void buildTreeDFS(Node root, int depth, StringBuilder output) {
+        for (int i = 0; i < depth; i++)
+            output.append(' ');
+        output.append(root.text).append('\n');
+        for (Node child : root.children)
+            buildTreeDFS(child, depth + 1, output);
     }
 
 }
