@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import static lab2.Sprut.*;
 
-public class EvaluatorTest {
+class EvaluatorTest {
 
     @Test
     void test() throws IOException, InterruptedException {
