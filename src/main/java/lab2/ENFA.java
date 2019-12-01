@@ -29,8 +29,7 @@ class ENFA {
 
     private State getInitialState(String initialState, Map<String, List<List<String>>> productions) {
         List<String> initialProduction = new LinkedList<>(productions.get(initialState).get(0));
-        initialProduction.add(0, Constants.MARK);
-        return new State(initialState, initialProduction,
+        return new State(initialState, initialProduction, 0,
                 new HashSet<>(Collections.singletonList(Constants.END)));
     }
 
@@ -119,16 +118,17 @@ class ENFA {
     }
 
     private void findNewStates(State currState, Map<State, State> visitedStates, Deque<State> stack) {
-        int markIndex = currState.rightSide.indexOf(Constants.MARK);
-        if (markIndex >= currState.rightSide.size() - 1) return;
-        List<String> newRightSide = new LinkedList<>(currState.rightSide);
-        String symbolLink = newRightSide.get(markIndex + 1);
-        Collections.swap(newRightSide, markIndex, markIndex + 1);
-        State newState = new State(currState.nonterminalSymbol, newRightSide, currState.terminalSymbolsAfter);
+        int markIndex = currState.rightSidePosition;
+        if (markIndex >= currState.rightSide.size()) return;
+
+        String symbolLink = currState.rightSide.get(markIndex);
+        State newState = new State(currState.nonterminalSymbol, currState.rightSide, markIndex+1, currState.terminalSymbolsAfter);
+
         newState = visitedStates.getOrDefault(newState, newState);
         if (visitedStates.putIfAbsent(newState, newState) == null) {
             stack.push(newState);
         }
+
         symbolLinkStates(currState, newState, symbolLink);
         if (nonterminalSymbols.contains(symbolLink)) {
             findEpsilonProductions(currState, symbolLink, markIndex, visitedStates, stack);
@@ -138,7 +138,7 @@ class ENFA {
     private void findEpsilonProductions(State currState, String symbolLink, int markIndex, Map<State, State> visitedStates, Deque<State> stack) {
         Set<String> terminalSymbolsAfter = new HashSet<>();
         boolean isEmpty = true;
-        for (int i = markIndex + 2; i < currState.rightSide.size(); i++) {
+        for (int i = markIndex + 1; i < currState.rightSide.size(); i++) {
             String symbol = currState.rightSide.get(i);
             if (nonterminalSymbols.contains(symbol)) {
                 terminalSymbolsAfter.addAll(beginsWithTerminal.get(symbol));
@@ -153,10 +153,9 @@ class ENFA {
         if (isEmpty) {
             terminalSymbolsAfter.addAll(currState.terminalSymbolsAfter);
         }
+
         for (List<String> rightSide : productions.get(symbolLink)) {
-            List<String> newRightSide = new LinkedList<>(rightSide);
-            newRightSide.add(0, Constants.MARK);
-            State newState = new State(symbolLink, newRightSide, terminalSymbolsAfter);
+            State newState = new State(symbolLink, rightSide, 0, terminalSymbolsAfter);
             newState = visitedStates.getOrDefault(newState, newState);
             if (visitedStates.putIfAbsent(newState, newState) == null) {
                 stack.push(newState);
@@ -250,17 +249,19 @@ class ENFA {
 
         final String nonterminalSymbol;
         final List<String> rightSide;
+        final int rightSidePosition;
         final Set<String> terminalSymbolsAfter;
         final Set<State> epsilonTransitions = new LinkedHashSet<>();
         final Map<String, State> symbolTransition = new HashMap<>();
         final boolean reducible;
         final boolean acceptable;
 
-        State(String nonterminal, List<String> rightSide, Set<String> charSet) {
+        State(String nonterminal, List<String> rightSide, int rightSidePosition, Set<String> charSet) {
             this.nonterminalSymbol = nonterminal;
             this.rightSide = rightSide;
+            this.rightSidePosition = rightSidePosition;
             this.terminalSymbolsAfter = charSet;
-            this.reducible = rightSide.get(rightSide.size() - 1).equals("*");
+            this.reducible = rightSidePosition == rightSide.size();
             this.acceptable = nonterminalSymbol.equals(Constants.INITIAL_STATE) && reducible;
         }
 
@@ -271,12 +272,13 @@ class ENFA {
             State state = (State) o;
             return nonterminalSymbol.equals(state.nonterminalSymbol) &&
                     rightSide.equals(state.rightSide) &&
+                    rightSidePosition == state.rightSidePosition &&
                     terminalSymbolsAfter.equals(state.terminalSymbolsAfter);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(nonterminalSymbol, rightSide, terminalSymbolsAfter);
+            return Objects.hash(nonterminalSymbol, rightSide, rightSidePosition, terminalSymbolsAfter);
         }
 
         @Override

@@ -42,6 +42,7 @@ public class GSA {
         DFA dfa = new DFA(new ENFA(Constants.INITIAL_STATE, productions, symbols, nonterminalSymbols));
         generateTables(dfa, terminalSymbols, nonterminalSymbols);
 
+        //printTables(dfa, terminalSymbols, nonterminalSymbols);
         try {
             ObjectWriterUtil.writeObjectToFile(actionTable, Constants.ACTION_TABLE_PATH);
             ObjectWriterUtil.writeObjectToFile(newStateTable, Constants.NEW_STATE_TABLE_PATH);
@@ -103,8 +104,7 @@ public class GSA {
                     reductions.sort(new ReducibleStateComparator());
                     for (ENFA.State enfaState : reductions) {
                         if (enfaState.terminalSymbolsAfter.contains(terminalSymbol)) {
-                            Production production = new Production(enfaState.nonterminalSymbol,
-                                    enfaState.rightSide.subList(0, enfaState.rightSide.size() - 1));
+                            Production production = new Production(enfaState.nonterminalSymbol, enfaState.rightSide);
                             actionTable.get(state.id).put(terminalSymbol, new Reduce(production));
                             break;
                         }
@@ -131,8 +131,8 @@ public class GSA {
             if (o1.equals(o2)) {
                 throw new RuntimeException();
             }
-            List<String> rightSideThis = o1.rightSide.subList(0, o1.rightSide.size() - 1);
-            List<String> rightSideOther = o2.rightSide.subList(0, o2.rightSide.size() - 1);
+            List<String> rightSideThis = o1.rightSide;
+            List<String> rightSideOther = o2.rightSide;
             for (Production production : productionsOrder) {
                 if (production.getNonterminalSymbol().equals(o1.nonterminalSymbol) && production.getRight().equals(rightSideThis)) {
                     return -1;
