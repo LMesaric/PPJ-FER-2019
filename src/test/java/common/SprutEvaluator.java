@@ -115,7 +115,7 @@ public class SprutEvaluator {
         print("Status: %s", isExpected ? "PASS" : "FAIL");
         print("Generator time: %.3f s", getTimeInSeconds(generatorStart, generatorEnd));
         print("Analyzer time: %.3f s", getTimeInSeconds(analyzerStart, analyzerEnd));
-        System.out.println("Analyzer stderr:");
+        print("Analyzer stderr:");
         stderr.forEach(s -> outputConsumer.accept("\t" + s));
         if (!isExpected) {
             print("Expected:");
