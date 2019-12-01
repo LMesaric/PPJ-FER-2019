@@ -287,7 +287,19 @@ class ENFA {
             for (String symbol : terminalSymbolsAfter) {
                 result.append(symbol).append(" ");
             }
-            return nonterminalSymbol + " -> " + String.join(" ", rightSide) + ", { " + result.toString() + "}";
+            return nonterminalSymbol + " -> " + rightSideStr() + ", { " + result.toString() + "}";
+        }
+
+        private String rightSideStr() {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < rightSide.size(); i++) {
+                if (i == rightSidePosition) sb.append("* ");
+                sb.append(rightSide.get(i)).append(" ");
+            }
+            if (rightSidePosition == rightSide.size()) {
+                sb.append("*");
+            }
+            return sb.toString().trim();
         }
 
     }
