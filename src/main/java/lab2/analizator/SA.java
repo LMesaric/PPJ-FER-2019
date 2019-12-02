@@ -35,6 +35,7 @@ public class SA {
         }
     }
 
+    @SuppressWarnings("Duplicates")
     private static byte[] readAllFromStdin() {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[32 * 1024];
