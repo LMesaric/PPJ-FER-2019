@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 public class SA {
@@ -25,10 +26,13 @@ public class SA {
         Map<Integer, Map<String, Put>> newStateTable = ObjectReaderUtil.readMapFromFile(Constants.NEW_STATE_TABLE_PATH);
         Set<String> synchronizationalSymbols = ObjectReaderUtil.readSetFromFile(Constants.SYNCHRONIZATIONAL_SYMBOLS_PATH);
 
-        Node root = new LR(inputTokens, actionTable, newStateTable, synchronizationalSymbols).parse();
-        StringBuilder sb = new StringBuilder();
-        buildTreeDFS(root, 0, sb);
-        System.out.print(sb.toString());
+        try {
+            Node root = new LR(inputTokens, actionTable, newStateTable, synchronizationalSymbols).parse();
+            StringBuilder sb = new StringBuilder();
+            buildTreeDFS(root, 0, sb);
+            System.out.print(sb.toString());
+        } catch (NoSuchElementException | IllegalStateException ignored) {
+        }
     }
 
     private static byte[] readAllFromStdin() {

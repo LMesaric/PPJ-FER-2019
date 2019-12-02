@@ -108,10 +108,10 @@ class LR {
             if (synchronizationalSymbols.contains(getCurrentInputSymbol()))
                 break;
 
-        while (stack.size() > 1 && null == getFromActionTable(stack.getFirst().state, getCurrentInputSymbol()))
+        while (null == getFromActionTable(stack.getFirst().state, getCurrentInputSymbol()))
             stack.pop();
 
-        return stack.size() <= 0;
+        return false;
     }
 
     private LexicalToken getCurrentInputToken() {
