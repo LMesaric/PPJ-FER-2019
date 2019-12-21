@@ -1,12 +1,13 @@
 package lab3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 class Node {
 
-    final String text;
+    final List<String> elements;
     final Node parent;
     final List<Node> children;
 
@@ -14,13 +15,13 @@ class Node {
         this(text, parent, new ArrayList<>());
     }
 
-    Node(String text, Node parent, List<Node> children) {
-        this.text = Objects.requireNonNull(text);
+    private Node(String text, Node parent, List<Node> children) {
+        this.elements = Arrays.asList(Objects.requireNonNull(text).split(" "));
         this.parent = parent;
         this.children = Objects.requireNonNull(children);
     }
 
-    Node addChildFirst(Node child) {
+    private Node addChildFirst(Node child) {
         children.add(0, Objects.requireNonNull(child));
         return child;
     }
@@ -29,7 +30,7 @@ class Node {
         return addChildFirst(new Node(Objects.requireNonNull(text), this));
     }
 
-    Node addChildLast(Node child) {
+    private Node addChildLast(Node child) {
         children.add(Objects.requireNonNull(child));
         return child;
     }
