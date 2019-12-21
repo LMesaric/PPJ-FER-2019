@@ -47,7 +47,7 @@ class TreeBuilderTest {
     private static void buildTreeDFS(Node root, int depth, StringBuilder output) {
         for (int i = 0; i < depth; i++)
             output.append(' ');
-        output.append(root.text).append('\n');
+        output.append(root).append('\n');
         for (Node child : root.children)
             buildTreeDFS(child, depth + 1, output);
     }
