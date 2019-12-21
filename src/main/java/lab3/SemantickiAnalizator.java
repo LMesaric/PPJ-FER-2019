@@ -244,7 +244,7 @@ public class SemantickiAnalizator {
     }
 
     // Tree builder
-    private static Node buildTree(String[] lines) {
+    static Node buildTree(String[] lines) {
         if (lines.length == 0 || lines.length == 1 && lines[0].trim().length() == 0)
             return null;
 
