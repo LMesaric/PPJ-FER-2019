@@ -50,6 +50,6 @@ class Node {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         elements.forEach(e -> sb.append(e).append(" "));
-        return sb.toString();
+        return sb.toString().trim();
     }
 }
