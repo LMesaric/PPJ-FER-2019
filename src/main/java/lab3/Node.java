@@ -16,7 +16,7 @@ class Node {
     }
 
     private Node(String text, Node parent, List<Node> children) {
-        this.elements = Arrays.asList(Objects.requireNonNull(text).split(" "));
+        this.elements = Arrays.asList(Objects.requireNonNull(text).trim().split(" "));
         this.parent = parent;
         this.children = Objects.requireNonNull(children);
     }
