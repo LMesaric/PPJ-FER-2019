@@ -46,4 +46,10 @@ class Node {
         return ref;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        elements.forEach(e -> sb.append(e).append(" "));
+        return sb.toString();
+    }
 }
