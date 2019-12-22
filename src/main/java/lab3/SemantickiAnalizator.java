@@ -294,6 +294,63 @@ public class SemantickiAnalizator {
         throw new IllegalStateException();
     }
 
+    private static void complexCommand(Node node) {
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "<lista_deklaracija>":
+                    declarationList(child);
+                    break;
+                case "<lista_naredbi>":
+                    commandList(child);
+                    break;
+            }
+        }
+    }
+
+    private static void commandList(Node node) {
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "<lista_naredbi>":
+                    commandList(child);
+                    break;
+                case "<naredba>":
+                    command(child);
+                    break;
+            }
+        }
+    }
+
+    private static void command(Node node) {
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "<slozena_naredba>":
+                    complexCommand(child);
+                    break;
+                case "<izraz_naredba>":
+                    expressionCommand(child);
+                    break;
+                case "<naredba_grananja>":
+                    branchCommand(child);
+                    break;
+                case "<naredba_petlje>":
+                    loopCommand(child);
+                    break;
+                case "<naredba_skoka>":
+                    jumpCommand(child);
+                    break;
+            }
+        }
+    }
+
+    private static FullType expressionCommand(Node node) {
+        for (Node child : node.children) {
+            if ("<izraz>".equals(child.elements.get(0))) {
+                return expression(child).fullType;
+            }
+        }
+        return new FullType(false, new Type(false, PrimitiveType.INT));
+    }
+
 
     private static void compileUnit(Node node) {
         for (Node child : node.children) {
@@ -365,62 +422,6 @@ public class SemantickiAnalizator {
             }
         }
         return parameters;
-    }
-
-    private static void complexCommand(Node node) {
-        for (Node child : node.children) {
-            switch (child.elements.get(0)) {
-                case "<lista_deklaracija>":
-                    declarationList(child);
-                    break;
-                case "<lista_naredbi>":
-                    commandList(child);
-                    break;
-            }
-        }
-    }
-
-    private static void commandList(Node node) {
-        for (Node child : node.children) {
-            switch (child.elements.get(0)) {
-                case "<lista_naredbi>":
-                    commandList(child);
-                    break;
-                case "<naredba>":
-                    command(child);
-                    break;
-            }
-        }
-    }
-
-    private static void command(Node node) {
-        for (Node child : node.children) {
-            switch (child.elements.get(0)) {
-                case "<slozena_naredba>":
-                    complexCommand(child);
-                    break;
-                case "<izraz_naredba>":
-                    expressionCommand(child);
-                    break;
-                case "<naredba_grananja>":
-                    branchCommand(child);
-                    break;
-                case "<naredba_petlje>":
-                    loopCommand(child);
-                    break;
-                case "<naredba_skoka>":
-                    jumpCommand(child);
-                    break;
-            }
-        }
-    }
-
-    private static void expressionCommand(Node node) {
-        for (Node child : node.children) {
-            if ("<izraz>".equals(child.elements.get(0))) {
-                expression(child);
-            }
-        }
     }
 
     private static void branchCommand(Node node) {
