@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class SemantickiAnalizator {
 
@@ -130,31 +131,169 @@ public class SemantickiAnalizator {
                     }
                     return new TypeExpression(new FullType(false, new Type(false, PrimitiveType.INT)), false);
                 case "<cast_izraz>":
-                    // TODO
+                    TypeExpression typeExp = castExpression(child);
+                    if (!checkIntCast(typeExp.fullType)) {
+                        error(node);
+                    }
+                    return new TypeExpression(new FullType(false, new Type(false, PrimitiveType.INT)), false);
+            }
+        }
+        throw new IllegalStateException();
+    }
+
+    private static TypeExpression castExpression(Node node) {
+        TypeExpression typeExpression = null;
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "<unarni_izraz>":
+                    return unaryExpression(child);
+                case "<ime_tipa>":
+                    Type type = typeName(child);
+                    typeExpression = new TypeExpression(new FullType(false, type), false);
+                    break;
+                case "<cast_izraz>":
+                    if (!checkExplicitCast(Objects.requireNonNull(typeExpression).fullType, castExpression(child).fullType)) {
+                        error(node);
+                    }
+                    return typeExpression;
+            }
+        }
+        throw new IllegalStateException();
+    }
+
+    private static Type typeName(Node node) {
+        boolean constant = false;
+        PrimitiveType primitiveType = null;
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "KR_CONST":
+                    constant = true;
+                    break;
+                case "<specifikator_tipa>":
+                    primitiveType = typeSpecifier(child);
+                    break;
+            }
+        }
+        if (constant && primitiveType == PrimitiveType.VOID) {
+            error(node);
+        }
+        return new Type(constant, primitiveType);
+    }
+
+    private static PrimitiveType typeSpecifier(Node node) {
+        switch (node.elements.get(0)) {
+            case "KR_VOID":
+                return PrimitiveType.VOID;
+            case "KR_CHAR":
+                return PrimitiveType.CHAR;
+            default:
+                return PrimitiveType.INT;
+        }
+    }
+
+    private static TypeExpression simpleExpression(Node node, String firstCase, String secondCase, Function<Node,
+            TypeExpression> firstFunction, Function<Node, TypeExpression> secondFunction) {
+        boolean seen = false;
+        for (Node child : node.children) {
+            if (child.elements.get(0).equals(firstCase)) {
+                TypeExpression typeExpression = firstFunction.apply(child);
+                if (!seen) {
+                    return typeExpression;
+                }
+                if (!checkIntCast(typeExpression.fullType)) {
+                    error(node);
+                }
+                return new TypeExpression(new FullType(false, new Type(false, PrimitiveType.INT)), false);
+            } else if (child.elements.get(0).equals(secondCase)) {
+                seen = true;
+                if (!checkIntCast(secondFunction.apply(child).fullType)) {
+                    error(node);
+                }
+            }
+        }
+        throw new IllegalStateException();
+    }
+
+    private static TypeExpression multiplicativeExpression(Node node) {
+        return simpleExpression(node, "<cast_izraz>", "<multiplikativni_izraz>", SemantickiAnalizator::castExpression, SemantickiAnalizator::multiplicativeExpression);
+    }
+
+    private static TypeExpression additiveExpression(Node node) {
+        return simpleExpression(node, "<multiplikativni_izraz>", "<aditivni_izraz>", SemantickiAnalizator::multiplicativeExpression, SemantickiAnalizator::additiveExpression);
+    }
+
+    private static TypeExpression relationalExpression(Node node) {
+        return simpleExpression(node, "<aditivni_izraz>", "<odnosni_izraz>", SemantickiAnalizator::additiveExpression, SemantickiAnalizator::relationalExpression);
+    }
+
+    private static TypeExpression equationalExpression(Node node) {
+        return simpleExpression(node, "<odnosni_izraz>", "<jednakosni_izraz>", SemantickiAnalizator::relationalExpression, SemantickiAnalizator::equationalExpression);
+    }
+
+    private static TypeExpression binaryAndExpression(Node node) {
+        return simpleExpression(node, "<jednakosni_izraz>", "<bin i izraz>", SemantickiAnalizator::equationalExpression, SemantickiAnalizator::binaryAndExpression);
+    }
+
+    private static TypeExpression binaryXorExpression(Node node) {
+        return simpleExpression(node, "<bin_i_izraz>", "<bin_xili_izraz>", SemantickiAnalizator::binaryAndExpression, SemantickiAnalizator::binaryXorExpression);
+    }
+
+    private static TypeExpression binaryOrExpression(Node node) {
+        return simpleExpression(node, "<bin_xili_izraz>", "<bin_ili_izraz>", SemantickiAnalizator::binaryXorExpression, SemantickiAnalizator::binaryOrExpression);
+    }
+
+    private static TypeExpression logAndExpression(Node node) {
+        return simpleExpression(node, "<bin_ili_izraz>", "<log_i_izraz>", SemantickiAnalizator::binaryOrExpression, SemantickiAnalizator::logAndExpression);
+    }
+
+    private static TypeExpression logOrExpression(Node node) {
+        return simpleExpression(node, "<log_i_izraz>", "<log_ili_izraz>", SemantickiAnalizator::logAndExpression, SemantickiAnalizator::logOrExpression);
+    }
+
+    private static TypeExpression assigmentExpression(Node node) {
+        TypeExpression typeExpression = null;
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "<log_ili_izraz>":
+                    return logOrExpression(child);
+                case "<postfiks_izraz>":
+                    TypeExpression postfixExpression = postfixExpression(child);
+                    if (!postfixExpression.lExpression) {
+                        error(node);
+                    }
+                    typeExpression = new TypeExpression(postfixExpression.fullType, false);
+                    break;
+                case "<izraz_pridruzivanja>":
+                    TypeExpression equationalExpression = equationalExpression(child);
+                    if (!checkImplicitCast(equationalExpression.fullType, Objects.requireNonNull(typeExpression).fullType)) {
+                        error(node);
+                    }
+                    return new TypeExpression(typeExpression.fullType, false);
             }
         }
         throw new IllegalStateException();
     }
 
     private static TypeExpression expression(Node node) {
-        boolean expression = false;
+        boolean seen = false;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
-                case "<izraz>":
-                    expression(child);
-                    expression = true;
-                    break;
                 case "<izraz_pridruzivanja>":
                     TypeExpression typeExpression = assigmentExpression(node);
-                    if (!expression) {
+                    if (!seen) {
                         return typeExpression;
                     } else {
                         return new TypeExpression(Objects.requireNonNull(typeExpression).fullType, false);
                     }
+                case "<izraz>":
+                    expression(child);
+                    seen = true;
+                    break;
             }
         }
         throw new IllegalStateException();
     }
+
 
     private static void compileUnit(Node node) {
         for (Node child : node.children) {
@@ -313,6 +452,7 @@ public class SemantickiAnalizator {
         }
     }
 
+    // TODO
     private static void jumpCommand(Node node) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
@@ -326,11 +466,6 @@ public class SemantickiAnalizator {
                     break;
             }
         }
-    }
-
-    // TODO
-    private static TypeExpression assigmentExpression(Node node) {
-        return null;
     }
 
     private static void declarationList(Node node) {
@@ -368,36 +503,6 @@ public class SemantickiAnalizator {
             error(node);
         }
         return new Variable(name, new FullType(array, type));
-    }
-
-    private static Type typeName(Node node) {
-        boolean constant = false;
-        PrimitiveType primitiveType = null;
-        for (Node child : node.children) {
-            switch (child.elements.get(0)) {
-                case "KR_CONST":
-                    constant = true;
-                    break;
-                case "<specifikator_tipa>":
-                    primitiveType = typeSpecifier(child);
-                    break;
-            }
-        }
-        if (constant && primitiveType == PrimitiveType.VOID) {
-            error(node);
-        }
-        return new Type(constant, primitiveType);
-    }
-
-    private static PrimitiveType typeSpecifier(Node node) {
-        switch (node.elements.get(0)) {
-            case "KR_VOID":
-                return PrimitiveType.VOID;
-            case "KR_CHAR":
-                return PrimitiveType.CHAR;
-            default:
-                return PrimitiveType.INT;
-        }
     }
 
     // TODO: remember function declaration
@@ -518,6 +623,20 @@ public class SemantickiAnalizator {
 
     private static boolean checkIntCast(FullType fullType) {
         return !(fullType.array || fullType.type.primitiveType == PrimitiveType.VOID);
+    }
+
+    private static boolean checkExplicitCast(FullType from, FullType into) {
+        if (checkImplicitCast(from, into)) {
+            return true;
+        }
+        return !from.array && !into.array && from.type.primitiveType == PrimitiveType.INT && into.type.primitiveType == PrimitiveType.CHAR;
+    }
+
+    private static boolean checkImplicitCast(FullType from, FullType into) {
+        if (from.array && into.array && from.type.primitiveType == into.type.primitiveType && (!from.type.constant || into.type.constant)) {
+            return true;
+        }
+        return !from.array && !into.array && (into.type.primitiveType == PrimitiveType.INT && from.type.primitiveType != PrimitiveType.VOID || from.type.primitiveType == PrimitiveType.CHAR && into.type.primitiveType == PrimitiveType.CHAR);
     }
 
     private static void error(Node node) {
