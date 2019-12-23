@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `int` to `char`
+note: 'b [ 0 ] = ( char ) '\0' + - 1' on line 5

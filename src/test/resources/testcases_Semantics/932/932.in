@@ -1,0 +1,97 @@
+<prijevodna_jedinica>
+ <prijevodna_jedinica>
+  <prijevodna_jedinica>
+   <vanjska_deklaracija>
+    <definicija_funkcije>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_INT 1 int
+     IDN 1 f1
+     L_ZAGRADA 1 (
+     <lista_parametara>
+      <lista_parametara>
+       <deklaracija_parametra>
+        <ime_tipa>
+         <specifikator_tipa>
+          KR_CHAR 1 char
+        IDN 1 a
+      ZAREZ 1 ,
+      <deklaracija_parametra>
+       <ime_tipa>
+        <specifikator_tipa>
+         KR_CHAR 1 char
+       IDN 1 b
+     D_ZAGRADA 1 )
+     <slozena_naredba>
+      L_VIT_ZAGRADA 1 {
+      <lista_naredbi>
+       <naredba>
+        <naredba_skoka>
+         KR_RETURN 2 return
+         <izraz>
+          <izraz_pridruzivanja>
+           <log_ili_izraz>
+            <log_i_izraz>
+             <bin_ili_izraz>
+              <bin_xili_izraz>
+               <bin_i_izraz>
+                <jednakosni_izraz>
+                 <jednakosni_izraz>
+                  <odnosni_izraz>
+                   <aditivni_izraz>
+                    <multiplikativni_izraz>
+                     <cast_izraz>
+                      <unarni_izraz>
+                       <postfiks_izraz>
+                        <primarni_izraz>
+                         IDN 2 a
+                 OP_EQ 2 ==
+                 <odnosni_izraz>
+                  <aditivni_izraz>
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        IDN 2 b
+         TOCKAZAREZ 2 ;
+      D_VIT_ZAGRADA 3 }
+  <vanjska_deklaracija>
+   <definicija_funkcije>
+    <ime_tipa>
+     <specifikator_tipa>
+      KR_VOID 5 void
+    IDN 5 f2
+    L_ZAGRADA 5 (
+    <lista_parametara>
+     <deklaracija_parametra>
+      <ime_tipa>
+       <specifikator_tipa>
+        KR_INT 5 int
+      IDN 5 x
+    D_ZAGRADA 5 )
+    <slozena_naredba>
+     L_VIT_ZAGRADA 5 {
+     <lista_naredbi>
+      <naredba>
+       <naredba_skoka>
+        KR_RETURN 6 return
+        TOCKAZAREZ 6 ;
+     D_VIT_ZAGRADA 7 }
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_VOID 9 void
+   IDN 9 f3
+   L_ZAGRADA 9 (
+   KR_VOID 9 void
+   D_ZAGRADA 9 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 9 {
+    <lista_naredbi>
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 10 return
+       TOCKAZAREZ 10 ;
+    D_VIT_ZAGRADA 11 }

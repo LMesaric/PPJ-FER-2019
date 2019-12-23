@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `int` to `char` in return
+note: 'return 97 ;' on line 3

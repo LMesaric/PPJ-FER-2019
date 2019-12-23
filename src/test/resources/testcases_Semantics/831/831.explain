@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `const int` to numeric in initialization
+note: 'e = o' on line 10

@@ -1,0 +1,2 @@
+semantic: conflicting declarations of function f
+note: 'f ( char a )' on line 3

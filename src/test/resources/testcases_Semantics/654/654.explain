@@ -1,0 +1,2 @@
+semantic: invalid escaped string 'abc\b' on byte offset 4
+note: '"abc\b"' on line 18

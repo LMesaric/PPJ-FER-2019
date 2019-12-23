@@ -1,0 +1,2 @@
+semantic: type mismatch in call of function f on param 1. no implicit conversion from `int` to `char`
+note: 'f ( f ( f ( 'X' ) ) + 2 )' on line 18

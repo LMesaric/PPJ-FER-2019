@@ -1,0 +1,2 @@
+semantic: function f called with wrong number of params
+note: 'f ( 2 )' on line 7

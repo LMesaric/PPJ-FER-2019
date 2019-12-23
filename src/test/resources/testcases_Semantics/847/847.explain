@@ -1,0 +1,2 @@
+semantic: d is not l-value
+note: 'd = dd' on line 4

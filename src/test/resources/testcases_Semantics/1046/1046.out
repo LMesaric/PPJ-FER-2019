@@ -1,0 +1,1 @@
+<izravni_deklarator> ::= IDN(13,a) L_ZAGRADA(13,() <lista_parametara> D_ZAGRADA(13,))

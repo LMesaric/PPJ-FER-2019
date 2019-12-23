@@ -1,0 +1,222 @@
+<prijevodna_jedinica>
+ <prijevodna_jedinica>
+  <prijevodna_jedinica>
+   <vanjska_deklaracija>
+    <deklaracija>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_INT 2 int
+     <lista_init_deklaratora>
+      <init_deklarator>
+       <izravni_deklarator>
+        IDN 2 f
+        L_ZAGRADA 2 (
+        <lista_parametara>
+         <deklaracija_parametra>
+          <ime_tipa>
+           <specifikator_tipa>
+            KR_INT 2 int
+          IDN 2 a
+        D_ZAGRADA 2 )
+     TOCKAZAREZ 2 ;
+  <vanjska_deklaracija>
+   <deklaracija>
+    <ime_tipa>
+     <specifikator_tipa>
+      KR_INT 3 int
+    <lista_init_deklaratora>
+     <init_deklarator>
+      <izravni_deklarator>
+       IDN 3 f
+       L_ZAGRADA 3 (
+       <lista_parametara>
+        <deklaracija_parametra>
+         <ime_tipa>
+          <specifikator_tipa>
+           KR_CHAR 3 char
+         IDN 3 a
+       D_ZAGRADA 3 )
+    TOCKAZAREZ 3 ;
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 6 int
+   IDN 6 main
+   L_ZAGRADA 6 (
+   <lista_parametara>
+    <deklaracija_parametra>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_INT 6 int
+     IDN 6 a
+   D_ZAGRADA 6 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 7 {
+    <lista_naredbi>
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 8 return
+       <izraz>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_ili_izraz>
+           <log_i_izraz>
+            <bin_ili_izraz>
+             <bin_ili_izraz>
+              <bin_xili_izraz>
+               <bin_i_izraz>
+                <jednakosni_izraz>
+                 <odnosni_izraz>
+                  <aditivni_izraz>
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        ZNAK 8 'a'
+             OP_BIN_ILI 8 |
+             <bin_xili_izraz>
+              <bin_i_izraz>
+               <jednakosni_izraz>
+                <odnosni_izraz>
+                 <aditivni_izraz>
+                  <multiplikativni_izraz>
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <postfiks_izraz>
+                      <primarni_izraz>
+                       ZNAK 8 '\0'
+          OP_ILI 8 ||
+          <log_i_izraz>
+           <log_i_izraz>
+            <bin_ili_izraz>
+             <bin_xili_izraz>
+              <bin_i_izraz>
+               <bin_i_izraz>
+                <jednakosni_izraz>
+                 <odnosni_izraz>
+                  <aditivni_izraz>
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        BROJ 8 2
+               OP_BIN_I 8 &
+               <jednakosni_izraz>
+                <odnosni_izraz>
+                 <aditivni_izraz>
+                  <multiplikativni_izraz>
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <postfiks_izraz>
+                      <primarni_izraz>
+                       ZNAK 8 '\''
+           OP_I 8 &&
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <aditivni_izraz>
+                  <aditivni_izraz>
+                   <aditivni_izraz>
+                    <aditivni_izraz>
+                     <multiplikativni_izraz>
+                      <cast_izraz>
+                       <unarni_izraz>
+                        <unarni_operator>
+                         MINUS 8 -
+                        <cast_izraz>
+                         <unarni_izraz>
+                          <postfiks_izraz>
+                           <primarni_izraz>
+                            BROJ 8 0
+                    PLUS 8 +
+                    <multiplikativni_izraz>
+                     <cast_izraz>
+                      <unarni_izraz>
+                       OP_DEC 8 --
+                       <unarni_izraz>
+                        <postfiks_izraz>
+                         <primarni_izraz>
+                          IDN 8 a
+                   PLUS 8 +
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <postfiks_izraz>
+                        <primarni_izraz>
+                         IDN 8 a
+                       OP_INC 8 ++
+                  PLUS 8 +
+                  <multiplikativni_izraz>
+                   <multiplikativni_izraz>
+                    <multiplikativni_izraz>
+                     <cast_izraz>
+                      <unarni_izraz>
+                       <postfiks_izraz>
+                        <primarni_izraz>
+                         ZNAK 8 'c'
+                    OP_DIJELI 8 /
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        BROJ 8 000
+                   OP_PUTA 8 *
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <unarni_operator>
+                      MINUS 8 -
+                     <cast_izraz>
+                      <unarni_izraz>
+                       <unarni_operator>
+                        PLUS 8 +
+                       <cast_izraz>
+                        <unarni_izraz>
+                         <unarni_operator>
+                          MINUS 8 -
+                         <cast_izraz>
+                          <unarni_izraz>
+                           <unarni_operator>
+                            PLUS 8 +
+                           <cast_izraz>
+                            <unarni_izraz>
+                             <unarni_operator>
+                              MINUS 8 -
+                             <cast_izraz>
+                              <unarni_izraz>
+                               <unarni_operator>
+                                PLUS 8 +
+                               <cast_izraz>
+                                <unarni_izraz>
+                                 <unarni_operator>
+                                  MINUS 8 -
+                                 <cast_izraz>
+                                  <unarni_izraz>
+                                   <unarni_operator>
+                                    PLUS 8 +
+                                   <cast_izraz>
+                                    <unarni_izraz>
+                                     <unarni_operator>
+                                      MINUS 8 -
+                                     <cast_izraz>
+                                      <unarni_izraz>
+                                       <postfiks_izraz>
+                                        <postfiks_izraz>
+                                         <primarni_izraz>
+                                          IDN 8 a
+                                        OP_DEC 8 --
+                 MINUS 8 -
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <primarni_izraz>
+                      IDN 8 a
+       TOCKAZAREZ 8 ;
+    D_VIT_ZAGRADA 9 }

@@ -1,0 +1,1 @@
+<postfiks_izraz> ::= <postfiks_izraz> L_ZAGRADA(19,() D_ZAGRADA(19,))

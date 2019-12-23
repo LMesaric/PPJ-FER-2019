@@ -1,0 +1,1 @@
+<multiplikativni_izraz> ::= <multiplikativni_izraz> OP_DIJELI(8,/) <cast_izraz>

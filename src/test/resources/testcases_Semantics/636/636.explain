@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `int` to `char` in return
+note: 'return x / 0 ;' on line 10

@@ -1,0 +1,1 @@
+int mafin(void) {return 5;}

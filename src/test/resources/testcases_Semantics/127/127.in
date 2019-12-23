@@ -1,0 +1,85 @@
+<prijevodna_jedinica>
+ <prijevodna_jedinica>
+  <prijevodna_jedinica>
+   <vanjska_deklaracija>
+    <deklaracija>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_INT 15 int
+     <lista_init_deklaratora>
+      <init_deklarator>
+       <izravni_deklarator>
+        IDN 15 f
+        L_ZAGRADA 15 (
+        KR_VOID 15 void
+        D_ZAGRADA 15 )
+     TOCKAZAREZ 15 ;
+  <vanjska_deklaracija>
+   <definicija_funkcije>
+    <ime_tipa>
+     <specifikator_tipa>
+      KR_INT 16 int
+    IDN 16 main
+    L_ZAGRADA 16 (
+    KR_VOID 16 void
+    D_ZAGRADA 16 )
+    <slozena_naredba>
+     L_VIT_ZAGRADA 16 {
+     <lista_naredbi>
+      <naredba>
+       <naredba_skoka>
+        KR_RETURN 17 return
+        <izraz>
+         <izraz_pridruzivanja>
+          <log_ili_izraz>
+           <log_i_izraz>
+            <bin_ili_izraz>
+             <bin_xili_izraz>
+              <bin_i_izraz>
+               <jednakosni_izraz>
+                <odnosni_izraz>
+                 <aditivni_izraz>
+                  <multiplikativni_izraz>
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <postfiks_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        IDN 17 f
+                      L_ZAGRADA 17 (
+                      D_ZAGRADA 17 )
+        TOCKAZAREZ 17 ;
+     D_VIT_ZAGRADA 18 }
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 19 int
+   IDN 19 f
+   L_ZAGRADA 19 (
+   KR_VOID 19 void
+   D_ZAGRADA 19 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 19 {
+    <lista_naredbi>
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 20 return
+       <izraz>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_i_izraz>
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <primarni_izraz>
+                      BROJ 20 0
+       TOCKAZAREZ 20 ;
+    D_VIT_ZAGRADA 21 }

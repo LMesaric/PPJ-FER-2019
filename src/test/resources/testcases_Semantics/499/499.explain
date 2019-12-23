@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `void` to `int` in return
+note: 'return printf ( "hello world!\n" ) ;' on line 21

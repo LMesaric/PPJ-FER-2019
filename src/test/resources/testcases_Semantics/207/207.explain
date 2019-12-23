@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `int` to `char` in return
+note: 'return f ( ) + 1 ;' on line 5

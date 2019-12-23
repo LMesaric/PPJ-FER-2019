@@ -1,0 +1,2 @@
+semantic: can't initialize array with scalar value
+note: 'c [ 1000 ] = 1' on line 2

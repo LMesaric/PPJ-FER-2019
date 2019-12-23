@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `niz(int)` to `int`
+note: 'c [ 100 ] = c' on line 3

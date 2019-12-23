@@ -1,0 +1,2 @@
+semantic: coflicting declarations of f2. `funkcija([int] -> int)` and `funkcija([int,niz(int)] -> void)`
+note: 'int f2 ( int y ) { return 5 ; }' on lines from 93 to 96

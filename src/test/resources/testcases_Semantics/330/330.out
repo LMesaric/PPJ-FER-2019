@@ -1,0 +1,1 @@
+<izravni_deklarator> ::= IDN(5,a) L_ZAGRADA(5,() <lista_parametara> D_ZAGRADA(5,))

@@ -1,0 +1,11 @@
+<prijevodna_jedinica>
+ <vanjska_deklaracija>
+  <deklaracija>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 1 int
+   <lista_init_deklaratora>
+    <init_deklarator>
+     <izravni_deklarator>
+      IDN 1 main
+   TOCKAZAREZ 3 ;

@@ -1,0 +1,2 @@
+semantic: conflicting declarations of function p
+note: 'p ( int a , int b )' on line 4

@@ -1,0 +1,2 @@
+semantic: use return; only in functions returning void
+note: 'return ;' on line 7

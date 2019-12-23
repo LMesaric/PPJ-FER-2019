@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `int` to numeric in initialization
+note: 'c = 253' on line 1

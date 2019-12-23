@@ -1,0 +1,2 @@
+semantic: type mismatch in call of function zbroji on param 2. no implicit conversion from `const int` to `char`
+note: 'zbroji ( a , b )' on line 22

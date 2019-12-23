@@ -1,0 +1,2 @@
+semantic: invalid escaped string '\\"' on byte offset 2
+note: '"\\""' on line 1

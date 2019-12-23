@@ -1,0 +1,2 @@
+semantic: invalid escaped string 'x\"\0\n\t\\"' on byte offset 11
+note: '"x\"\0\n\t\\""' on line 2

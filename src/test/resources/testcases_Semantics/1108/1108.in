@@ -1,0 +1,28 @@
+<prijevodna_jedinica>
+ <vanjska_deklaracija>
+  <deklaracija>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_CHAR 1 char
+   <lista_init_deklaratora>
+    <init_deklarator>
+     <izravni_deklarator>
+      IDN 1 c
+     OP_PRIDRUZI 1 =
+     <inicijalizator>
+      <izraz_pridruzivanja>
+       <log_ili_izraz>
+        <log_i_izraz>
+         <bin_ili_izraz>
+          <bin_xili_izraz>
+           <bin_i_izraz>
+            <jednakosni_izraz>
+             <odnosni_izraz>
+              <aditivni_izraz>
+               <multiplikativni_izraz>
+                <cast_izraz>
+                 <unarni_izraz>
+                  <postfiks_izraz>
+                   <primarni_izraz>
+                    BROJ 1 257
+   TOCKAZAREZ 1 ;

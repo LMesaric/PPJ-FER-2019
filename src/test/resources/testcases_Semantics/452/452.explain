@@ -1,0 +1,2 @@
+semantic: too many initializators
+note: 'b [ 2 ] = "x\0"' on line 2

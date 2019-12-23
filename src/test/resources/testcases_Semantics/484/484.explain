@@ -1,0 +1,2 @@
+semantic: invalid escaped string '       f            h\s' on byte offset 22
+note: '"       f            h\s"' on line 18

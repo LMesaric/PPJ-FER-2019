@@ -1,0 +1,185 @@
+<prijevodna_jedinica>
+ <prijevodna_jedinica>
+  <prijevodna_jedinica>
+   <vanjska_deklaracija>
+    <deklaracija>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_CHAR 1 char
+     <lista_init_deklaratora>
+      <init_deklarator>
+       <izravni_deklarator>
+        IDN 1 p
+        L_ZAGRADA 1 (
+        <lista_parametara>
+         <deklaracija_parametra>
+          <ime_tipa>
+           <specifikator_tipa>
+            KR_INT 1 int
+          IDN 1 a
+        D_ZAGRADA 1 )
+     TOCKAZAREZ 1 ;
+  <vanjska_deklaracija>
+   <definicija_funkcije>
+    <ime_tipa>
+     <specifikator_tipa>
+      KR_INT 3 int
+    IDN 3 main
+    L_ZAGRADA 3 (
+    KR_VOID 3 void
+    D_ZAGRADA 3 )
+    <slozena_naredba>
+     L_VIT_ZAGRADA 3 {
+     <lista_deklaracija>
+      <lista_deklaracija>
+       <lista_deklaracija>
+        <lista_deklaracija>
+         <deklaracija>
+          <ime_tipa>
+           <specifikator_tipa>
+            KR_INT 5 int
+          <lista_init_deklaratora>
+           <init_deklarator>
+            <izravni_deklarator>
+             IDN 5 a
+            OP_PRIDRUZI 5 =
+            <inicijalizator>
+             <izraz_pridruzivanja>
+              <log_ili_izraz>
+               <log_i_izraz>
+                <bin_ili_izraz>
+                 <bin_xili_izraz>
+                  <bin_i_izraz>
+                   <jednakosni_izraz>
+                    <odnosni_izraz>
+                     <aditivni_izraz>
+                      <multiplikativni_izraz>
+                       <cast_izraz>
+                        <unarni_izraz>
+                         <postfiks_izraz>
+                          <primarni_izraz>
+                           BROJ 5 12
+          TOCKAZAREZ 5 ;
+        <deklaracija>
+         <ime_tipa>
+          <specifikator_tipa>
+           KR_CHAR 6 char
+         <lista_init_deklaratora>
+          <init_deklarator>
+           <izravni_deklarator>
+            IDN 6 polje
+            L_UGL_ZAGRADA 6 [
+            BROJ 6 10
+            D_UGL_ZAGRADA 6 ]
+           OP_PRIDRUZI 6 =
+           <inicijalizator>
+            <izraz_pridruzivanja>
+             <log_ili_izraz>
+              <log_i_izraz>
+               <bin_ili_izraz>
+                <bin_xili_izraz>
+                 <bin_i_izraz>
+                  <jednakosni_izraz>
+                   <odnosni_izraz>
+                    <aditivni_izraz>
+                     <multiplikativni_izraz>
+                      <cast_izraz>
+                       <unarni_izraz>
+                        <postfiks_izraz>
+                         <primarni_izraz>
+                          NIZ_ZNAKOVA 6 "asdass\0"
+         TOCKAZAREZ 6 ;
+       <deklaracija>
+        <ime_tipa>
+         <specifikator_tipa>
+          KR_INT 7 int
+        <lista_init_deklaratora>
+         <init_deklarator>
+          <izravni_deklarator>
+           IDN 7 b
+           L_UGL_ZAGRADA 7 [
+           BROJ 7 10
+           D_UGL_ZAGRADA 7 ]
+        TOCKAZAREZ 7 ;
+      <deklaracija>
+       <ime_tipa>
+        <specifikator_tipa>
+         KR_INT 8 int
+       <lista_init_deklaratora>
+        <init_deklarator>
+         <izravni_deklarator>
+          IDN 8 b
+          L_UGL_ZAGRADA 8 [
+          BROJ 8 3
+          D_UGL_ZAGRADA 8 ]
+       TOCKAZAREZ 8 ;
+     <lista_naredbi>
+      <naredba>
+       <izraz_naredba>
+        <izraz>
+         <izraz_pridruzivanja>
+          <postfiks_izraz>
+           <primarni_izraz>
+            IDN 9 a
+          OP_PRIDRUZI 9 =
+          <izraz_pridruzivanja>
+           <log_ili_izraz>
+            <log_i_izraz>
+             <bin_ili_izraz>
+              <bin_xili_izraz>
+               <bin_i_izraz>
+                <jednakosni_izraz>
+                 <odnosni_izraz>
+                  <aditivni_izraz>
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        BROJ 9 3
+        TOCKAZAREZ 9 ;
+     D_VIT_ZAGRADA 12 }
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_CHAR 14 char
+   IDN 14 p
+   L_ZAGRADA 14 (
+   <lista_parametara>
+    <deklaracija_parametra>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_INT 14 int
+     IDN 14 a
+   D_ZAGRADA 14 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 15 {
+    <lista_naredbi>
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 17 return
+       <izraz>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_i_izraz>
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   L_ZAGRADA 17 (
+                   <ime_tipa>
+                    <specifikator_tipa>
+                     KR_CHAR 17 char
+                   D_ZAGRADA 17 )
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <postfiks_izraz>
+                      <primarni_izraz>
+                       BROJ 17 3
+       TOCKAZAREZ 17 ;
+    D_VIT_ZAGRADA 19 }

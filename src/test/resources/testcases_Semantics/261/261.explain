@@ -1,0 +1,2 @@
+semantic: coflicting declarations of p. `funkcija([int] -> void)` and `funkcija([int,int] -> void)`
+note: 'void p ( int a ) { return ; }' on lines from 16 to 19

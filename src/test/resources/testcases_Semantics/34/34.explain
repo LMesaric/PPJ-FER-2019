@@ -1,0 +1,2 @@
+semantic: function printf called with wrong number of params
+note: 'printf ( "Ne moze se prikazati %d. Fibonaccijev broj!\n" , i )' on line 29

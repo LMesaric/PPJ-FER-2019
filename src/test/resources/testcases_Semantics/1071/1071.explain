@@ -1,0 +1,2 @@
+semantic: function printf called with wrong number of params
+note: 'printf ( "\n %d. clan aritmetickog niza, s nultim clanom %d i diferencijom %d: %d \n" , n , a0 , d , nclan )' on line 34

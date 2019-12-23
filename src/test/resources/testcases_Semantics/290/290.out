@@ -1,0 +1,1 @@
+<izraz_pridruzivanja> ::= <postfiks_izraz> OP_PRIDRUZI(5,=) <izraz_pridruzivanja>

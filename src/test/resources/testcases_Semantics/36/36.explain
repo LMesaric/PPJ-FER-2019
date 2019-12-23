@@ -1,0 +1,2 @@
+semantic: invalid escaped string 'bok\x' on byte offset 4
+note: '"bok\x"' on line 21

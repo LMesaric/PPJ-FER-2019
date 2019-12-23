@@ -1,0 +1,1 @@
+<deklaracija_parametra> ::= <ime_tipa> IDN(20,v)

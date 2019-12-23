@@ -1,0 +1,1 @@
+<aditivni_izraz> ::= <aditivni_izraz> PLUS(4,+) <multiplikativni_izraz>
