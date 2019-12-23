@@ -1,18 +1,20 @@
 package lab3;
 
-import common.SprutEvaluatorSingle;
+import common.SprutEvaluator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static lab3.Sprut.ANALYZER_CLASS;
+import static lab3.Sprut.TESTCASES_DIR;
+
 class EvaluatorTest {
 
-    // TODO: Mark as a Test
-    // @Test
+    @Test
     void test() throws IOException, InterruptedException {
-        SprutEvaluatorSingle sprut = new SprutEvaluatorSingle(str -> {
-        }, "src/test/resources/testcases_Semantics", "lab3.SemantickiAnalizator", ".*\\.in", ".*\\.out");
+        SprutEvaluator sprut = new SprutEvaluator(str -> {}, TESTCASES_DIR, ANALYZER_CLASS,
+                ".*\\.in", ".*\\.out");
         Assertions.assertTrue(sprut.evaluateAll());
     }
 
