@@ -49,7 +49,7 @@ class Node {
     public String getString() {
         StringBuilder sb = new StringBuilder();
         elements.forEach(e -> sb.append(e).append(" "));
-        sb.append(":= ");
+        sb.append("::= ");
         children.forEach(e -> {
             if (e.elements.size() == 3) {
                 sb.append(e.elements.get(0)).append("(").append(e.elements.get(1)).append(",").append(e.elements.get(2)).append(") ");
