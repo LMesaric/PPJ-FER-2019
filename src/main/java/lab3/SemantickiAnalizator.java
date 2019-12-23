@@ -274,7 +274,7 @@ public class SemantickiAnalizator {
                     typeExpression = new TypeExpression(postfixExpression.fullType, false);
                     break;
                 case "<izraz_pridruzivanja>":
-                    TypeExpression equationalExpression = equationalExpression(child);
+                    TypeExpression equationalExpression = assignmentExpression(child);
                     if (!checkImplicitCast(equationalExpression.fullType, Objects.requireNonNull(typeExpression).fullType)) {
                         error(node);
                     }
@@ -305,6 +305,7 @@ public class SemantickiAnalizator {
     }
 
     private static void complexCommand(Node node) {
+        tables.addFirst(new HashMap<>());
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<lista_deklaracija>":
@@ -315,6 +316,7 @@ public class SemantickiAnalizator {
                     break;
             }
         }
+        tables.pop();
     }
 
     private static void commandList(Node node) {
@@ -334,7 +336,6 @@ public class SemantickiAnalizator {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<slozena_naredba>":
-                    // TODO
                     complexCommand(child);
                     break;
                 case "<izraz_naredba>":
@@ -385,27 +386,31 @@ public class SemantickiAnalizator {
                     TypeExpression expression = expression(child);
                     if (!seen) {
                         checkIntCast(expression.fullType);
+                        tables.addFirst(new HashMap<>());
                     }
                     break;
                 case "<naredba>":
                     if (!seen) {
                         tables.addFirst(new HashMap<>());
                     }
+                    boolean old = loop;
                     loop = true;
                     command(child);
-                    loop = false;
+                    loop = old;
                     break;
                 case "<izraz_naredba>":
-                    FullType expressionCommand = expressionCommand(child);
-                    if (seen) {
-                        checkIntCast(expressionCommand);
-                    } else {
+                    if (!seen) {
                         tables.addFirst(new HashMap<>());
+                    }
+                    FullType expressionCommand = expressionCommand(child);
+                    if (seen && !checkIntCast(expressionCommand)) {
+                        error(node);
                     }
                     seen = true;
                     break;
             }
         }
+        tables.removeFirst();
     }
 
     private static void jumpCommand(Node node) {
@@ -463,12 +468,19 @@ public class SemantickiAnalizator {
             System.out.println("main");
             System.exit(0);
         }
+        for (Map.Entry<String, TypeExpression> entry : functionDeclarations.entrySet()) {
+            if (!entry.getValue().defined) {
+                System.out.println("funkcija");
+                System.exit(0);
+            }
+        }
         tables.pop();
     }
 
     private static void functionDefinition(Node node) {
         String functionName = null;
         Type returnType = null;
+        FullType oldFunction = currentFunction;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<ime_tipa>":
@@ -493,6 +505,7 @@ public class SemantickiAnalizator {
                     currentFunction = function.fullType;
                     tables.getFirst().put(functionName, function);
                     tables.addFirst(new HashMap<>());
+                    functionDeclarations.put(functionName, function);
                     break;
                 case "<lista_parametara>":
                     LinkedHashSet<Variable> parameters = parameterList(child);
@@ -510,10 +523,12 @@ public class SemantickiAnalizator {
                     Map<String, TypeExpression> save = tables.pop();
                     tables.getFirst().put(functionName, function);
                     tables.addFirst(save);
+                    functionDeclarations.put(functionName, function);
                     break;
                 case "<slozena_naredba>":
                     complexCommand(child);
                     tables.pop();
+                    currentFunction = oldFunction;
                     break;
             }
         }
@@ -665,7 +680,8 @@ public class SemantickiAnalizator {
                     if (function != null && !function.equals(fullType)) {
                         error(node);
                     }
-                    tables.getFirst().put(name, new TypeExpression(fullType, false));
+                    tables.getFirst().putIfAbsent(name, new TypeExpression(fullType, false));
+                    functionDeclarations.putIfAbsent(name, new TypeExpression(fullType, false));
                     return fullType;
                 case "<lista_parametara>":
                     fullType = new FullType(type, parameterList(child).stream().map(Variable::getFullType).collect(Collectors.toList()));
@@ -673,7 +689,8 @@ public class SemantickiAnalizator {
                     if (function != null && !function.equals(fullType)) {
                         error(node);
                     }
-                    tables.getFirst().put(name, new TypeExpression(fullType, false));
+                    tables.getFirst().putIfAbsent(name, new TypeExpression(fullType, false));
+                    functionDeclarations.putIfAbsent(name, new TypeExpression(fullType, false));
                     return fullType;
             }
         }
@@ -907,7 +924,7 @@ public class SemantickiAnalizator {
     }
 
     private static boolean checkIntCast(FullType fullType) {
-        return !(fullType.array || fullType.type.primitiveType == PrimitiveType.VOID);
+        return !(fullType.array || fullType.arguments != null || fullType.type.primitiveType == PrimitiveType.VOID);
     }
 
     private static boolean checkExplicitCast(FullType from, FullType into) {
