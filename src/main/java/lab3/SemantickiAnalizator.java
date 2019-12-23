@@ -3,17 +3,17 @@ package lab3;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SemantickiAnalizator {
 
-    // TODO: remember scope of variables, stack of maps?
-    int currentScope = 0;
+    private static FullType currentFunction;
+
+    private static boolean loop;
+
+    private static final Deque<Map<String, TypeExpression>> tables = new ArrayDeque<>();
 
     enum PrimitiveType {
         VOID, CHAR, INT
@@ -25,37 +25,41 @@ public class SemantickiAnalizator {
         if (root != null) {
             compileUnit(root);
         }
-        //TODO Epsilon production has a node with text set to "$" (Constants.EPSILON)
     }
 
     private static TypeExpression primaryExpression(Node node) {
-        FullType fullType = null;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "IDN":
-                    // TODO: check if IDN exists as function or variable declaration, return proper version of TypeExpression
-                    break;
+                    String idn = child.elements.get(2);
+                    for (Map<String, TypeExpression> table : tables) {
+                        if (table.containsKey(idn)) {
+                            return table.get(idn);
+                        }
+                    }
+                    error(node);
                 case "BROJ":
                     if (checkInt(child.elements.get(2)) == null) {
                         error(node);
                     }
-                    fullType = new FullType(new Type(false, PrimitiveType.INT));
-                    break;
+                    return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
                 case "ZNAK":
                     if (checkChar(child.elements.get(2)) == null) {
                         error(node);
                     }
-                    fullType = new FullType(new Type(false, PrimitiveType.CHAR));
+                    return new TypeExpression(new FullType(new Type(false, PrimitiveType.CHAR)), false);
                 case "NIZ_ZNAKOVA":
-                    if (!checkConstCharArray(child.elements.get(2))) {
+                    String arr;
+                    if ((arr = checkConstCharArray(child.elements.get(2))) == null) {
                         error(node);
+                    } else {
+                        return new TypeExpression(new FullType(new Type(true, PrimitiveType.CHAR), arr.length() + 1), false);
                     }
-                    fullType = new FullType(new Type(true, PrimitiveType.CHAR), child.elements.get(2).substring(1, child.elements.get(2).length() - 1).length() + 1);
                 case "<izraz>":
                     return expression(child);
             }
         }
-        return new TypeExpression(fullType, true);
+        throw new IllegalStateException();
     }
 
     private static TypeExpression postfixExpression(Node node) {
@@ -359,7 +363,9 @@ public class SemantickiAnalizator {
                     checkIntCast(expression(child).fullType);
                     break;
                 case "<naredba>":
+                    tables.addFirst(new HashMap<>());
                     command(child);
+                    tables.removeFirst();
                     break;
             }
         }
@@ -376,12 +382,19 @@ public class SemantickiAnalizator {
                     }
                     break;
                 case "<naredba>":
+                    if (!seen) {
+                        tables.addFirst(new HashMap<>());
+                    }
+                    loop = true;
                     command(child);
+                    loop = false;
                     break;
                 case "<izraz_naredba>":
                     FullType expressionCommand = expressionCommand(child);
                     if (seen) {
                         checkIntCast(expressionCommand);
+                    } else {
+                        tables.addFirst(new HashMap<>());
                     }
                     seen = true;
                     break;
@@ -394,15 +407,19 @@ public class SemantickiAnalizator {
             switch (child.elements.get(0)) {
                 case "KR_CONTINUE":
                 case "KR_BREAK":
-                    // TODO: check if program is inside loop
+                    if (!loop) {
+                        error(node);
+                    }
                     break;
-                case "KR_RETURN":
-                    // TODO: check if program is inside function
-                    break;
+                case "TOCKAZAREZ":
+                    if (currentFunction == null || currentFunction.type.primitiveType != PrimitiveType.VOID)
+                        break;
                 case "<izraz>":
                     TypeExpression expression = expression(child);
-                    // TODO: check if expression type matches current function return type
-                    break;
+                    if (currentFunction == null || !checkImplicitCast(expression.fullType, new FullType(currentFunction.type))) {
+                        error(node);
+                    }
+                    return;
             }
         }
     }
@@ -421,6 +438,7 @@ public class SemantickiAnalizator {
     }
 
     private static void outerDeclaration(Node node) {
+        tables.addFirst(new HashMap<>());
         for (Node child : node.children) {
             switch (node.elements.get(0)) {
                 case "<definicija_funkcije>":
@@ -436,7 +454,6 @@ public class SemantickiAnalizator {
     private static void functionDefinition(Node node) {
         String functionName = null;
         Type returnType = null;
-        // TODO: create new scope for variables
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<ime_tipa>":
@@ -446,20 +463,42 @@ public class SemantickiAnalizator {
                     }
                     break;
                 case "<IDN>":
-                    // TODO: check if there is already defined function with given typename
                     functionName = child.elements.get(2);
                     break;
                 case "KR_VOID":
-                    // TODO: remember function definition and declaration
-                    // TODO: if the function is already declared check if it has expected type
+                    TypeExpression function = tables.getFirst().get(functionName);
+                    FullType definedFunction = new FullType(returnType, new ArrayList<>());
+                    if (function != null && (function.defined || !definedFunction.equals(function.fullType))) {
+                        error(node);
+                    }
+                    if (function == null) {
+                        function = new TypeExpression(definedFunction, false);
+                    }
+                    function.defined = true;
+                    currentFunction = function.fullType;
+                    tables.getFirst().put(functionName, function);
+                    tables.addFirst(new HashMap<>());
                     break;
                 case "<lista_parametara>":
-                    // TODO: check if function name is already declared if this definition is same as declaration
                     LinkedHashSet<Variable> parameters = parameterList(child);
-                    // TODO: add parameters to newly created scope
+                    function = tables.getFirst().get(functionName);
+                    tables.addFirst(new HashMap<>());
+                    definedFunction = new FullType(returnType, parameters.stream().map(Variable::getFullType).collect(Collectors.toList()));
+                    if (function != null && (function.defined || !definedFunction.equals(function.fullType))) {
+                        error(node);
+                    }
+                    if (function == null) {
+                        function = new TypeExpression(definedFunction, false);
+                    }
+                    function.defined = true;
+                    currentFunction = function.fullType;
+                    Map<String, TypeExpression> save = tables.pop();
+                    tables.getFirst().put(functionName, function);
+                    tables.addFirst(save);
                     break;
                 case "<slozena_naredba>":
                     complexCommand(child);
+                    tables.pop();
                     break;
             }
         }
@@ -503,8 +542,11 @@ public class SemantickiAnalizator {
                     break;
             }
         }
-        // TODO: remember parameter in a map
-        return new Variable(name, new FullType(type));
+        FullType fullType = new FullType(type);
+        fullType.array = array;
+        boolean lValue = !fullType.array && fullType.arguments == null && !fullType.type.constant;
+        tables.getFirst().put(name, new TypeExpression(fullType, lValue));
+        return new Variable(name, fullType);
     }
 
     private static void declarationList(Node node) {
@@ -583,38 +625,68 @@ public class SemantickiAnalizator {
 
     private static FullType directDeclarator(Node node, Type type) {
         String name = null;
+        FullType fullType = new FullType(type);
+        boolean lValue = !type.constant;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "IDN":
                     name = child.elements.get(2);
                     break;
                 case "BROJ":
-                    int brElements = checkInt(child.elements.get(2));
-                    if (brElements <= 0 || brElements > 1024) {
+                    Integer brElements = checkInt(child.elements.get(2));
+                    if (brElements == null) {
                         error(node);
+                    } else {
+                        if (brElements <= 0 || brElements > 1024) {
+                            error(node);
+                        }
+                        fullType = new FullType(type, brElements);
+                        lValue = false;
                     }
-                    if (type.primitiveType == PrimitiveType.VOID) {
-                        error(node);
-                    }
-                    // TODO: check if name is not already declared in local space
-                    // TODO: remember declaration
-                    return new FullType(type, brElements);
+                    break;
                 case "KR_VOID":
-                    // TODO: check if name is already declared and matches current function type
-                    // TODO: remember function declaration
-                    return new FullType(type, new LinkedList<>());
+                    fullType = new FullType(type, new LinkedList<>());
+                    FullType function = getExistingFunction(node, name);
+                    if (function != null && !function.equals(fullType)) {
+                        error(node);
+                    }
+                    tables.getFirst().put(name, new TypeExpression(fullType, false));
+                    return fullType;
                 case "<lista_parametara>":
-                    // TODO: check if name is already declared and matches current function type
-                    // TODO: remember function declaration
-                    return new FullType(type, parameterList(child).stream().map(Variable::getFullType).collect(Collectors.toList()));
+                    fullType = new FullType(type, parameterList(child).stream().map(Variable::getFullType).collect(Collectors.toList()));
+                    function = getExistingFunction(node, name);
+                    if (function != null && !function.equals(fullType)) {
+                        error(node);
+                    }
+                    tables.getFirst().put(name, new TypeExpression(fullType, false));
+                    return fullType;
             }
         }
         if (type.primitiveType == PrimitiveType.VOID) {
             error(node);
         }
-        // TODO: check if name is not already declared in local space
-        // TODO: remember declaration
-        return new FullType(type);
+        for (Map<String, TypeExpression> table : tables) {
+            TypeExpression te = table.get(name);
+            if (te != null && te.fullType.arguments != null) {
+                error(node);
+            }
+        }
+        if (tables.getFirst().put(name, new TypeExpression(fullType, lValue)) != null) {
+            error(node);
+        }
+        return fullType;
+    }
+
+    private static FullType getExistingFunction(Node node, String name) {
+        for (Map<String, TypeExpression> table : tables) {
+            TypeExpression te = table.get(name);
+            if (te != null && te.fullType.arguments == null) {
+                error(node);
+            } else if (te != null) {
+                return te.fullType;
+            }
+        }
+        return null;
     }
 
     private static InitializerWrapper initializer(Node node) {
@@ -744,8 +816,10 @@ public class SemantickiAnalizator {
     }
 
     private static class TypeExpression {
-        FullType fullType = null;
-        boolean lExpression = false;
+        FullType fullType;
+        boolean lExpression;
+        // Tells whether function is defined
+        boolean defined;
 
         TypeExpression(FullType type, boolean lValue) {
             this.fullType = type;
@@ -767,19 +841,54 @@ public class SemantickiAnalizator {
         }
     }
 
-    // TODO
     private static Integer checkInt(String i) {
-        return 0;
+        try {
+            return Integer.parseInt(i);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
     }
 
-    // TODO
     private static Character checkChar(String c) {
-        return 0;
+        if (c.startsWith("\'")) {
+            c = c.substring(1, c.length() - 1);
+        }
+        if (c.length() == 1 && c.charAt(0) != '\\') {
+            return c.charAt(0);
+        }
+        switch (c) {
+            case "\\t":
+                return '\t';
+            case "\\n":
+                return '\n';
+            case "\\0":
+                return '\0';
+            case "\\'":
+                return '\'';
+            case "\\\"":
+                return '\"';
+            case "\\\\":
+                return '\\';
+            default:
+                return null;
+        }
     }
 
-    // TODO
-    private static boolean checkConstCharArray(String arr) {
-        return true;
+    private static String checkConstCharArray(String arr) {
+        arr = arr.substring(1, arr.length() - 1);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < arr.length(); i++) {
+            if (arr.charAt(i) == '\\') {
+                if (i >= arr.length() - 1) {
+                    return null;
+                }
+                Character c = checkChar(arr.substring(i, i + 2));
+                if (c == null) return null;
+                i++;
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     private static boolean checkIntCast(FullType fullType) {
