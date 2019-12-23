@@ -7,8 +7,8 @@ import java.util.Objects;
 
 class Node {
 
+    private final Node parent;
     final List<String> elements;
-    final Node parent;
     final List<Node> children;
 
     Node(String text, Node parent) {
@@ -44,6 +44,20 @@ class Node {
         for (int i = 0; i < numLevelsAbove; i++)
             ref = ref.parent;
         return ref;
+    }
+
+    public String getString() {
+        StringBuilder sb = new StringBuilder();
+        elements.forEach(e -> sb.append(e).append(" "));
+        sb.append(":= ");
+        children.forEach(e -> {
+            if (e.elements.size() == 3) {
+                sb.append(e.elements.get(0)).append("(").append(e.elements.get(1)).append(",").append(e.elements.get(2)).append(") ");
+            } else {
+                sb.append(e.elements.get(0)).append(" ");
+            }
+        });
+        return sb.toString().trim();
     }
 
     @Override
