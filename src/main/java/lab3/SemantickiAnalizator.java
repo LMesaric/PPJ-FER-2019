@@ -15,6 +15,8 @@ public class SemantickiAnalizator {
 
     private static final Deque<Map<String, TypeExpression>> tables = new ArrayDeque<>();
 
+    private static final Map<String, TypeExpression> functionDeclarations = new HashMap<>();
+
     enum PrimitiveType {
         VOID, CHAR, INT
     }
@@ -65,7 +67,7 @@ public class SemantickiAnalizator {
     private static TypeExpression postfixExpression(Node node) {
         TypeExpression typeExpression = null;
         for (Node child : node.children) {
-            switch (node.elements.get(0)) {
+            switch (child.elements.get(0)) {
                 case "<primarni_izraz>":
                     return primaryExpression(child);
                 case "<postfiks_izraz>":
@@ -114,7 +116,7 @@ public class SemantickiAnalizator {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izraz_pridruzivanja>":
-                    arguments.add(Objects.requireNonNull(assigmentExpression(child)).fullType);
+                    arguments.add(Objects.requireNonNull(assignmentExpression(child)).fullType);
                     break;
                 case "<lista_argumenata>":
                     arguments.addAll(argumentList(child));
@@ -186,14 +188,17 @@ public class SemantickiAnalizator {
     }
 
     private static PrimitiveType typeSpecifier(Node node) {
-        switch (node.elements.get(0)) {
-            case "KR_VOID":
-                return PrimitiveType.VOID;
-            case "KR_CHAR":
-                return PrimitiveType.CHAR;
-            default:
-                return PrimitiveType.INT;
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "KR_VOID":
+                    return PrimitiveType.VOID;
+                case "KR_CHAR":
+                    return PrimitiveType.CHAR;
+                default:
+                    return PrimitiveType.INT;
+            }
         }
+        throw new IllegalStateException();
     }
 
     private static TypeExpression simpleExpression(Node node, String firstCase, String secondCase, Function<Node,
@@ -255,7 +260,7 @@ public class SemantickiAnalizator {
         return simpleExpression(node, "<log_i_izraz>", "<log_ili_izraz>", SemantickiAnalizator::logAndExpression, SemantickiAnalizator::logOrExpression);
     }
 
-    private static TypeExpression assigmentExpression(Node node) {
+    private static TypeExpression assignmentExpression(Node node) {
         TypeExpression typeExpression = null;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
@@ -284,7 +289,7 @@ public class SemantickiAnalizator {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izraz_pridruzivanja>":
-                    TypeExpression typeExpression = assigmentExpression(node);
+                    TypeExpression typeExpression = assignmentExpression(child);
                     if (!seen) {
                         return typeExpression;
                     } else {
@@ -329,6 +334,7 @@ public class SemantickiAnalizator {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<slozena_naredba>":
+                    // TODO
                     complexCommand(child);
                     break;
                 case "<izraz_naredba>":
@@ -412,8 +418,10 @@ public class SemantickiAnalizator {
                     }
                     break;
                 case "TOCKAZAREZ":
-                    if (currentFunction == null || currentFunction.type.primitiveType != PrimitiveType.VOID)
-                        break;
+                    if (currentFunction == null || currentFunction.type.primitiveType != PrimitiveType.VOID) {
+                        error(node);
+                    }
+                    break;
                 case "<izraz>":
                     TypeExpression expression = expression(child);
                     if (currentFunction == null || !checkImplicitCast(expression.fullType, new FullType(currentFunction.type))) {
@@ -438,9 +446,10 @@ public class SemantickiAnalizator {
     }
 
     private static void outerDeclaration(Node node) {
+        // TODO: one main for every declaration??
         tables.addFirst(new HashMap<>());
         for (Node child : node.children) {
-            switch (node.elements.get(0)) {
+            switch (child.elements.get(0)) {
                 case "<definicija_funkcije>":
                     functionDefinition(child);
                     break;
@@ -449,6 +458,12 @@ public class SemantickiAnalizator {
                     break;
             }
         }
+        TypeExpression main = tables.getFirst().get("main");
+        if (main == null || !main.defined || main.fullType.type.primitiveType != PrimitiveType.INT || !main.fullType.arguments.isEmpty()) {
+            System.out.println("main");
+            System.exit(0);
+        }
+        tables.pop();
     }
 
     private static void functionDefinition(Node node) {
@@ -462,7 +477,7 @@ public class SemantickiAnalizator {
                         error(node);
                     }
                     break;
-                case "<IDN>":
+                case "IDN":
                     functionName = child.elements.get(2);
                     break;
                 case "KR_VOID":
@@ -693,31 +708,31 @@ public class SemantickiAnalizator {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izraz_pridruzivanja>":
-                    FullType assigmentExpressionType = assigmentExpression(child).fullType;
-                    if (assigmentExpressionType.array) {
+                    FullType assignmentExpressionType = assignmentExpression(child).fullType;
+                    if (assignmentExpressionType.array) {
                         List<FullType> charTypes = new LinkedList<>();
-                        for (int i = 0; i < assigmentExpressionType.brElements; i++) {
+                        for (int i = 0; i < assignmentExpressionType.brElements; i++) {
                             charTypes.add(new FullType(new Type(false, PrimitiveType.CHAR)));
                         }
                         return new InitializerWrapper(new LinkedList<>(charTypes));
                     }
-                    return new InitializerWrapper(assigmentExpressionType);
+                    return new InitializerWrapper(assignmentExpressionType);
                 case "<lista_izraza_pridruzivanja> ":
-                    return new InitializerWrapper(assigmentExpressionList(child));
+                    return new InitializerWrapper(assignmentExpressionList(child));
             }
         }
         throw new IllegalStateException();
     }
 
-    private static List<FullType> assigmentExpressionList(Node node) {
+    private static List<FullType> assignmentExpressionList(Node node) {
         List<FullType> types = new LinkedList<>();
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izraz_pridruzivanja>":
-                    types.add(assigmentExpression(child).fullType);
+                    types.add(assignmentExpression(child).fullType);
                     break;
                 case "<lista_izraza_pridruzivanja> ":
-                    types.addAll(assigmentExpressionList(child));
+                    types.addAll(assignmentExpressionList(child));
                     break;
             }
         }
@@ -910,7 +925,7 @@ public class SemantickiAnalizator {
     }
 
     private static void error(Node node) {
-        System.out.println(node);
+        System.out.println(node.getString());
         System.exit(0);
     }
 
