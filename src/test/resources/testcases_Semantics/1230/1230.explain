@@ -1,0 +1,2 @@
+semantic: invalid escaped string '\w' on byte offset 1
+note: '"\w"' on line 2

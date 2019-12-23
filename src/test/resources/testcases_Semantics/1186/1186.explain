@@ -1,0 +1,2 @@
+semantic: coflicting declarations of main. `funkcija(void -> int)` and `funkcija([int] -> int)`
+note: 'int main ( void ) { return 0 ; }' on lines from 4 to 6

@@ -1,0 +1,46 @@
+<prijevodna_jedinica>
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 1 int
+   IDN 1 funk
+   L_ZAGRADA 1 (
+   <lista_parametara>
+    <lista_parametara>
+     <deklaracija_parametra>
+      <ime_tipa>
+       <specifikator_tipa>
+        KR_INT 1 int
+      IDN 1 x
+    ZAREZ 1 ,
+    <deklaracija_parametra>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_CHAR 1 char
+     IDN 1 x
+   D_ZAGRADA 1 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 2 {
+    <lista_naredbi>
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 3 return
+       <izraz>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_i_izraz>
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <primarni_izraz>
+                      BROJ 3 0
+       TOCKAZAREZ 3 ;
+    D_VIT_ZAGRADA 4 }

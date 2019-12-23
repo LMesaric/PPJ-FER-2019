@@ -1,0 +1,2 @@
+semantic: can't initialize array with scalar value
+note: 'pom [ 5 ] = 5' on line 5

@@ -1,0 +1,64 @@
+<prijevodna_jedinica>
+ <prijevodna_jedinica>
+  <prijevodna_jedinica>
+   <vanjska_deklaracija>
+    <deklaracija>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_INT 1 int
+     <lista_init_deklaratora>
+      <init_deklarator>
+       <izravni_deklarator>
+        IDN 1 a
+        L_ZAGRADA 1 (
+        <lista_parametara>
+         <deklaracija_parametra>
+          <ime_tipa>
+           <specifikator_tipa>
+            KR_INT 1 int
+          IDN 1 a
+        D_ZAGRADA 1 )
+     TOCKAZAREZ 1 ;
+  <vanjska_deklaracija>
+   <deklaracija>
+    <ime_tipa>
+     <specifikator_tipa>
+      KR_INT 3 int
+    <lista_init_deklaratora>
+     <init_deklarator>
+      <izravni_deklarator>
+       IDN 3 b
+       L_ZAGRADA 3 (
+       <lista_parametara>
+        <deklaracija_parametra>
+         <ime_tipa>
+          <specifikator_tipa>
+           KR_INT 3 int
+         IDN 3 b
+       D_ZAGRADA 3 )
+    TOCKAZAREZ 3 ;
+ <vanjska_deklaracija>
+  <deklaracija>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 5 int
+   <lista_init_deklaratora>
+    <init_deklarator>
+     <izravni_deklarator>
+      IDN 5 a
+      L_ZAGRADA 5 (
+      <lista_parametara>
+       <lista_parametara>
+        <deklaracija_parametra>
+         <ime_tipa>
+          <specifikator_tipa>
+           KR_INT 5 int
+         IDN 5 a
+       ZAREZ 5 ,
+       <deklaracija_parametra>
+        <ime_tipa>
+         <specifikator_tipa>
+          KR_INT 5 int
+        IDN 5 b
+      D_ZAGRADA 5 )
+   TOCKAZAREZ 5 ;

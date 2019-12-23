@@ -1,0 +1,2 @@
+semantic: b -- can't be --'ed (not lvalue)
+note: 'b -- --' on line 4

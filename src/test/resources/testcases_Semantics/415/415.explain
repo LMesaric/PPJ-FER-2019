@@ -1,0 +1,2 @@
+semantic: function printf is not callable
+note: 'printf ( "hello world!\n" )' on line 24

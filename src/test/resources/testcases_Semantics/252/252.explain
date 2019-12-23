@@ -1,0 +1,2 @@
+semantic: can't initialize scalar value with array
+note: 'k = "s"' on line 17

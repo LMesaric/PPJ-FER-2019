@@ -1,0 +1,67 @@
+<prijevodna_jedinica>
+ <prijevodna_jedinica>
+  <prijevodna_jedinica>
+   <vanjska_deklaracija>
+    <deklaracija>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_INT 15 int
+     <lista_init_deklaratora>
+      <init_deklarator>
+       <izravni_deklarator>
+        IDN 15 x
+       OP_PRIDRUZI 15 =
+       <inicijalizator>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_i_izraz>
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <primarni_izraz>
+                      BROJ 15 3
+     TOCKAZAREZ 15 ;
+  <vanjska_deklaracija>
+   <deklaracija>
+    <ime_tipa>
+     <specifikator_tipa>
+      KR_INT 16 int
+    <lista_init_deklaratora>
+     <init_deklarator>
+      <izravni_deklarator>
+       IDN 16 z
+      OP_PRIDRUZI 16 =
+      <inicijalizator>
+       <izraz_pridruzivanja>
+        <log_ili_izraz>
+         <log_i_izraz>
+          <bin_ili_izraz>
+           <bin_xili_izraz>
+            <bin_i_izraz>
+             <jednakosni_izraz>
+              <odnosni_izraz>
+               <aditivni_izraz>
+                <multiplikativni_izraz>
+                 <cast_izraz>
+                  <unarni_izraz>
+                   <postfiks_izraz>
+                    <primarni_izraz>
+                     BROJ 16 2
+    TOCKAZAREZ 17 ;
+ <vanjska_deklaracija>
+  <deklaracija>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 18 int
+   <lista_init_deklaratora>
+    <init_deklarator>
+     <izravni_deklarator>
+      IDN 18 y
+   TOCKAZAREZ 18 ;

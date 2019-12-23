@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `int` to `char` in return
+note: 'return a [ 0 ] + 'd' ;' on line 4

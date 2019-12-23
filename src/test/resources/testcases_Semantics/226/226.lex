@@ -1,0 +1,5 @@
+KR_INT 1 int
+IDN 1 a
+OP_PRIDRUZI 1 =
+ZNAK 1 'c'
+TOCKAZAREZ 1 ;

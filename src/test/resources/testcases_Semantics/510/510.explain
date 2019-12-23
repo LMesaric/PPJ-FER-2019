@@ -1,0 +1,2 @@
+semantic: invalid escaped string '\x55' on byte offset 1
+note: '"\x55"' on line 18

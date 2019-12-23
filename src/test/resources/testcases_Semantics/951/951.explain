@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `int` to `char`
+note: 'a [ 0 ] = ( int ) b' on line 4

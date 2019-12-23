@@ -1,0 +1,2 @@
+semantic: duplicate parameter name b
+note: 'int a , int b , int b' on line 3

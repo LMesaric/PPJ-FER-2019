@@ -1,0 +1,2 @@
+semantic: too many initializators
+note: 'a [ 3 ] = "bla"' on line 22

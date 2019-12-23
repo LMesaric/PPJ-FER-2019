@@ -1,0 +1,91 @@
+<prijevodna_jedinica>
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 16 int
+   IDN 16 main
+   L_ZAGRADA 16 (
+   KR_VOID 16 void
+   D_ZAGRADA 16 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 16 {
+    <lista_deklaracija>
+     <lista_deklaracija>
+      <deklaracija>
+       <ime_tipa>
+        <specifikator_tipa>
+         KR_INT 18 int
+       <lista_init_deklaratora>
+        <init_deklarator>
+         <izravni_deklarator>
+          IDN 18 a
+          L_UGL_ZAGRADA 18 [
+          BROJ 18 10
+          D_UGL_ZAGRADA 18 ]
+         OP_PRIDRUZI 18 =
+         <inicijalizator>
+          <izraz_pridruzivanja>
+           <log_ili_izraz>
+            <log_i_izraz>
+             <bin_ili_izraz>
+              <bin_xili_izraz>
+               <bin_i_izraz>
+                <jednakosni_izraz>
+                 <odnosni_izraz>
+                  <aditivni_izraz>
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        NIZ_ZNAKOVA 18 "5\5"
+       TOCKAZAREZ 18 ;
+     <deklaracija>
+      <ime_tipa>
+       <specifikator_tipa>
+        KR_CHAR 19 char
+      <lista_init_deklaratora>
+       <init_deklarator>
+        <izravni_deklarator>
+         IDN 19 b
+        OP_PRIDRUZI 19 =
+        <inicijalizator>
+         <izraz_pridruzivanja>
+          <log_ili_izraz>
+           <log_i_izraz>
+            <bin_ili_izraz>
+             <bin_xili_izraz>
+              <bin_i_izraz>
+               <jednakosni_izraz>
+                <odnosni_izraz>
+                 <aditivni_izraz>
+                  <multiplikativni_izraz>
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <postfiks_izraz>
+                      <primarni_izraz>
+                       ZNAK 19 '\"'
+      TOCKAZAREZ 19 ;
+    <lista_naredbi>
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 20 return
+       <izraz>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_i_izraz>
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <primarni_izraz>
+                      BROJ 20 0
+       TOCKAZAREZ 20 ;
+    D_VIT_ZAGRADA 21 }

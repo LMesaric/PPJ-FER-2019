@@ -1,0 +1,84 @@
+<prijevodna_jedinica>
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 1 int
+   IDN 1 main
+   L_ZAGRADA 1 (
+   KR_VOID 1 void
+   D_ZAGRADA 1 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 1 {
+    <lista_naredbi>
+     <lista_naredbi>
+      <lista_naredbi>
+       <naredba>
+        <naredba_grananja>
+         KR_IF 2 if
+         L_ZAGRADA 2 (
+         <izraz>
+          <izraz_pridruzivanja>
+           <log_ili_izraz>
+            <log_i_izraz>
+             <bin_ili_izraz>
+              <bin_xili_izraz>
+               <bin_i_izraz>
+                <jednakosni_izraz>
+                 <odnosni_izraz>
+                  <aditivni_izraz>
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        BROJ 2 1
+         D_ZAGRADA 2 )
+         <naredba>
+          <slozena_naredba>
+           L_VIT_ZAGRADA 2 {
+           <lista_naredbi>
+            <lista_naredbi>
+             <naredba>
+              <izraz_naredba>
+               TOCKAZAREZ 5 ;
+            <naredba>
+             <izraz_naredba>
+              <izraz>
+               <izraz_pridruzivanja>
+                <log_ili_izraz>
+                 <log_i_izraz>
+                  <bin_ili_izraz>
+                   <bin_xili_izraz>
+                    <bin_i_izraz>
+                     <jednakosni_izraz>
+                      <odnosni_izraz>
+                       <aditivni_izraz>
+                        <multiplikativni_izraz>
+                         <cast_izraz>
+                          <unarni_izraz>
+                           <postfiks_izraz>
+                            <postfiks_izraz>
+                             <primarni_izraz>
+                              IDN 6 a
+                            OP_INC 6 ++
+              TOCKAZAREZ 6 ;
+           D_VIT_ZAGRADA 7 }
+         KR_ELSE 8 else
+         <naredba>
+          <slozena_naredba>
+           L_VIT_ZAGRADA 8 {
+           <lista_naredbi>
+            <naredba>
+             <naredba_skoka>
+              KR_BREAK 9 break
+              TOCKAZAREZ 9 ;
+           D_VIT_ZAGRADA 10 }
+      <naredba>
+       <naredba_skoka>
+        KR_CONTINUE 11 continue
+        TOCKAZAREZ 11 ;
+     <naredba>
+      <izraz_naredba>
+       TOCKAZAREZ 13 ;
+    D_VIT_ZAGRADA 14 }

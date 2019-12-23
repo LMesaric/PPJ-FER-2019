@@ -1,0 +1,2 @@
+semantic: f ( ) can't be --'ed (not lvalue)
+note: 'f ( ) --' on line 5

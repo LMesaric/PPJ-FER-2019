@@ -1,0 +1,2 @@
+semantic: invalid escaped string '5\5' on byte offset 2
+note: '"5\5"' on line 18

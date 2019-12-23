@@ -1,0 +1,1 @@
+<primarni_izraz> ::= IDN(22,string)

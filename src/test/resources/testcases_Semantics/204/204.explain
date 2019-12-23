@@ -1,0 +1,2 @@
+semantic: type mismatch in call of function printf on param 1. no implicit conversion from `niz(const char)` to `niz(char)`
+note: 'printf ( "hello world!\n" )' on line 24

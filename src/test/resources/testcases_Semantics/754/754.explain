@@ -1,0 +1,2 @@
+semantic: can't [] on `int`
+note: 'c [ 1 ]' on line 4

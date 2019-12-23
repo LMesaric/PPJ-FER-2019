@@ -1,0 +1,2 @@
+semantic: array size must be positive int less or equal 1024
+note: 'b [ 1025 ]' on line 2

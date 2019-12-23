@@ -1,0 +1,2 @@
+semantic: can't initialize array with scalar value
+note: 'niz [ 10 ] = niz1' on line 38

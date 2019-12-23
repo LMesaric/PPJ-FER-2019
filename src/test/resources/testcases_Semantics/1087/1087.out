@@ -1,0 +1,1 @@
+<postfiks_izraz> ::= <postfiks_izraz> OP_DEC(4,--)

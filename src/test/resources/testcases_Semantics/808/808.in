@@ -1,0 +1,222 @@
+<prijevodna_jedinica>
+ <prijevodna_jedinica>
+  <prijevodna_jedinica>
+   <vanjska_deklaracija>
+    <deklaracija>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_INT 2 int
+     <lista_init_deklaratora>
+      <init_deklarator>
+       <izravni_deklarator>
+        IDN 2 f
+        L_ZAGRADA 2 (
+        <lista_parametara>
+         <deklaracija_parametra>
+          <ime_tipa>
+           <specifikator_tipa>
+            KR_INT 2 int
+          IDN 2 a
+        D_ZAGRADA 2 )
+     TOCKAZAREZ 2 ;
+  <vanjska_deklaracija>
+   <deklaracija>
+    <ime_tipa>
+     <specifikator_tipa>
+      KR_CHAR 3 char
+    <lista_init_deklaratora>
+     <init_deklarator>
+      <izravni_deklarator>
+       IDN 3 f
+       L_ZAGRADA 3 (
+       <lista_parametara>
+        <deklaracija_parametra>
+         <ime_tipa>
+          <specifikator_tipa>
+           KR_CHAR 3 char
+         IDN 3 a
+       D_ZAGRADA 3 )
+    TOCKAZAREZ 3 ;
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 5 int
+   IDN 5 main
+   L_ZAGRADA 5 (
+   <lista_parametara>
+    <deklaracija_parametra>
+     <ime_tipa>
+      <specifikator_tipa>
+       KR_INT 5 int
+     IDN 5 a
+   D_ZAGRADA 5 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 6 {
+    <lista_naredbi>
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 7 return
+       <izraz>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_ili_izraz>
+           <log_i_izraz>
+            <bin_ili_izraz>
+             <bin_ili_izraz>
+              <bin_xili_izraz>
+               <bin_i_izraz>
+                <jednakosni_izraz>
+                 <odnosni_izraz>
+                  <aditivni_izraz>
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        ZNAK 7 'a'
+             OP_BIN_ILI 7 |
+             <bin_xili_izraz>
+              <bin_i_izraz>
+               <jednakosni_izraz>
+                <odnosni_izraz>
+                 <aditivni_izraz>
+                  <multiplikativni_izraz>
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <postfiks_izraz>
+                      <primarni_izraz>
+                       ZNAK 7 '\0'
+          OP_ILI 7 ||
+          <log_i_izraz>
+           <log_i_izraz>
+            <bin_ili_izraz>
+             <bin_xili_izraz>
+              <bin_i_izraz>
+               <bin_i_izraz>
+                <jednakosni_izraz>
+                 <odnosni_izraz>
+                  <aditivni_izraz>
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        BROJ 7 2
+               OP_BIN_I 7 &
+               <jednakosni_izraz>
+                <odnosni_izraz>
+                 <aditivni_izraz>
+                  <multiplikativni_izraz>
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <postfiks_izraz>
+                      <primarni_izraz>
+                       ZNAK 7 '\''
+           OP_I 7 &&
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <aditivni_izraz>
+                  <aditivni_izraz>
+                   <aditivni_izraz>
+                    <aditivni_izraz>
+                     <multiplikativni_izraz>
+                      <cast_izraz>
+                       <unarni_izraz>
+                        <unarni_operator>
+                         MINUS 7 -
+                        <cast_izraz>
+                         <unarni_izraz>
+                          <postfiks_izraz>
+                           <primarni_izraz>
+                            BROJ 7 0
+                    PLUS 7 +
+                    <multiplikativni_izraz>
+                     <cast_izraz>
+                      <unarni_izraz>
+                       OP_DEC 7 --
+                       <unarni_izraz>
+                        <postfiks_izraz>
+                         <primarni_izraz>
+                          IDN 7 a
+                   PLUS 7 +
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <postfiks_izraz>
+                        <primarni_izraz>
+                         IDN 7 a
+                       OP_INC 7 ++
+                  PLUS 7 +
+                  <multiplikativni_izraz>
+                   <multiplikativni_izraz>
+                    <multiplikativni_izraz>
+                     <cast_izraz>
+                      <unarni_izraz>
+                       <postfiks_izraz>
+                        <primarni_izraz>
+                         ZNAK 7 'c'
+                    OP_DIJELI 7 /
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        BROJ 7 000
+                   OP_PUTA 7 *
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <unarni_operator>
+                      MINUS 7 -
+                     <cast_izraz>
+                      <unarni_izraz>
+                       <unarni_operator>
+                        PLUS 7 +
+                       <cast_izraz>
+                        <unarni_izraz>
+                         <unarni_operator>
+                          MINUS 7 -
+                         <cast_izraz>
+                          <unarni_izraz>
+                           <unarni_operator>
+                            PLUS 7 +
+                           <cast_izraz>
+                            <unarni_izraz>
+                             <unarni_operator>
+                              MINUS 7 -
+                             <cast_izraz>
+                              <unarni_izraz>
+                               <unarni_operator>
+                                PLUS 7 +
+                               <cast_izraz>
+                                <unarni_izraz>
+                                 <unarni_operator>
+                                  MINUS 7 -
+                                 <cast_izraz>
+                                  <unarni_izraz>
+                                   <unarni_operator>
+                                    PLUS 7 +
+                                   <cast_izraz>
+                                    <unarni_izraz>
+                                     <unarni_operator>
+                                      MINUS 7 -
+                                     <cast_izraz>
+                                      <unarni_izraz>
+                                       <postfiks_izraz>
+                                        <postfiks_izraz>
+                                         <primarni_izraz>
+                                          IDN 7 a
+                                        OP_DEC 7 --
+                 MINUS 7 -
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <primarni_izraz>
+                      IDN 7 a
+       TOCKAZAREZ 7 ;
+    D_VIT_ZAGRADA 8 }

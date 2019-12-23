@@ -1,0 +1,21 @@
+<prijevodna_jedinica>
+ <vanjska_deklaracija>
+  <deklaracija>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 1 int
+   <lista_init_deklaratora>
+    <lista_init_deklaratora>
+     <lista_init_deklaratora>
+      <init_deklarator>
+       <izravni_deklarator>
+        IDN 1 a
+     ZAREZ 1 ,
+     <init_deklarator>
+      <izravni_deklarator>
+       IDN 1 b
+    ZAREZ 1 ,
+    <init_deklarator>
+     <izravni_deklarator>
+      IDN 1 c
+   TOCKAZAREZ 3 ;

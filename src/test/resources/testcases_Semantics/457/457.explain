@@ -1,0 +1,2 @@
+semantic: coflicting declarations of v. `funkcija(void -> int)` and `funkcija(void -> void)`
+note: 'int v ( void ) { return ; }' on lines from 12 to 15

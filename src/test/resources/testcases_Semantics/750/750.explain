@@ -1,0 +1,2 @@
+semantic: invalid escaped string 'hello world!\n\' on byte offset 15
+note: '"hello world!\n\"' on line 21

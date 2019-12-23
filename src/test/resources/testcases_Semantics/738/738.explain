@@ -1,0 +1,2 @@
+semantic: too many initializators
+note: 't [ 1 ] = { 1 , 2 , 3 }' on line 21

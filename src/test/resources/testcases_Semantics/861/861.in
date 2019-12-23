@@ -1,0 +1,87 @@
+<prijevodna_jedinica>
+ <prijevodna_jedinica>
+  <vanjska_deklaracija>
+   <deklaracija>
+    <ime_tipa>
+     <specifikator_tipa>
+      KR_INT 3 int
+    <lista_init_deklaratora>
+     <lista_init_deklaratora>
+      <init_deklarator>
+       <izravni_deklarator>
+        IDN 3 a
+        L_UGL_ZAGRADA 3 [
+        BROJ 3 3
+        D_UGL_ZAGRADA 3 ]
+       OP_PRIDRUZI 3 =
+       <inicijalizator>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_i_izraz>
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <primarni_izraz>
+                      NIZ_ZNAKOVA 3 "\\\\"
+     ZAREZ 3 ,
+     <init_deklarator>
+      <izravni_deklarator>
+       IDN 3 c
+      OP_PRIDRUZI 3 =
+      <inicijalizator>
+       <izraz_pridruzivanja>
+        <log_ili_izraz>
+         <log_i_izraz>
+          <bin_ili_izraz>
+           <bin_xili_izraz>
+            <bin_i_izraz>
+             <jednakosni_izraz>
+              <odnosni_izraz>
+               <aditivni_izraz>
+                <multiplikativni_izraz>
+                 <cast_izraz>
+                  <unarni_izraz>
+                   <postfiks_izraz>
+                    <primarni_izraz>
+                     BROJ 3 5
+    TOCKAZAREZ 3 ;
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 5 int
+   IDN 5 main
+   L_ZAGRADA 5 (
+   KR_VOID 5 void
+   D_ZAGRADA 5 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 5 {
+    <lista_naredbi>
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 6 return
+       <izraz>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_i_izraz>
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <primarni_izraz>
+                      BROJ 6 0
+       TOCKAZAREZ 6 ;
+    D_VIT_ZAGRADA 7 }

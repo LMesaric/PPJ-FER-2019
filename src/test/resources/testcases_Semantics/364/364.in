@@ -1,0 +1,71 @@
+<prijevodna_jedinica>
+ <prijevodna_jedinica>
+  <vanjska_deklaracija>
+   <definicija_funkcije>
+    <ime_tipa>
+     <specifikator_tipa>
+      KR_INT 17 int
+    IDN 17 f
+    L_ZAGRADA 17 (
+    KR_VOID 17 void
+    D_ZAGRADA 17 )
+    <slozena_naredba>
+     L_VIT_ZAGRADA 17 {
+     <lista_naredbi>
+      <naredba>
+       <naredba_skoka>
+        KR_RETURN 18 return
+        <izraz>
+         <izraz_pridruzivanja>
+          <log_ili_izraz>
+           <log_i_izraz>
+            <bin_ili_izraz>
+             <bin_xili_izraz>
+              <bin_i_izraz>
+               <jednakosni_izraz>
+                <odnosni_izraz>
+                 <aditivni_izraz>
+                  <multiplikativni_izraz>
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <postfiks_izraz>
+                      <primarni_izraz>
+                       BROJ 18 0
+        TOCKAZAREZ 18 ;
+     D_VIT_ZAGRADA 19 }
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 21 int
+   IDN 21 main
+   L_ZAGRADA 21 (
+   KR_VOID 21 void
+   D_ZAGRADA 21 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 21 {
+    <lista_naredbi>
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 23 return
+       <izraz>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_i_izraz>
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <postfiks_izraz>
+                      <primarni_izraz>
+                       IDN 23 f
+                     L_ZAGRADA 23 (
+                     D_ZAGRADA 23 )
+       TOCKAZAREZ 23 ;
+    D_VIT_ZAGRADA 24 }

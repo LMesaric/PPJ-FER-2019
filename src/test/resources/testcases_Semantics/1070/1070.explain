@@ -1,0 +1,2 @@
+semantic: too many initializators
+note: 'a [ 6 ] = { 'c' , 'c' , 'c' , 'c' , 'c' , 'c' , 'c' }' on line 1

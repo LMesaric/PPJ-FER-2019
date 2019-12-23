@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `niz(const char)` to `char`
+note: 'a = "abcd"' on line 22

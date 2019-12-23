@@ -1,0 +1,1 @@
+<izraz_pridruzivanja> ::= <postfiks_izraz> OP_PRIDRUZI(19,=) <izraz_pridruzivanja>

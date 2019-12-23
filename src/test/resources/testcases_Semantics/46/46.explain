@@ -1,0 +1,2 @@
+semantic: invalid escaped string '  h\"\p' on byte offset 6
+note: '"  h\"\p"' on line 18

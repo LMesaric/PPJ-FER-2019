@@ -1,0 +1,2 @@
+semantic: invalid implicit conversion from `int` to `char`
+note: 'c [ 1 ] = 2' on line 3

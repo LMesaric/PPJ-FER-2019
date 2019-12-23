@@ -1,0 +1,2 @@
+semantic: v is not l-value
+note: 'v = 666' on line 9
