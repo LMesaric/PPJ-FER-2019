@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class SemantickiAnalizator {
 
@@ -35,21 +36,21 @@ public class SemantickiAnalizator {
                     // TODO: check if IDN exists as function or variable declaration, return proper version of TypeExpression
                     break;
                 case "BROJ":
-                    if (!checkInt(child.elements.get(2))) {
+                    if (checkInt(child.elements.get(2)) == null) {
                         error(node);
                     }
-                    fullType = new FullType(false, new Type(false, PrimitiveType.INT));
+                    fullType = new FullType(new Type(false, PrimitiveType.INT));
                     break;
                 case "ZNAK":
-                    if (!checkChar(child.elements.get(2))) {
+                    if (checkChar(child.elements.get(2)) == null) {
                         error(node);
                     }
-                    fullType = new FullType(false, new Type(false, PrimitiveType.CHAR));
+                    fullType = new FullType(new Type(false, PrimitiveType.CHAR));
                 case "NIZ_ZNAKOVA":
                     if (!checkConstCharArray(child.elements.get(2))) {
                         error(node);
                     }
-                    fullType = new FullType(true, new Type(true, PrimitiveType.CHAR));
+                    fullType = new FullType(new Type(true, PrimitiveType.CHAR), child.elements.get(2).substring(1, child.elements.get(2).length() - 1).length() + 1);
                 case "<izraz>":
                     return expression(child);
             }
@@ -72,24 +73,24 @@ public class SemantickiAnalizator {
                     }
                     break;
                 case "L_UGL_ZAGRADA":
-                    if (Objects.requireNonNull(typeExpression).arguments != null || Objects.requireNonNull(typeExpression).fullType.array) {
+                    if (Objects.requireNonNull(typeExpression).fullType.arguments != null || Objects.requireNonNull(typeExpression).fullType.array) {
                         error(node);
                     }
                     return new TypeExpression(typeExpression.fullType, typeExpression.lExpression);
                 case "<lista_argumenata>":
-                    if (Objects.requireNonNull(typeExpression).arguments == null) {
+                    if (Objects.requireNonNull(typeExpression).fullType.arguments == null) {
                         error(node);
                     }
                     List<FullType> arguments = argumentList(child);
-                    if (!typeExpression.arguments.equals(arguments)) {
+                    if (!typeExpression.fullType.arguments.equals(arguments)) {
                         error(node);
                     }
                     return typeExpression;
                 case "D_ZAGRADA":
-                    if (Objects.requireNonNull(typeExpression).arguments == null) {
+                    if (Objects.requireNonNull(typeExpression).fullType.arguments == null) {
                         error(node);
                     }
-                    if (!typeExpression.arguments.isEmpty()) {
+                    if (!typeExpression.fullType.arguments.isEmpty()) {
                         error(node);
                     }
                     return typeExpression;
@@ -98,7 +99,7 @@ public class SemantickiAnalizator {
                     if (!Objects.requireNonNull(typeExpression).lExpression || !checkIntCast(typeExpression.fullType)) {
                         error(node);
                     }
-                    return new TypeExpression(new FullType(false, new Type(false, PrimitiveType.INT)), false);
+                    return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
             }
         }
         return typeExpression;
@@ -129,13 +130,13 @@ public class SemantickiAnalizator {
                     if (!Objects.requireNonNull(typeExpression).lExpression || !checkIntCast(typeExpression.fullType)) {
                         error(node);
                     }
-                    return new TypeExpression(new FullType(false, new Type(false, PrimitiveType.INT)), false);
+                    return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
                 case "<cast_izraz>":
                     TypeExpression typeExp = castExpression(child);
                     if (!checkIntCast(typeExp.fullType)) {
                         error(node);
                     }
-                    return new TypeExpression(new FullType(false, new Type(false, PrimitiveType.INT)), false);
+                    return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
             }
         }
         throw new IllegalStateException();
@@ -149,7 +150,7 @@ public class SemantickiAnalizator {
                     return unaryExpression(child);
                 case "<ime_tipa>":
                     Type type = typeName(child);
-                    typeExpression = new TypeExpression(new FullType(false, type), false);
+                    typeExpression = new TypeExpression(new FullType(type), false);
                     break;
                 case "<cast_izraz>":
                     if (!checkExplicitCast(Objects.requireNonNull(typeExpression).fullType, castExpression(child).fullType)) {
@@ -203,7 +204,7 @@ public class SemantickiAnalizator {
                 if (!checkIntCast(typeExpression.fullType)) {
                     error(node);
                 }
-                return new TypeExpression(new FullType(false, new Type(false, PrimitiveType.INT)), false);
+                return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
             } else if (child.elements.get(0).equals(secondCase)) {
                 seen = true;
                 if (!checkIntCast(secondFunction.apply(child).fullType)) {
@@ -348,13 +349,67 @@ public class SemantickiAnalizator {
                 return expression(child).fullType;
             }
         }
-        return new FullType(false, new Type(false, PrimitiveType.INT));
+        return new FullType(new Type(false, PrimitiveType.INT));
     }
 
+    private static void branchCommand(Node node) {
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "<izraz>":
+                    checkIntCast(expression(child).fullType);
+                    break;
+                case "<naredba>":
+                    command(child);
+                    break;
+            }
+        }
+    }
+
+    private static void loopCommand(Node node) {
+        boolean seen = false;
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "<izraz>":
+                    TypeExpression expression = expression(child);
+                    if (!seen) {
+                        checkIntCast(expression.fullType);
+                    }
+                    break;
+                case "<naredba>":
+                    command(child);
+                    break;
+                case "<izraz_naredba>":
+                    FullType expressionCommand = expressionCommand(child);
+                    if (seen) {
+                        checkIntCast(expressionCommand);
+                    }
+                    seen = true;
+                    break;
+            }
+        }
+    }
+
+    private static void jumpCommand(Node node) {
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "KR_CONTINUE":
+                case "KR_BREAK":
+                    // TODO: check if program is inside loop
+                    break;
+                case "KR_RETURN":
+                    // TODO: check if program is inside function
+                    break;
+                case "<izraz>":
+                    TypeExpression expression = expression(child);
+                    // TODO: check if expression type matches current function return type
+                    break;
+            }
+        }
+    }
 
     private static void compileUnit(Node node) {
         for (Node child : node.children) {
-            switch (node.elements.get(0)) {
+            switch (child.elements.get(0)) {
                 case "<prijevodna_jedinica>":
                     compileUnit(child);
                     break;
@@ -378,25 +433,29 @@ public class SemantickiAnalizator {
         }
     }
 
-    // TODO remember function definition
     private static void functionDefinition(Node node) {
         String functionName = null;
         Type returnType = null;
-        LinkedHashSet<Variable> parameters = null;
         // TODO: create new scope for variables
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<ime_tipa>":
-                    // TODO: check
                     returnType = typeName(child);
+                    if (returnType.constant) {
+                        error(node);
+                    }
                     break;
                 case "<IDN>":
-                    // TODO: check
+                    // TODO: check if there is already defined function with given typename
                     functionName = child.elements.get(2);
+                    break;
+                case "KR_VOID":
+                    // TODO: remember function definition and declaration
+                    // TODO: if the function is already declared check if it has expected type
                     break;
                 case "<lista_parametara>":
                     // TODO: check if function name is already declared if this definition is same as declaration
-                    parameters = parameterList(child);
+                    LinkedHashSet<Variable> parameters = parameterList(child);
                     // TODO: add parameters to newly created scope
                     break;
                 case "<slozena_naredba>":
@@ -424,49 +483,28 @@ public class SemantickiAnalizator {
         return parameters;
     }
 
-    private static void branchCommand(Node node) {
+    private static Variable parameterDeclaration(Node node) {
+        String name = null;
+        boolean array = false;
+        Type type = null;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
-                case "<izraz>":
-                    expression(child);
+                case "<ime_tipa>":
+                    type = typeName(child);
+                    if (type.primitiveType == PrimitiveType.VOID) {
+                        error(node);
+                    }
                     break;
-                case "<naredba>":
-                    command(child);
+                case "IDN":
+                    name = child.elements.get(2);
+                    break;
+                case "L_UGL_ZAGRADA":
+                    array = true;
                     break;
             }
         }
-    }
-
-    private static void loopCommand(Node node) {
-        for (Node child : node.children) {
-            switch (child.elements.get(0)) {
-                case "<izraz>":
-                    expression(child);
-                    break;
-                case "<naredba>":
-                    command(child);
-                    break;
-                case "<izraz_naredba>":
-                    expressionCommand(child);
-                    break;
-            }
-        }
-    }
-
-    // TODO
-    private static void jumpCommand(Node node) {
-        for (Node child : node.children) {
-            switch (child.elements.get(0)) {
-                case "KR_CONTINUE":
-                    break;
-                case "KR_BREAK":
-                    break;
-                case "KR_RETURN":
-                    break;
-                case "<izraz>":
-                    break;
-            }
-        }
+        // TODO: remember parameter in a map
+        return new Variable(name, new FullType(type));
     }
 
     private static void declarationList(Node node) {
@@ -482,42 +520,136 @@ public class SemantickiAnalizator {
         }
     }
 
-    // TODO: remember parameter in a map
-    private static Variable parameterDeclaration(Node node) {
-        String name = null;
-        boolean array = false;
+    private static void declaration(Node node) {
         Type type = null;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<ime_tipa>":
                     type = typeName(child);
                     break;
+                case "<lista_init_deklaratora>":
+                    initDeclaratorList(child, type);
+                    break;
+            }
+        }
+    }
+
+    private static void initDeclaratorList(Node node, Type type) {
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "<init_deklarator>":
+                    initDeclarator(child, type);
+                    break;
+                case "<lista_init_deklaratora>":
+                    initDeclaratorList(child, type);
+                    break;
+            }
+        }
+    }
+
+    private static void initDeclarator(Node node, Type type) {
+        FullType directDeclaratorType = null;
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "<izravni_deklarator>":
+                    directDeclaratorType = directDeclarator(child, type);
+                    break;
+                case "<inicijalizator>":
+                    if (Objects.requireNonNull(directDeclaratorType).arguments != null) {
+                        error(node);
+                    }
+                    InitializerWrapper wrapper = initializer(child);
+                    if (wrapper.type != null) {
+                        if (directDeclaratorType.array || !checkImplicitCast(wrapper.type, new FullType(directDeclaratorType.type))) {
+                            error(node);
+                        }
+                    } else {
+                        if (!directDeclaratorType.array) {
+                            error(node);
+                        }
+                        for (FullType ft : wrapper.types) {
+                            if (!checkImplicitCast(ft, new FullType(Objects.requireNonNull(directDeclaratorType).type))) {
+                                error(node);
+                            }
+                        }
+                    }
+                    return;
+            }
+        }
+        if (Objects.requireNonNull(directDeclaratorType).type.constant) {
+            error(node);
+        }
+    }
+
+    private static FullType directDeclarator(Node node, Type type) {
+        String name = null;
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
                 case "IDN":
                     name = child.elements.get(2);
                     break;
-                case "L_UGL_ZAGRADA":
-                    array = true;
-                    break;
+                case "BROJ":
+                    int brElements = checkInt(child.elements.get(2));
+                    if (brElements <= 0 || brElements > 1024) {
+                        error(node);
+                    }
+                    if (type.primitiveType == PrimitiveType.VOID) {
+                        error(node);
+                    }
+                    // TODO: check if name is not already declared in local space
+                    // TODO: remember declaration
+                    return new FullType(type, brElements);
+                case "KR_VOID":
+                    // TODO: check if name is already declared and matches current function type
+                    // TODO: remember function declaration
+                    return new FullType(type, new LinkedList<>());
+                case "<lista_parametara>":
+                    // TODO: check if name is already declared and matches current function type
+                    // TODO: remember function declaration
+                    return new FullType(type, parameterList(child).stream().map(Variable::getFullType).collect(Collectors.toList()));
             }
         }
-        if (Objects.requireNonNull(type).primitiveType == PrimitiveType.VOID) {
+        if (type.primitiveType == PrimitiveType.VOID) {
             error(node);
         }
-        return new Variable(name, new FullType(array, type));
+        // TODO: check if name is not already declared in local space
+        // TODO: remember declaration
+        return new FullType(type);
     }
 
-    // TODO: remember function declaration
-    private static void declaration(Node node) {
+    private static InitializerWrapper initializer(Node node) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
-                case "<ime_tipa>":
-                    typeName(node);
+                case "<izraz_pridruzivanja>":
+                    FullType assigmentExpressionType = assigmentExpression(child).fullType;
+                    if (assigmentExpressionType.array) {
+                        List<FullType> charTypes = new LinkedList<>();
+                        for (int i = 0; i < assigmentExpressionType.brElements; i++) {
+                            charTypes.add(new FullType(new Type(false, PrimitiveType.CHAR)));
+                        }
+                        return new InitializerWrapper(new LinkedList<>(charTypes));
+                    }
+                    return new InitializerWrapper(assigmentExpressionType);
+                case "<lista_izraza_pridruzivanja> ":
+                    return new InitializerWrapper(assigmentExpressionList(child));
+            }
+        }
+        throw new IllegalStateException();
+    }
+
+    private static List<FullType> assigmentExpressionList(Node node) {
+        List<FullType> types = new LinkedList<>();
+        for (Node child : node.children) {
+            switch (child.elements.get(0)) {
+                case "<izraz_pridruzivanja>":
+                    types.add(assigmentExpression(child).fullType);
                     break;
-                case "<lista_init_deklaratora>":
-                    // TODO: implement
+                case "<lista_izraza_pridruzivanja> ":
+                    types.addAll(assigmentExpressionList(child));
                     break;
             }
         }
+        return types;
     }
 
     private static class Type {
@@ -547,10 +679,24 @@ public class SemantickiAnalizator {
     private static class FullType {
         boolean array;
         Type type;
+        // Used if type is array
+        int brElements;
+        // Not null if type is function
+        List<FullType> arguments = null;
 
-        FullType(boolean array, Type type) {
-            this.array = array;
-            this.type = type;
+        FullType(Type type) {
+            this.type = Objects.requireNonNull(type);
+        }
+
+        FullType(Type type, int brElements) {
+            this(type);
+            this.brElements = brElements;
+            this.array = true;
+        }
+
+        FullType(Type returnType, List<FullType> arguments) {
+            this(returnType);
+            this.arguments = Objects.requireNonNull(arguments);
         }
 
         @Override
@@ -559,12 +705,14 @@ public class SemantickiAnalizator {
             if (o == null || getClass() != o.getClass()) return false;
             FullType fullType = (FullType) o;
             return array == fullType.array &&
-                    type.equals(fullType.type);
+                    brElements == fullType.brElements &&
+                    type.equals(fullType.type) &&
+                    Objects.equals(arguments, fullType.arguments);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(array, type);
+            return Objects.hash(array, type, brElements, arguments);
         }
     }
 
@@ -575,6 +723,10 @@ public class SemantickiAnalizator {
         Variable(String name, FullType fullType) {
             this.name = name;
             this.fullType = fullType;
+        }
+
+        FullType getFullType() {
+            return fullType;
         }
 
         @Override
@@ -594,27 +746,35 @@ public class SemantickiAnalizator {
     private static class TypeExpression {
         FullType fullType = null;
         boolean lExpression = false;
-        List<FullType> arguments = null;
 
         TypeExpression(FullType type, boolean lValue) {
             this.fullType = type;
             this.lExpression = lValue;
         }
 
-        TypeExpression(FullType type, List<FullType> arguments) {
-            this.fullType = type;
-            this.arguments = Objects.requireNonNull(arguments);
+    }
+
+    private static class InitializerWrapper {
+        FullType type;
+        List<FullType> types;
+
+        InitializerWrapper(FullType type) {
+            this.type = type;
+        }
+
+        InitializerWrapper(List<FullType> types) {
+            this.types = types;
         }
     }
 
     // TODO
-    private static boolean checkInt(String i) {
-        return true;
+    private static Integer checkInt(String i) {
+        return 0;
     }
 
     // TODO
-    private static boolean checkChar(String c) {
-        return true;
+    private static Character checkChar(String c) {
+        return 0;
     }
 
     // TODO
