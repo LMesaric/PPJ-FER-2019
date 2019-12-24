@@ -13,6 +13,8 @@ public class SemantickiAnalizator {
 
     private static boolean loop;
 
+    private static boolean functionError;
+
     private static final Deque<Map<String, TypeExpression>> tables = new ArrayDeque<>();
 
     private static final Map<String, TypeExpression> functionDeclarations = new HashMap<>();
@@ -25,7 +27,24 @@ public class SemantickiAnalizator {
         String inputText = new String(readAllFromStdin(), StandardCharsets.UTF_8);
         Node root = buildTree(inputText.split("\r?\n"));
         if (root != null) {
+            tables.addFirst(new HashMap<>());
             compileUnit(root);
+            TypeExpression main = tables.getFirst().get("main");
+            if (main == null || !main.defined || main.fullType.type.primitiveType != PrimitiveType.INT || !main.fullType.arguments.isEmpty()) {
+                System.out.println("main");
+                System.exit(0);
+            }
+            if (functionError) {
+                System.out.println("funkcija");
+                System.exit(0);
+            }
+            for (Map.Entry<String, TypeExpression> entry : functionDeclarations.entrySet()) {
+                if (!entry.getValue().defined) {
+                    System.out.println("funkcija");
+                    System.exit(0);
+                }
+            }
+            tables.removeFirst();
         }
     }
 
@@ -55,7 +74,9 @@ public class SemantickiAnalizator {
                     if ((arr = checkConstCharArray(child.elements.get(2))) == null) {
                         error(node);
                     } else {
-                        return new TypeExpression(new FullType(new Type(true, PrimitiveType.CHAR), arr.length() + 1), false);
+                        TypeExpression typeExpression = new TypeExpression(new FullType(new Type(true, PrimitiveType.CHAR), arr.length() + 1), false);
+                        typeExpression.constCharArray = true;
+                        return typeExpression;
                     }
                 case "<izraz>":
                     return expression(child);
@@ -78,20 +99,25 @@ public class SemantickiAnalizator {
                         error(node);
                     }
                     break;
-                case "L_UGL_ZAGRADA":
-                    if (Objects.requireNonNull(typeExpression).fullType.arguments != null || Objects.requireNonNull(typeExpression).fullType.array) {
+                case "D_UGL_ZAGRADA":
+                    if (!Objects.requireNonNull(typeExpression).fullType.array) {
                         error(node);
                     }
-                    return new TypeExpression(typeExpression.fullType, typeExpression.lExpression);
+                    return new TypeExpression(new FullType(typeExpression.fullType.type), !typeExpression.fullType.type.constant);
                 case "<lista_argumenata>":
                     if (Objects.requireNonNull(typeExpression).fullType.arguments == null) {
                         error(node);
                     }
                     List<FullType> arguments = argumentList(child);
-                    if (!typeExpression.fullType.arguments.equals(arguments)) {
+                    if (typeExpression.fullType.arguments.size() != arguments.size()) {
                         error(node);
                     }
-                    return typeExpression;
+                    for (int i = 0; i < arguments.size(); i++) {
+                        if (!checkImplicitCast(arguments.get(i), typeExpression.fullType.arguments.get(i))) {
+                            error(node);
+                        }
+                    }
+                    return new TypeExpression(new FullType(typeExpression.fullType.type), false);
                 case "D_ZAGRADA":
                     if (Objects.requireNonNull(typeExpression).fullType.arguments == null) {
                         error(node);
@@ -99,7 +125,7 @@ public class SemantickiAnalizator {
                     if (!typeExpression.fullType.arguments.isEmpty()) {
                         error(node);
                     }
-                    return typeExpression;
+                    return new TypeExpression(new FullType(typeExpression.fullType.type), false);
                 case "OP_INC":
                 case "OP_DEC":
                     if (!Objects.requireNonNull(typeExpression).lExpression || !checkIntCast(typeExpression.fullType)) {
@@ -304,8 +330,14 @@ public class SemantickiAnalizator {
         throw new IllegalStateException();
     }
 
-    private static void complexCommand(Node node) {
-        tables.addFirst(new HashMap<>());
+    private static void complexCommand(Node node, boolean newBlock, LinkedHashSet<Variable> parameters) {
+        if (newBlock) {
+            tables.addFirst(new HashMap<>());
+            parameters.forEach(p -> {
+                boolean lValue = !p.fullType.array && p.fullType.arguments == null && !p.fullType.type.constant;
+                tables.getFirst().put(p.name, new TypeExpression(p.fullType, lValue));
+            });
+        }
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<lista_deklaracija>":
@@ -316,7 +348,9 @@ public class SemantickiAnalizator {
                     break;
             }
         }
-        tables.pop();
+        if (newBlock) {
+            tables.removeFirst();
+        }
     }
 
     private static void commandList(Node node) {
@@ -326,17 +360,17 @@ public class SemantickiAnalizator {
                     commandList(child);
                     break;
                 case "<naredba>":
-                    command(child);
+                    command(child, true);
                     break;
             }
         }
     }
 
-    private static void command(Node node) {
+    private static void command(Node node, boolean newBlock) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<slozena_naredba>":
-                    complexCommand(child);
+                    complexCommand(child, newBlock, new LinkedHashSet<>());
                     break;
                 case "<izraz_naredba>":
                     expressionCommand(child);
@@ -367,11 +401,13 @@ public class SemantickiAnalizator {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izraz>":
-                    checkIntCast(expression(child).fullType);
+                    if (!checkIntCast(expression(child).fullType)) {
+                        error(node);
+                    }
                     break;
                 case "<naredba>":
                     tables.addFirst(new HashMap<>());
-                    command(child);
+                    command(child, false);
                     tables.removeFirst();
                     break;
             }
@@ -390,12 +426,9 @@ public class SemantickiAnalizator {
                     }
                     break;
                 case "<naredba>":
-                    if (!seen) {
-                        tables.addFirst(new HashMap<>());
-                    }
                     boolean old = loop;
                     loop = true;
-                    command(child);
+                    command(child, false);
                     loop = old;
                     break;
                 case "<izraz_naredba>":
@@ -421,7 +454,7 @@ public class SemantickiAnalizator {
                     if (!loop) {
                         error(node);
                     }
-                    break;
+                    return;
                 case "TOCKAZAREZ":
                     if (currentFunction == null || currentFunction.type.primitiveType != PrimitiveType.VOID) {
                         error(node);
@@ -451,8 +484,6 @@ public class SemantickiAnalizator {
     }
 
     private static void outerDeclaration(Node node) {
-        // TODO: one main for every declaration??
-        tables.addFirst(new HashMap<>());
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<definicija_funkcije>":
@@ -463,23 +494,12 @@ public class SemantickiAnalizator {
                     break;
             }
         }
-        TypeExpression main = tables.getFirst().get("main");
-        if (main == null || !main.defined || main.fullType.type.primitiveType != PrimitiveType.INT || !main.fullType.arguments.isEmpty()) {
-            System.out.println("main");
-            System.exit(0);
-        }
-        for (Map.Entry<String, TypeExpression> entry : functionDeclarations.entrySet()) {
-            if (!entry.getValue().defined) {
-                System.out.println("funkcija");
-                System.exit(0);
-            }
-        }
-        tables.pop();
     }
 
     private static void functionDefinition(Node node) {
         String functionName = null;
         Type returnType = null;
+        LinkedHashSet<Variable> parameters = new LinkedHashSet<>();
         FullType oldFunction = currentFunction;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
@@ -491,6 +511,9 @@ public class SemantickiAnalizator {
                     break;
                 case "IDN":
                     functionName = child.elements.get(2);
+                    if (functionName.equals("foo")) {
+                        int i = 0;
+                    }
                     break;
                 case "KR_VOID":
                     TypeExpression function = tables.getFirst().get(functionName);
@@ -504,13 +527,11 @@ public class SemantickiAnalizator {
                     function.defined = true;
                     currentFunction = function.fullType;
                     tables.getFirst().put(functionName, function);
-                    tables.addFirst(new HashMap<>());
                     functionDeclarations.put(functionName, function);
                     break;
                 case "<lista_parametara>":
-                    LinkedHashSet<Variable> parameters = parameterList(child);
+                    parameters = parameterList(child);
                     function = tables.getFirst().get(functionName);
-                    tables.addFirst(new HashMap<>());
                     definedFunction = new FullType(returnType, parameters.stream().map(Variable::getFullType).collect(Collectors.toList()));
                     if (function != null && (function.defined || !definedFunction.equals(function.fullType))) {
                         error(node);
@@ -519,15 +540,12 @@ public class SemantickiAnalizator {
                         function = new TypeExpression(definedFunction, false);
                     }
                     function.defined = true;
-                    currentFunction = function.fullType;
-                    Map<String, TypeExpression> save = tables.pop();
                     tables.getFirst().put(functionName, function);
-                    tables.addFirst(save);
+                    currentFunction = function.fullType;
                     functionDeclarations.put(functionName, function);
                     break;
                 case "<slozena_naredba>":
-                    complexCommand(child);
-                    tables.pop();
+                    complexCommand(child, true, parameters);
                     currentFunction = oldFunction;
                     break;
             }
@@ -574,8 +592,6 @@ public class SemantickiAnalizator {
         }
         FullType fullType = new FullType(type);
         fullType.array = array;
-        boolean lValue = !fullType.array && fullType.arguments == null && !fullType.type.constant;
-        tables.getFirst().put(name, new TypeExpression(fullType, lValue));
         return new Variable(name, fullType);
     }
 
@@ -639,6 +655,9 @@ public class SemantickiAnalizator {
                         if (!directDeclaratorType.array) {
                             error(node);
                         }
+                        if (wrapper.types.size() > directDeclaratorType.brElements) {
+                            error(node);
+                        }
                         for (FullType ft : wrapper.types) {
                             if (!checkImplicitCast(ft, new FullType(Objects.requireNonNull(directDeclaratorType).type))) {
                                 error(node);
@@ -676,18 +695,29 @@ public class SemantickiAnalizator {
                     break;
                 case "KR_VOID":
                     fullType = new FullType(type, new LinkedList<>());
-                    FullType function = getExistingFunction(node, name);
+                    TypeExpression functionExpression = tables.getFirst().get(name);
+                    FullType function = functionExpression != null ? functionExpression.fullType : null;
                     if (function != null && !function.equals(fullType)) {
                         error(node);
+                    }
+                    if (!checkFunction(name, fullType)) {
+                        functionError = true;
                     }
                     tables.getFirst().putIfAbsent(name, new TypeExpression(fullType, false));
                     functionDeclarations.putIfAbsent(name, new TypeExpression(fullType, false));
                     return fullType;
                 case "<lista_parametara>":
                     fullType = new FullType(type, parameterList(child).stream().map(Variable::getFullType).collect(Collectors.toList()));
-                    function = getExistingFunction(node, name);
+                    if (tables.size() == 0) {
+                        int i = 0;
+                    }
+                    functionExpression = tables.getFirst().get(name);
+                    function = functionExpression != null ? functionExpression.fullType : null;
                     if (function != null && !function.equals(fullType)) {
                         error(node);
+                    }
+                    if (!checkFunction(name, fullType)) {
+                        functionError = true;
                     }
                     tables.getFirst().putIfAbsent(name, new TypeExpression(fullType, false));
                     functionDeclarations.putIfAbsent(name, new TypeExpression(fullType, false));
@@ -697,44 +727,31 @@ public class SemantickiAnalizator {
         if (type.primitiveType == PrimitiveType.VOID) {
             error(node);
         }
-        for (Map<String, TypeExpression> table : tables) {
-            TypeExpression te = table.get(name);
-            if (te != null && te.fullType.arguments != null) {
-                error(node);
-            }
-        }
         if (tables.getFirst().put(name, new TypeExpression(fullType, lValue)) != null) {
             error(node);
         }
         return fullType;
     }
 
-    private static FullType getExistingFunction(Node node, String name) {
-        for (Map<String, TypeExpression> table : tables) {
-            TypeExpression te = table.get(name);
-            if (te != null && te.fullType.arguments == null) {
-                error(node);
-            } else if (te != null) {
-                return te.fullType;
-            }
-        }
-        return null;
+    private static boolean checkFunction(String name, FullType function) {
+        TypeExpression te = functionDeclarations.get(name);
+        return te == null || te.fullType.equals(function);
     }
 
     private static InitializerWrapper initializer(Node node) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izraz_pridruzivanja>":
-                    FullType assignmentExpressionType = assignmentExpression(child).fullType;
-                    if (assignmentExpressionType.array) {
+                    TypeExpression assignmentExpressionType = assignmentExpression(child);
+                    if (assignmentExpressionType.constCharArray) {
                         List<FullType> charTypes = new LinkedList<>();
-                        for (int i = 0; i < assignmentExpressionType.brElements; i++) {
+                        for (int i = 0; i < assignmentExpressionType.fullType.brElements; i++) {
                             charTypes.add(new FullType(new Type(false, PrimitiveType.CHAR)));
                         }
                         return new InitializerWrapper(new LinkedList<>(charTypes));
                     }
-                    return new InitializerWrapper(assignmentExpressionType);
-                case "<lista_izraza_pridruzivanja> ":
+                    return new InitializerWrapper(assignmentExpressionType.fullType);
+                case "<lista_izraza_pridruzivanja>":
                     return new InitializerWrapper(assignmentExpressionList(child));
             }
         }
@@ -748,7 +765,7 @@ public class SemantickiAnalizator {
                 case "<izraz_pridruzivanja>":
                     types.add(assignmentExpression(child).fullType);
                     break;
-                case "<lista_izraza_pridruzivanja> ":
+                case "<lista_izraza_pridruzivanja>":
                     types.addAll(assignmentExpressionList(child));
                     break;
             }
@@ -852,6 +869,7 @@ public class SemantickiAnalizator {
         boolean lExpression;
         // Tells whether function is defined
         boolean defined;
+        boolean constCharArray;
 
         TypeExpression(FullType type, boolean lValue) {
             this.fullType = type;
@@ -875,7 +893,7 @@ public class SemantickiAnalizator {
 
     private static Integer checkInt(String i) {
         try {
-            return Integer.parseInt(i);
+            return Integer.decode(i);
         } catch (NumberFormatException ignored) {
             return null;
         }
@@ -910,6 +928,9 @@ public class SemantickiAnalizator {
         arr = arr.substring(1, arr.length() - 1);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < arr.length(); i++) {
+            if (arr.charAt(i) == '"') {
+                return null;
+            }
             if (arr.charAt(i) == '\\') {
                 if (i >= arr.length() - 1) {
                     return null;
@@ -918,6 +939,8 @@ public class SemantickiAnalizator {
                 if (c == null) return null;
                 i++;
                 sb.append(c);
+            } else {
+                sb.append(arr.charAt(i));
             }
         }
         return sb.toString();
@@ -938,7 +961,9 @@ public class SemantickiAnalizator {
         if (from.array && into.array && from.type.primitiveType == into.type.primitiveType && (!from.type.constant || into.type.constant)) {
             return true;
         }
-        return !from.array && !into.array && (into.type.primitiveType == PrimitiveType.INT && from.type.primitiveType != PrimitiveType.VOID || from.type.primitiveType == PrimitiveType.CHAR && into.type.primitiveType == PrimitiveType.CHAR);
+        return !from.array && !into.array && from.arguments == null && into.arguments == null &&
+                (into.type.primitiveType == PrimitiveType.INT && from.type.primitiveType != PrimitiveType.VOID ||
+                        from.type.primitiveType == PrimitiveType.CHAR && into.type.primitiveType == PrimitiveType.CHAR);
     }
 
     private static void error(Node node) {
