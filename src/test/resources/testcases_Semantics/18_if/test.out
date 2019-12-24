@@ -1,0 +1,1 @@
+<naredba_grananja> ::= KR_IF(4,if) L_ZAGRADA(4,() <izraz> D_ZAGRADA(4,)) <naredba>

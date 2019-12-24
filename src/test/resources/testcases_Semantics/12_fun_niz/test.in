@@ -1,0 +1,271 @@
+<prijevodna_jedinica>
+ <prijevodna_jedinica>
+  <vanjska_deklaracija>
+   <definicija_funkcije>
+    <ime_tipa>
+     <specifikator_tipa>
+      KR_INT 1 int
+    IDN 1 f
+    L_ZAGRADA 1 (
+    <lista_parametara>
+     <deklaracija_parametra>
+      <ime_tipa>
+       <specifikator_tipa>
+        KR_INT 1 int
+      IDN 1 a
+      L_UGL_ZAGRADA 1 [
+      D_UGL_ZAGRADA 1 ]
+    D_ZAGRADA 1 )
+    <slozena_naredba>
+     L_VIT_ZAGRADA 1 {
+     <lista_naredbi>
+      <naredba>
+       <naredba_skoka>
+        KR_RETURN 2 return
+        <izraz>
+         <izraz_pridruzivanja>
+          <log_ili_izraz>
+           <log_i_izraz>
+            <bin_ili_izraz>
+             <bin_xili_izraz>
+              <bin_i_izraz>
+               <jednakosni_izraz>
+                <odnosni_izraz>
+                 <aditivni_izraz>
+                  <multiplikativni_izraz>
+                   <cast_izraz>
+                    <unarni_izraz>
+                     <postfiks_izraz>
+                      <postfiks_izraz>
+                       <primarni_izraz>
+                        IDN 2 a
+                      L_UGL_ZAGRADA 2 [
+                      <izraz>
+                       <izraz_pridruzivanja>
+                        <log_ili_izraz>
+                         <log_i_izraz>
+                          <bin_ili_izraz>
+                           <bin_xili_izraz>
+                            <bin_i_izraz>
+                             <jednakosni_izraz>
+                              <odnosni_izraz>
+                               <aditivni_izraz>
+                                <multiplikativni_izraz>
+                                 <cast_izraz>
+                                  <unarni_izraz>
+                                   <postfiks_izraz>
+                                    <primarni_izraz>
+                                     BROJ 2 0
+                      D_UGL_ZAGRADA 2 ]
+        TOCKAZAREZ 2 ;
+     D_VIT_ZAGRADA 3 }
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 4 int
+   IDN 4 main
+   L_ZAGRADA 4 (
+   KR_VOID 4 void
+   D_ZAGRADA 4 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 4 {
+    <lista_deklaracija>
+     <deklaracija>
+      <ime_tipa>
+       <specifikator_tipa>
+        KR_INT 5 int
+      <lista_init_deklaratora>
+       <init_deklarator>
+        <izravni_deklarator>
+         IDN 5 a
+         L_UGL_ZAGRADA 5 [
+         BROJ 5 2
+         D_UGL_ZAGRADA 5 ]
+      TOCKAZAREZ 5 ;
+    <lista_naredbi>
+     <lista_naredbi>
+      <lista_naredbi>
+       <naredba>
+        <izraz_naredba>
+         <izraz>
+          <izraz_pridruzivanja>
+           <postfiks_izraz>
+            <postfiks_izraz>
+             <primarni_izraz>
+              IDN 6 a
+            L_UGL_ZAGRADA 6 [
+            <izraz>
+             <izraz_pridruzivanja>
+              <log_ili_izraz>
+               <log_i_izraz>
+                <bin_ili_izraz>
+                 <bin_xili_izraz>
+                  <bin_i_izraz>
+                   <jednakosni_izraz>
+                    <odnosni_izraz>
+                     <aditivni_izraz>
+                      <multiplikativni_izraz>
+                       <cast_izraz>
+                        <unarni_izraz>
+                         <postfiks_izraz>
+                          <primarni_izraz>
+                           BROJ 6 0
+            D_UGL_ZAGRADA 6 ]
+           OP_PRIDRUZI 6 =
+           <izraz_pridruzivanja>
+            <log_ili_izraz>
+             <log_i_izraz>
+              <bin_ili_izraz>
+               <bin_xili_izraz>
+                <bin_i_izraz>
+                 <jednakosni_izraz>
+                  <odnosni_izraz>
+                   <aditivni_izraz>
+                    <multiplikativni_izraz>
+                     <cast_izraz>
+                      <unarni_izraz>
+                       <postfiks_izraz>
+                        <primarni_izraz>
+                         BROJ 6 1
+         TOCKAZAREZ 6 ;
+      <naredba>
+       <izraz_naredba>
+        <izraz>
+         <izraz_pridruzivanja>
+          <postfiks_izraz>
+           <postfiks_izraz>
+            <primarni_izraz>
+             IDN 7 a
+           L_UGL_ZAGRADA 7 [
+           <izraz>
+            <izraz_pridruzivanja>
+             <log_ili_izraz>
+              <log_i_izraz>
+               <bin_ili_izraz>
+                <bin_xili_izraz>
+                 <bin_i_izraz>
+                  <jednakosni_izraz>
+                   <odnosni_izraz>
+                    <aditivni_izraz>
+                     <multiplikativni_izraz>
+                      <cast_izraz>
+                       <unarni_izraz>
+                        <postfiks_izraz>
+                         <primarni_izraz>
+                          BROJ 7 1
+           D_UGL_ZAGRADA 7 ]
+          OP_PRIDRUZI 7 =
+          <izraz_pridruzivanja>
+           <log_ili_izraz>
+            <log_i_izraz>
+             <bin_ili_izraz>
+              <bin_xili_izraz>
+               <bin_i_izraz>
+                <jednakosni_izraz>
+                 <odnosni_izraz>
+                  <aditivni_izraz>
+                   <multiplikativni_izraz>
+                    <cast_izraz>
+                     <unarni_izraz>
+                      <postfiks_izraz>
+                       <postfiks_izraz>
+                        <primarni_izraz>
+                         IDN 7 f
+                       L_ZAGRADA 7 (
+                       <lista_argumenata>
+                        <izraz_pridruzivanja>
+                         <log_ili_izraz>
+                          <log_i_izraz>
+                           <bin_ili_izraz>
+                            <bin_xili_izraz>
+                             <bin_i_izraz>
+                              <jednakosni_izraz>
+                               <odnosni_izraz>
+                                <aditivni_izraz>
+                                 <multiplikativni_izraz>
+                                  <cast_izraz>
+                                   <unarni_izraz>
+                                    <postfiks_izraz>
+                                     <primarni_izraz>
+                                      IDN 7 a
+                       D_ZAGRADA 7 )
+        TOCKAZAREZ 7 ;
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 8 return
+       <izraz>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_i_izraz>
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <postfiks_izraz>
+                      <postfiks_izraz>
+                       <postfiks_izraz>
+                        <primarni_izraz>
+                         IDN 8 a
+                       L_UGL_ZAGRADA 8 [
+                       <izraz>
+                        <izraz_pridruzivanja>
+                         <log_ili_izraz>
+                          <log_i_izraz>
+                           <bin_ili_izraz>
+                            <bin_xili_izraz>
+                             <bin_i_izraz>
+                              <jednakosni_izraz>
+                               <odnosni_izraz>
+                                <aditivni_izraz>
+                                 <multiplikativni_izraz>
+                                  <cast_izraz>
+                                   <unarni_izraz>
+                                    <postfiks_izraz>
+                                     <primarni_izraz>
+                                      BROJ 8 1
+                       D_UGL_ZAGRADA 8 ]
+                      L_UGL_ZAGRADA 8 [
+                      <izraz>
+                       <izraz_pridruzivanja>
+                        <log_ili_izraz>
+                         <log_i_izraz>
+                          <bin_ili_izraz>
+                           <bin_xili_izraz>
+                            <bin_i_izraz>
+                             <jednakosni_izraz>
+                              <odnosni_izraz>
+                               <aditivni_izraz>
+                                <multiplikativni_izraz>
+                                 <cast_izraz>
+                                  <unarni_izraz>
+                                   <postfiks_izraz>
+                                    <primarni_izraz>
+                                     BROJ 8 2
+                      D_UGL_ZAGRADA 8 ]
+                     L_UGL_ZAGRADA 8 [
+                     <izraz>
+                      <izraz_pridruzivanja>
+                       <log_ili_izraz>
+                        <log_i_izraz>
+                         <bin_ili_izraz>
+                          <bin_xili_izraz>
+                           <bin_i_izraz>
+                            <jednakosni_izraz>
+                             <odnosni_izraz>
+                              <aditivni_izraz>
+                               <multiplikativni_izraz>
+                                <cast_izraz>
+                                 <unarni_izraz>
+                                  <postfiks_izraz>
+                                   <primarni_izraz>
+                                    BROJ 8 3
+                     D_UGL_ZAGRADA 8 ]
+       TOCKAZAREZ 8 ;
+    D_VIT_ZAGRADA 9 }

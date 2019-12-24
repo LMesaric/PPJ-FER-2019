@@ -1,0 +1,1 @@
+<naredba_petlje> ::= KR_FOR(7,for) L_ZAGRADA(7,() <izraz_naredba> <izraz_naredba> <izraz> D_ZAGRADA(7,)) <naredba>

@@ -1,0 +1,1 @@
+<jednakosni_izraz> ::= <jednakosni_izraz> OP_EQ(4,==) <odnosni_izraz>

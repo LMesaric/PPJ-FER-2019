@@ -1,0 +1,34 @@
+<prijevodna_jedinica>
+ <vanjska_deklaracija>
+  <definicija_funkcije>
+   <ime_tipa>
+    <specifikator_tipa>
+     KR_INT 1 int
+   IDN 1 main
+   L_ZAGRADA 1 (
+   KR_VOID 1 void
+   D_ZAGRADA 1 )
+   <slozena_naredba>
+    L_VIT_ZAGRADA 1 {
+    <lista_naredbi>
+     <naredba>
+      <naredba_skoka>
+       KR_RETURN 2 return
+       <izraz>
+        <izraz_pridruzivanja>
+         <log_ili_izraz>
+          <log_i_izraz>
+           <bin_ili_izraz>
+            <bin_xili_izraz>
+             <bin_i_izraz>
+              <jednakosni_izraz>
+               <odnosni_izraz>
+                <aditivni_izraz>
+                 <multiplikativni_izraz>
+                  <cast_izraz>
+                   <unarni_izraz>
+                    <postfiks_izraz>
+                     <primarni_izraz>
+                      NIZ_ZNAKOVA 2 "\a\b\c"
+       TOCKAZAREZ 2 ;
+    D_VIT_ZAGRADA 3 }

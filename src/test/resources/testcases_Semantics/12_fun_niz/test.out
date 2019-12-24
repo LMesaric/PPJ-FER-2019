@@ -1,0 +1,1 @@
+<postfiks_izraz> ::= <postfiks_izraz> L_UGL_ZAGRADA(8,[) <izraz> D_UGL_ZAGRADA(8,])
