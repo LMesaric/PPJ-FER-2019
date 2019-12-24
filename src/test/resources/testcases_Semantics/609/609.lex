@@ -1,9 +1,0 @@
-KR_INT 1 int
-IDN 1 a
-ZAREZ 1 ,
-IDN 1 b
-ZAREZ 1 ,
-IDN 1 c
-OP_PRIDRUZI 1 =
-NIZ_ZNAKOVA 1 "sdfsd"
-TOCKAZAREZ 1 ;

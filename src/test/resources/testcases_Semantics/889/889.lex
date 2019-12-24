@@ -1,3 +1,0 @@
-KR_INT 17 int
-IDN 17 a
-TOCKAZAREZ 17 ;

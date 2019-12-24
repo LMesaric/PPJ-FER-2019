@@ -1,6 +1,0 @@
-KR_INT 1 int
-IDN 1 x
-TOCKAZAREZ 1 ;
-KR_INT 2 int
-IDN 2 y
-TOCKAZAREZ 2 ;

@@ -1,5 +1,0 @@
-KR_CHAR 2 char
-IDN 2 a
-OP_PRIDRUZI 2 =
-ZNAK 2 '\\'
-TOCKAZAREZ 2 ;
