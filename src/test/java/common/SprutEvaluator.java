@@ -20,6 +20,7 @@ public class SprutEvaluator {
     private static final int BUFFER_LENGTH = 1024;
     private static final int MAX_TIMEOUT_MS = 15000;
 
+    private final boolean twoProcesses;
     private final Consumer<String> outputConsumer;
     // private final Consumer<String> errorConsumer;
     private final Path testsDirectory;
@@ -32,6 +33,20 @@ public class SprutEvaluator {
     public SprutEvaluator(Consumer<String> outputConsumer, String testsDirectory,
                           String generatorClass, String analyzerClass,
                           String inputRegex, String definitionRegex, String outputRegex) {
+        this(true, outputConsumer, testsDirectory, generatorClass, analyzerClass,
+                inputRegex, definitionRegex, outputRegex);
+    }
+
+    public SprutEvaluator(Consumer<String> outputConsumer, String testsDirectory,
+                          String analyzerClass, String inputRegex, String outputRegex) {
+        this(false, outputConsumer, testsDirectory, null, analyzerClass,
+                inputRegex, null, outputRegex);
+    }
+
+    private SprutEvaluator(boolean twoProcesses, Consumer<String> outputConsumer, String testsDirectory,
+                           String generatorClass, String analyzerClass,
+                           String inputRegex, String definitionRegex, String outputRegex) {
+        this.twoProcesses = twoProcesses;
         this.outputConsumer = outputConsumer;
         this.testsDirectory = Paths.get(testsDirectory);
         this.generatorClass = generatorClass;
@@ -52,11 +67,11 @@ public class SprutEvaluator {
             for (Path file : Files.newDirectoryStream(caseDir)) {
                 String fileName = file.getFileName().toString();
                 if (fileName.matches(inputRegex)) input = file;
-                if (fileName.matches(definitionRegex)) definition = file;
+                if (twoProcesses && fileName.matches(definitionRegex)) definition = file;
                 if (fileName.matches(outputRegex)) expected = file;
             }
 
-            if (input == null || expected == null || definition == null) {
+            if (input == null || expected == null || (twoProcesses && definition == null)) {
                 print("Test %s does not have all required files!", caseName);
                 continue;
             }
@@ -75,24 +90,27 @@ public class SprutEvaluator {
         print("--------------------");
         print("TEST %s", caseName);
 
-        ProcessBuilder genBuilder = new ProcessBuilder()
-                .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, generatorClass);
+        long generatorStart = 0;
+        long generatorEnd = 0;
+        if (twoProcesses) {
+            ProcessBuilder genBuilder = new ProcessBuilder()
+                    .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, generatorClass);
 
-        long generatorStart = System.nanoTime();
-        Process generator = genBuilder.start();
-        injectFileAsStdinToProcess(definition, generator);
-        generator.getOutputStream().close();
-        generator.waitFor(MAX_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        if (generator.isAlive()) {
-            print("Generator Time Limit Exceeded.\n");
-            generator.destroy();
-            return false;
+            generatorStart = System.nanoTime();
+            Process generator = genBuilder.start();
+            injectFileAsStdinToProcess(definition, generator);
+            generator.getOutputStream().close();
+            generator.waitFor(MAX_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            if (generator.isAlive()) {
+                print("Generator Time Limit Exceeded.\n");
+                generator.destroy();
+                return false;
+            }
+            generatorEnd = System.nanoTime();
         }
-        long generatorEnd = System.nanoTime();
 
         ProcessBuilder laBuilder = new ProcessBuilder()
-                .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, analyzerClass)
-                .redirectErrorStream(false);
+                .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, analyzerClass);
 
         long analyzerStart = System.nanoTime();
         Process analyzer = laBuilder.start();
@@ -113,7 +131,8 @@ public class SprutEvaluator {
         boolean isExpected = expected.equals(stdout);
 
         print("Status: %s", isExpected ? "PASS" : "FAIL");
-        print("Generator time: %.3f s", getTimeInSeconds(generatorStart, generatorEnd));
+        if (twoProcesses)
+            print("Generator time: %.3f s", getTimeInSeconds(generatorStart, generatorEnd));
         print("Analyzer time: %.3f s", getTimeInSeconds(analyzerStart, analyzerEnd));
         print("Analyzer stderr:");
         stderr.forEach(s -> outputConsumer.accept("\t" + s));
