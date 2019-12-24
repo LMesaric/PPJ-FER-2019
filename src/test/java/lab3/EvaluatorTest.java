@@ -8,8 +8,7 @@ import java.io.IOException;
 
 class EvaluatorTest {
 
-    // TODO: Mark as a Test
-    // @Test
+    @Test
     void test() throws IOException, InterruptedException {
         SprutEvaluatorSingle sprut = new SprutEvaluatorSingle(str -> {
         }, "src/test/resources/testcases_Semantics", "lab3.SemantickiAnalizator", ".*\\.in", ".*\\.out");
