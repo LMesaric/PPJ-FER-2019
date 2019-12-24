@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class SemantickiAnalizator {
 
     private static FullType currentFunction;
@@ -511,9 +512,6 @@ public class SemantickiAnalizator {
                     break;
                 case "IDN":
                     functionName = child.elements.get(2);
-                    if (functionName.equals("foo")) {
-                        int i = 0;
-                    }
                     break;
                 case "KR_VOID":
                     TypeExpression function = tables.getFirst().get(functionName);
@@ -708,9 +706,6 @@ public class SemantickiAnalizator {
                     return fullType;
                 case "<lista_parametara>":
                     fullType = new FullType(type, parameterList(child).stream().map(Variable::getFullType).collect(Collectors.toList()));
-                    if (tables.size() == 0) {
-                        int i = 0;
-                    }
                     functionExpression = tables.getFirst().get(name);
                     function = functionExpression != null ? functionExpression.fullType : null;
                     if (function != null && !function.equals(fullType)) {
