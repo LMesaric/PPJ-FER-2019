@@ -18,7 +18,7 @@ base='src/main/resources'
 cat $base/ppjC.lan | $run lab1.GLA && \
   # lexer parsing
   $src | ($run lab1.analizator.LA && \
-  # syntax definitons
+  # syntax definitions
   cat $base/ppjC.san | $run lab2.GSA) | \
   # syntax parsing
   $run lab2.analizator.SA
