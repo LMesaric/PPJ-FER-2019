@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "Duplicates"})
-public class SemantickiAnalizator {
+public class GeneratorKoda {
 
     private static FullType currentFunction;
 
@@ -249,39 +249,39 @@ public class SemantickiAnalizator {
     }
 
     private static TypeExpression multiplicativeExpression(Node node) {
-        return simpleExpression(node, "<cast_izraz>", "<multiplikativni_izraz>", SemantickiAnalizator::castExpression, SemantickiAnalizator::multiplicativeExpression);
+        return simpleExpression(node, "<cast_izraz>", "<multiplikativni_izraz>", GeneratorKoda::castExpression, GeneratorKoda::multiplicativeExpression);
     }
 
     private static TypeExpression additiveExpression(Node node) {
-        return simpleExpression(node, "<multiplikativni_izraz>", "<aditivni_izraz>", SemantickiAnalizator::multiplicativeExpression, SemantickiAnalizator::additiveExpression);
+        return simpleExpression(node, "<multiplikativni_izraz>", "<aditivni_izraz>", GeneratorKoda::multiplicativeExpression, GeneratorKoda::additiveExpression);
     }
 
     private static TypeExpression relationalExpression(Node node) {
-        return simpleExpression(node, "<aditivni_izraz>", "<odnosni_izraz>", SemantickiAnalizator::additiveExpression, SemantickiAnalizator::relationalExpression);
+        return simpleExpression(node, "<aditivni_izraz>", "<odnosni_izraz>", GeneratorKoda::additiveExpression, GeneratorKoda::relationalExpression);
     }
 
     private static TypeExpression equationalExpression(Node node) {
-        return simpleExpression(node, "<odnosni_izraz>", "<jednakosni_izraz>", SemantickiAnalizator::relationalExpression, SemantickiAnalizator::equationalExpression);
+        return simpleExpression(node, "<odnosni_izraz>", "<jednakosni_izraz>", GeneratorKoda::relationalExpression, GeneratorKoda::equationalExpression);
     }
 
     private static TypeExpression binaryAndExpression(Node node) {
-        return simpleExpression(node, "<jednakosni_izraz>", "<bin i izraz>", SemantickiAnalizator::equationalExpression, SemantickiAnalizator::binaryAndExpression);
+        return simpleExpression(node, "<jednakosni_izraz>", "<bin i izraz>", GeneratorKoda::equationalExpression, GeneratorKoda::binaryAndExpression);
     }
 
     private static TypeExpression binaryXorExpression(Node node) {
-        return simpleExpression(node, "<bin_i_izraz>", "<bin_xili_izraz>", SemantickiAnalizator::binaryAndExpression, SemantickiAnalizator::binaryXorExpression);
+        return simpleExpression(node, "<bin_i_izraz>", "<bin_xili_izraz>", GeneratorKoda::binaryAndExpression, GeneratorKoda::binaryXorExpression);
     }
 
     private static TypeExpression binaryOrExpression(Node node) {
-        return simpleExpression(node, "<bin_xili_izraz>", "<bin_ili_izraz>", SemantickiAnalizator::binaryXorExpression, SemantickiAnalizator::binaryOrExpression);
+        return simpleExpression(node, "<bin_xili_izraz>", "<bin_ili_izraz>", GeneratorKoda::binaryXorExpression, GeneratorKoda::binaryOrExpression);
     }
 
     private static TypeExpression logAndExpression(Node node) {
-        return simpleExpression(node, "<bin_ili_izraz>", "<log_i_izraz>", SemantickiAnalizator::binaryOrExpression, SemantickiAnalizator::logAndExpression);
+        return simpleExpression(node, "<bin_ili_izraz>", "<log_i_izraz>", GeneratorKoda::binaryOrExpression, GeneratorKoda::logAndExpression);
     }
 
     private static TypeExpression logOrExpression(Node node) {
-        return simpleExpression(node, "<log_i_izraz>", "<log_ili_izraz>", SemantickiAnalizator::logAndExpression, SemantickiAnalizator::logOrExpression);
+        return simpleExpression(node, "<log_i_izraz>", "<log_ili_izraz>", GeneratorKoda::logAndExpression, GeneratorKoda::logOrExpression);
     }
 
     private static TypeExpression assignmentExpression(Node node) {
