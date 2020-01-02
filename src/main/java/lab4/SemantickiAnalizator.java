@@ -215,17 +215,14 @@ public class SemantickiAnalizator {
     }
 
     private static PrimitiveType typeSpecifier(Node node) {
-        for (Node child : node.children) {
-            switch (child.elements.get(0)) {
-                case "KR_VOID":
-                    return PrimitiveType.VOID;
-                case "KR_CHAR":
-                    return PrimitiveType.CHAR;
-                default:
-                    return PrimitiveType.INT;
-            }
+        switch (node.children.get(0).elements.get(0)) {
+            case "KR_VOID":
+                return PrimitiveType.VOID;
+            case "KR_CHAR":
+                return PrimitiveType.CHAR;
+            default:
+                return PrimitiveType.INT;
         }
-        throw new IllegalStateException();
     }
 
     private static TypeExpression simpleExpression(Node node, String firstCase, String secondCase, Function<Node,
@@ -967,7 +964,7 @@ public class SemantickiAnalizator {
     }
 
     // Tree builder
-    static Node buildTree(String[] lines) {
+    private static Node buildTree(String[] lines) {
         if (lines.length == 0 || lines.length == 1 && lines[0].trim().length() == 0)
             return null;
 
@@ -992,7 +989,7 @@ public class SemantickiAnalizator {
         return root;
     }
 
-    static int countLeadingSpaces(String s) {
+    private static int countLeadingSpaces(String s) {
         int n = 0;
         for (char c : s.toCharArray())
             if (c == ' ') n++;
