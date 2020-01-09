@@ -1,5 +1,10 @@
 language: java
 jdk:
   - openjdk8
+before_install:
+  - nvm install 12
+before_script:
+  - npm install
+  - npm install friscjs
 script:
   - mvn test -B
