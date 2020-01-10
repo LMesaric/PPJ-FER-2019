@@ -20,6 +20,8 @@ public class GeneratorKoda {
 
     private static final Map<String, TypeExpression> functionDeclarations = new HashMap<>();
 
+    private static final StringBuilder completeOutput = new StringBuilder();
+
     enum PrimitiveType {
         VOID, CHAR, INT
     }
@@ -28,6 +30,10 @@ public class GeneratorKoda {
         String inputText = new String(readAllFromStdin(), StandardCharsets.UTF_8);
         Node root = buildTree(inputText.split("\r?\n"));
         if (root != null) {
+            BuilderUtil.appendLine(completeOutput, "MOVE 40000, R7");
+            BuilderUtil.appendLine(completeOutput, "CALL F_MAIN");
+            BuilderUtil.appendLine(completeOutput, "HALT");
+
             tables.addFirst(new HashMap<>());
             compileUnit(root);
             TypeExpression main = tables.getFirst().get("main");
@@ -46,6 +52,7 @@ public class GeneratorKoda {
                 }
             }
             tables.removeFirst();
+            OutputUtil.writeToFileOutput(completeOutput.toString());
         }
     }
 
