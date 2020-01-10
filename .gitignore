@@ -5,6 +5,8 @@
 
 *.ser
 
+src/main/java/lab4/a.frisc
+
 # Created by https://www.gitignore.io/api/java,maven,eclipse,intellij
 # Edit at https://www.gitignore.io/?templates=java,maven,eclipse,intellij
 
