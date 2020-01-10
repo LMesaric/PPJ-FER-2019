@@ -15,5 +15,4 @@ public class Sprut {
         sprut.evaluateAll();
     }
 
-
 }
