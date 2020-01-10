@@ -20,6 +20,10 @@ public class SprutEvaluator {
     private static final int BUFFER_LENGTH = 1024;
     private static final int MAX_TIMEOUT_MS = 15000;
 
+    private static final String NODE_EXEC = "node";
+    private static final String NODE_PARAM1 = "src/test/resources/friscjs/consoleapp/frisc-console.js";
+    private static final String NODE_PARAM2 = "src/main/java/lab4/a.frisc";
+
     private final boolean twoProcesses;
     private final Consumer<String> outputConsumer;
     // private final Consumer<String> errorConsumer;
@@ -29,24 +33,34 @@ public class SprutEvaluator {
     private final String inputRegex;
     private final String definitionRegex;
     private final String outputRegex;
+    private final boolean nodeAnalyzer;
 
     public SprutEvaluator(Consumer<String> outputConsumer, String testsDirectory,
                           String generatorClass, String analyzerClass,
                           String inputRegex, String definitionRegex, String outputRegex) {
-        this(true, outputConsumer, testsDirectory, generatorClass, analyzerClass,
+        this(true, false, outputConsumer, testsDirectory, generatorClass, analyzerClass,
                 inputRegex, definitionRegex, outputRegex);
     }
 
     public SprutEvaluator(Consumer<String> outputConsumer, String testsDirectory,
                           String analyzerClass, String inputRegex, String outputRegex) {
-        this(false, outputConsumer, testsDirectory, null, analyzerClass,
+        this(false, false, outputConsumer, testsDirectory, null, analyzerClass,
                 inputRegex, null, outputRegex);
     }
 
-    private SprutEvaluator(boolean twoProcesses, Consumer<String> outputConsumer, String testsDirectory,
+    public SprutEvaluator(String testsDirectory,
+                          String generatorClass, String inputRegex,
+                          String outputRegex, Consumer<String> outputConsumer) {
+        this(true, true, outputConsumer, testsDirectory, generatorClass, null,
+                null, inputRegex, outputRegex);
+    }
+
+    private SprutEvaluator(boolean twoProcesses, boolean nodeAnalyzer,
+                           Consumer<String> outputConsumer, String testsDirectory,
                            String generatorClass, String analyzerClass,
                            String inputRegex, String definitionRegex, String outputRegex) {
         this.twoProcesses = twoProcesses;
+        this.nodeAnalyzer = nodeAnalyzer;
         this.outputConsumer = outputConsumer;
         this.testsDirectory = Paths.get(testsDirectory);
         this.generatorClass = generatorClass;
@@ -66,12 +80,12 @@ public class SprutEvaluator {
             Path definition = null;
             for (Path file : Files.newDirectoryStream(caseDir)) {
                 String fileName = file.getFileName().toString();
-                if (fileName.matches(inputRegex)) input = file;
+                if (!nodeAnalyzer && fileName.matches(inputRegex)) input = file;
                 if (twoProcesses && fileName.matches(definitionRegex)) definition = file;
                 if (fileName.matches(outputRegex)) expected = file;
             }
 
-            if (input == null || expected == null || (twoProcesses && definition == null)) {
+            if ((!nodeAnalyzer && input == null) || expected == null || (twoProcesses && definition == null)) {
                 print("Test %s does not have all required files!", caseName);
                 continue;
             }
@@ -109,12 +123,13 @@ public class SprutEvaluator {
             generatorEnd = System.nanoTime();
         }
 
-        ProcessBuilder laBuilder = new ProcessBuilder()
-                .command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, analyzerClass);
+        ProcessBuilder laBuilder = nodeAnalyzer ?
+                new ProcessBuilder().command(NODE_EXEC, NODE_PARAM1, NODE_PARAM2) :
+                new ProcessBuilder().command(JAVA_EXEC, JAVA_PARAMS1, JAVA_PARAMS2, analyzerClass);
 
         long analyzerStart = System.nanoTime();
         Process analyzer = laBuilder.start();
-        injectFileAsStdinToProcess(input, analyzer);
+        if (!nodeAnalyzer) injectFileAsStdinToProcess(input, analyzer);
         analyzer.getOutputStream().close();
 
         List<String> expected = Files.readAllLines(output);
