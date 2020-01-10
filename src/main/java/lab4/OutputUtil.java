@@ -5,19 +5,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class OutputUtil {
+class OutputUtil {
 
     // TODO: Keep only methods that will be used.
 
-    public static void writeToFileOutput(Iterable<String> lines) {
+    static void writeToFileOutput(Iterable<String> lines) {
         writeToFileOutput(String.join(System.lineSeparator(), lines));
     }
 
-    public static void writeToFileOutput(String[] lines) {
+    static void writeToFileOutput(String[] lines) {
         writeToFileOutput(String.join(System.lineSeparator(), lines));
     }
 
-    public static void writeToFileOutput(String text) {
+    static void writeToFileOutput(String text) {
         // Try up to three times in case of failures.
         @SuppressWarnings("unused")
         boolean b = writeToFileOutputInternal(text)
