@@ -1,7 +1,7 @@
 package lab4;
 
-class Constants {
+public class Constants {
 
-    static final String FRISC_OUTPUT_PATH = "./src/main/java/lab4/a.frisc";
+    public static final String FRISC_OUTPUT_PATH = "./src/main/java/lab4/a.frisc";
 
 }

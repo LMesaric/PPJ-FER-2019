@@ -1,5 +1,7 @@
 package common;
 
+import lab4.Constants;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +24,7 @@ public class SprutEvaluator {
 
     private static final String NODE_EXEC = "node";
     private static final String NODE_PARAM1 = "src/test/resources/friscjs/consoleapp/frisc-console.js";
-    private static final String NODE_PARAM2 = "src/main/java/lab4/a.frisc";
+    private static final String NODE_PARAM2 = Constants.FRISC_OUTPUT_PATH;
 
     private final boolean twoProcesses;
     private final Consumer<String> outputConsumer;
