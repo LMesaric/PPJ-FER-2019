@@ -3,7 +3,7 @@ package lab4;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImplementationContext {
+public class FunctionImplementation {
 
     List<String> commands = new ArrayList<>();
 

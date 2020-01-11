@@ -20,7 +20,7 @@ public class GeneratorKoda {
 
     private static final Map<String, TypeExpression> functionDeclarations = new HashMap<>();
 
-    private static final Map<String, ImplementationContext> functionImplementations = new HashMap<>();
+    private static final Map<String, FunctionImplementation> functionImplementations = new HashMap<>();
 
     private static final Set<String> allLabels = new HashSet<>();
 
@@ -43,7 +43,7 @@ public class GeneratorKoda {
 
             tables.addFirst(new HashMap<>());
             compileUnit(root);
-            for (Map.Entry<String, ImplementationContext> implementation : functionImplementations.entrySet()) {
+            for (Map.Entry<String, FunctionImplementation> implementation : functionImplementations.entrySet()) {
                 List<String> commands = implementation.getValue().getCommands();
                 BuilderUtil.appendLine(completeOutput, commands.get(0), implementation.getKey());
                 for (int i = 1; i < commands.size(); i++) {
@@ -386,7 +386,7 @@ public class GeneratorKoda {
         throw new IllegalStateException();
     }
 
-    private static void complexCommand(Node node, boolean newBlock, LinkedHashSet<Variable> parameters, ImplementationContext implementation) {
+    private static void complexCommand(Node node, boolean newBlock, LinkedHashSet<Variable> parameters, FunctionImplementation implementation) {
         if (newBlock) {
             tables.addFirst(new HashMap<>());
             parameters.forEach(p -> {
@@ -409,7 +409,7 @@ public class GeneratorKoda {
         }
     }
 
-    private static void commandList(Node node, ImplementationContext implementation) {
+    private static void commandList(Node node, FunctionImplementation implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<lista_naredbi>":
@@ -422,7 +422,7 @@ public class GeneratorKoda {
         }
     }
 
-    private static void command(Node node, boolean newBlock, ImplementationContext implementation) {
+    private static void command(Node node, boolean newBlock, FunctionImplementation implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<slozena_naredba>":
@@ -444,7 +444,7 @@ public class GeneratorKoda {
         }
     }
 
-    private static FullType expressionCommand(Node node, ImplementationContext implementation) {
+    private static FullType expressionCommand(Node node, FunctionImplementation implementation) {
         for (Node child : node.children) {
             if ("<izraz>".equals(child.elements.get(0))) {
                 return expression(child).fullType;
@@ -453,7 +453,7 @@ public class GeneratorKoda {
         return new FullType(new Type(false, PrimitiveType.INT));
     }
 
-    private static void branchCommand(Node node, ImplementationContext implementation) {
+    private static void branchCommand(Node node, FunctionImplementation implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izraz>":
@@ -470,7 +470,7 @@ public class GeneratorKoda {
         }
     }
 
-    private static void loopCommand(Node node, ImplementationContext implementation) {
+    private static void loopCommand(Node node, FunctionImplementation implementation) {
         boolean seen = false;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
@@ -502,7 +502,7 @@ public class GeneratorKoda {
         tables.removeFirst();
     }
 
-    private static void jumpCommand(Node node, ImplementationContext implementation) {
+    private static void jumpCommand(Node node, FunctionImplementation implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "KR_CONTINUE":
@@ -554,7 +554,7 @@ public class GeneratorKoda {
 
     private static void functionDefinition(Node node) {
         String functionName = null;
-        ImplementationContext implementation = new ImplementationContext();
+        FunctionImplementation implementation = new FunctionImplementation();
         Type returnType = null;
         LinkedHashSet<Variable> parameters = new LinkedHashSet<>();
         FullType oldFunction = currentFunction;
