@@ -20,6 +20,8 @@ public class GeneratorKoda {
 
     private static final Map<String, TypeExpression> functionDeclarations = new HashMap<>();
 
+    private static final Map<String, ImplementationContext> functionImplementations = new HashMap<>();
+
     private static final Set<String> allLabels = new HashSet<>();
 
     private static final StringBuilder completeOutput = new StringBuilder();
@@ -41,6 +43,15 @@ public class GeneratorKoda {
 
             tables.addFirst(new HashMap<>());
             compileUnit(root);
+            for (Map.Entry<String, ImplementationContext> implementation : functionImplementations.entrySet()) {
+                List<String> commands = implementation.getValue().getCommands();
+                BuilderUtil.appendLine(completeOutput, commands.get(0), implementation.getKey());
+                for (int i = 1; i < commands.size(); i++) {
+                    BuilderUtil.appendLine(completeOutput, commands.get(i));
+                }
+                BuilderUtil.appendLine(completeOutput, "");
+            }
+
             TypeExpression main = tables.getFirst().get("main");
             if (main == null || !main.defined || main.fullType.type.primitiveType != PrimitiveType.INT || !main.fullType.arguments.isEmpty()) {
                 System.out.println("main");
@@ -375,7 +386,7 @@ public class GeneratorKoda {
         throw new IllegalStateException();
     }
 
-    private static void complexCommand(Node node, boolean newBlock, LinkedHashSet<Variable> parameters) {
+    private static void complexCommand(Node node, boolean newBlock, LinkedHashSet<Variable> parameters, ImplementationContext implementation) {
         if (newBlock) {
             tables.addFirst(new HashMap<>());
             parameters.forEach(p -> {
@@ -389,7 +400,7 @@ public class GeneratorKoda {
                     declarationList(child);
                     break;
                 case "<lista_naredbi>":
-                    commandList(child);
+                    commandList(child, implementation);
                     break;
             }
         }
@@ -398,42 +409,42 @@ public class GeneratorKoda {
         }
     }
 
-    private static void commandList(Node node) {
+    private static void commandList(Node node, ImplementationContext implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<lista_naredbi>":
-                    commandList(child);
+                    commandList(child, implementation);
                     break;
                 case "<naredba>":
-                    command(child, true);
+                    command(child, true, implementation);
                     break;
             }
         }
     }
 
-    private static void command(Node node, boolean newBlock) {
+    private static void command(Node node, boolean newBlock, ImplementationContext implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<slozena_naredba>":
-                    complexCommand(child, newBlock, new LinkedHashSet<>());
+                    complexCommand(child, newBlock, new LinkedHashSet<>(), implementation);
                     break;
                 case "<izraz_naredba>":
-                    expressionCommand(child);
+                    expressionCommand(child, implementation);
                     break;
                 case "<naredba_grananja>":
-                    branchCommand(child);
+                    branchCommand(child, implementation);
                     break;
                 case "<naredba_petlje>":
-                    loopCommand(child);
+                    loopCommand(child, implementation);
                     break;
                 case "<naredba_skoka>":
-                    jumpCommand(child);
+                    jumpCommand(child, implementation);
                     break;
             }
         }
     }
 
-    private static FullType expressionCommand(Node node) {
+    private static FullType expressionCommand(Node node, ImplementationContext implementation) {
         for (Node child : node.children) {
             if ("<izraz>".equals(child.elements.get(0))) {
                 return expression(child).fullType;
@@ -442,7 +453,7 @@ public class GeneratorKoda {
         return new FullType(new Type(false, PrimitiveType.INT));
     }
 
-    private static void branchCommand(Node node) {
+    private static void branchCommand(Node node, ImplementationContext implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izraz>":
@@ -452,14 +463,14 @@ public class GeneratorKoda {
                     break;
                 case "<naredba>":
                     tables.addFirst(new HashMap<>());
-                    command(child, false);
+                    command(child, false, implementation);
                     tables.removeFirst();
                     break;
             }
         }
     }
 
-    private static void loopCommand(Node node) {
+    private static void loopCommand(Node node, ImplementationContext implementation) {
         boolean seen = false;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
@@ -473,14 +484,14 @@ public class GeneratorKoda {
                 case "<naredba>":
                     boolean old = loop;
                     loop = true;
-                    command(child, false);
+                    command(child, false, implementation);
                     loop = old;
                     break;
                 case "<izraz_naredba>":
                     if (!seen) {
                         tables.addFirst(new HashMap<>());
                     }
-                    FullType expressionCommand = expressionCommand(child);
+                    FullType expressionCommand = expressionCommand(child, implementation);
                     if (seen && !checkIntCast(expressionCommand)) {
                         error(node);
                     }
@@ -491,7 +502,7 @@ public class GeneratorKoda {
         tables.removeFirst();
     }
 
-    private static void jumpCommand(Node node) {
+    private static void jumpCommand(Node node, ImplementationContext implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "KR_CONTINUE":
@@ -543,6 +554,7 @@ public class GeneratorKoda {
 
     private static void functionDefinition(Node node) {
         String functionName = null;
+        ImplementationContext implementation = new ImplementationContext();
         Type returnType = null;
         LinkedHashSet<Variable> parameters = new LinkedHashSet<>();
         FullType oldFunction = currentFunction;
@@ -587,11 +599,13 @@ public class GeneratorKoda {
                     functionDeclarations.put(functionName, function);
                     break;
                 case "<slozena_naredba>":
-                    complexCommand(child, true, parameters);
+                    complexCommand(child, true, parameters, implementation);
                     currentFunction = oldFunction;
                     break;
             }
         }
+
+        functionImplementations.put("F_" + functionName.toUpperCase(), implementation);
     }
 
     private static LinkedHashSet<Variable> parameterList(Node node) {
