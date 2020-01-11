@@ -20,6 +20,8 @@ public class GeneratorKoda {
 
     private static final Map<String, TypeExpression> functionDeclarations = new HashMap<>();
 
+    private static final Set<String> allLabels = new HashSet<>();
+
     private static final StringBuilder completeOutput = new StringBuilder();
 
     private static final Map<String, Integer> constants = new HashMap<>();
@@ -55,6 +57,21 @@ public class GeneratorKoda {
             }
             tables.removeFirst();
             OutputUtil.writeToFileOutput(concatenateGeneratedOutputs());
+        }
+    }
+
+    private static String generateRandomLabel() {
+        while (true) {
+            String generatedString = new Random().ints('A', 'Z' + 1)
+                    .limit(10)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
+            // Highly unlikely, but possible
+            if (allLabels.contains(generatedString))
+                continue;
+
+            allLabels.add(generatedString);
+            return generatedString;
         }
     }
 
