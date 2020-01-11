@@ -45,6 +45,7 @@ public class GeneratorKoda {
             compileUnit(root);
             for (Map.Entry<String, FunctionImplementation> implementation : functionImplementations.entrySet()) {
                 List<String> commands = implementation.getValue().getCommands();
+                if (commands.isEmpty()) continue;
                 BuilderUtil.appendLine(completeOutput, commands.get(0), implementation.getKey());
                 for (int i = 1; i < commands.size(); i++) {
                     BuilderUtil.appendLine(completeOutput, commands.get(i));
@@ -503,6 +504,12 @@ public class GeneratorKoda {
     }
 
     private static void jumpCommand(Node node, FunctionImplementation implementation) {
+        if (node.children.get(0).elements.get(0).equals("KR_RETURN")) {
+            Node tmp = node.children.get(1);
+            while (!tmp.children.isEmpty()) tmp = tmp.children.get(0);
+            implementation.addCommand("MOVE %D " + tmp.elements.get(2) + ", R6");
+            implementation.addCommand("RET");
+        }
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "KR_CONTINUE":
