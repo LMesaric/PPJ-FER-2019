@@ -37,6 +37,7 @@ public class GeneratorKoda {
             BuilderUtil.appendLine(completeOutput, "MOVE 40000, R7");
             BuilderUtil.appendLine(completeOutput, "CALL F_MAIN");
             BuilderUtil.appendLine(completeOutput, "HALT");
+            allLabels.add("F_MAIN");
 
             tables.addFirst(new HashMap<>());
             compileUnit(root);
@@ -60,18 +61,21 @@ public class GeneratorKoda {
         }
     }
 
+    private static String createNewConstant(int value) {
+        String label = generateRandomLabel();
+        constants.put(label, value);
+        return label;
+    }
+
     private static String generateRandomLabel() {
         while (true) {
             String generatedString = new Random().ints('A', 'Z' + 1)
                     .limit(10)
                     .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                     .toString();
-            // Highly unlikely, but possible
-            if (allLabels.contains(generatedString))
-                continue;
 
-            allLabels.add(generatedString);
-            return generatedString;
+            if (allLabels.add(generatedString))
+                return generatedString;
         }
     }
 
