@@ -22,6 +22,8 @@ public class GeneratorKoda {
 
     private static final StringBuilder completeOutput = new StringBuilder();
 
+    private static final Map<String, Integer> constants = new HashMap<>();
+
     enum PrimitiveType {
         VOID, CHAR, INT
     }
@@ -52,8 +54,25 @@ public class GeneratorKoda {
                 }
             }
             tables.removeFirst();
-            OutputUtil.writeToFileOutput(completeOutput.toString());
+            OutputUtil.writeToFileOutput(concatenateGeneratedOutputs());
         }
+    }
+
+    private static String concatenateGeneratedOutputs() {
+        return completeOutput.append("\n")
+                .append(generateConstantsCode())
+                .toString();
+    }
+
+    private static String generateConstantsCode() {
+        StringBuilder consts = new StringBuilder();
+        BuilderUtil.appendLine(consts, "");
+        BuilderUtil.appendLine(consts, "; Constants");
+        for (Map.Entry<String, Integer> c : constants.entrySet()) {
+            // TODO: Update if needed to distinguish DW from DB
+            BuilderUtil.appendLine(consts, String.format("DW %%D %s", c.getValue()), c.getKey());
+        }
+        return consts.toString();
     }
 
     private static TypeExpression primaryExpression(Node node) {
