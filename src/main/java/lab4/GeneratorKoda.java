@@ -28,9 +28,7 @@ public class GeneratorKoda {
 
     private static final Map<String, Integer> constants = new HashMap<>();
 
-    enum PrimitiveType {
-        VOID, CHAR, INT
-    }
+
 
     public static void main(String[] args) {
         String inputText = new String(readAllFromStdin(), StandardCharsets.UTF_8);
@@ -575,6 +573,8 @@ public class GeneratorKoda {
                     break;
                 case "IDN":
                     functionName = child.elements.get(2);
+                    implementation.functionName = functionName;
+                    functionImplementations.put(functionName, implementation);
                     break;
                 case "KR_VOID":
                     TypeExpression function = tables.getFirst().get(functionName);
@@ -611,8 +611,6 @@ public class GeneratorKoda {
                     break;
             }
         }
-
-        functionImplementations.put("F_" + functionName.toUpperCase(), implementation);
     }
 
     private static LinkedHashSet<Variable> parameterList(Node node) {
@@ -833,96 +831,11 @@ public class GeneratorKoda {
         return types;
     }
 
-    private static class Type {
-        boolean constant;
-        PrimitiveType primitiveType;
 
-        Type(boolean constant, PrimitiveType type) {
-            this.constant = constant;
-            this.primitiveType = type;
-        }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Type type = (Type) o;
-            return constant == type.constant &&
-                    primitiveType == type.primitiveType;
-        }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(constant, primitiveType);
-        }
-    }
 
-    private static class FullType {
-        boolean array;
-        Type type;
-        // Used if type is array
-        int brElements;
-        // Not null if type is function
-        List<FullType> arguments = null;
 
-        FullType(Type type) {
-            this.type = Objects.requireNonNull(type);
-        }
-
-        FullType(Type type, int brElements) {
-            this(type);
-            this.brElements = brElements;
-            this.array = true;
-        }
-
-        FullType(Type returnType, List<FullType> arguments) {
-            this(returnType);
-            this.arguments = Objects.requireNonNull(arguments);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            FullType fullType = (FullType) o;
-            return array == fullType.array &&
-                    brElements == fullType.brElements &&
-                    type.equals(fullType.type) &&
-                    Objects.equals(arguments, fullType.arguments);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(array, type, brElements, arguments);
-        }
-    }
-
-    private static class Variable {
-        String name;
-        FullType fullType;
-
-        Variable(String name, FullType fullType) {
-            this.name = name;
-            this.fullType = fullType;
-        }
-
-        FullType getFullType() {
-            return fullType;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Variable variable = (Variable) o;
-            return name.equals(variable.name);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(name);
-        }
-    }
 
     private static class TypeExpression {
         FullType fullType;
@@ -950,6 +863,7 @@ public class GeneratorKoda {
             this.types = types;
         }
     }
+
 
     private static Integer checkInt(String i) {
         try {

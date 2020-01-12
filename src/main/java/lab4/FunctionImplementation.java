@@ -1,9 +1,12 @@
 package lab4;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class FunctionImplementation {
+
+    String functionName;
+    Map<String, Variable> locals = new LinkedHashMap<>();
+    Map<String, Variable> parameters = new LinkedHashMap<>();
 
     List<String> commands = new ArrayList<>();
 
@@ -14,5 +17,7 @@ public class FunctionImplementation {
     public List<String> getCommands() {
         return commands;
     }
+
+
 
 }
