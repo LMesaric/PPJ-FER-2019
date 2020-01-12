@@ -41,10 +41,12 @@ public class GeneratorKoda {
 
             tables.addFirst(new HashMap<>());
             compileUnit(root);
+
             for (Map.Entry<String, FunctionImplementation> implementation : functionImplementations.entrySet()) {
                 List<String> commands = implementation.getValue().getCommands();
                 if (commands.isEmpty()) continue;
-                BuilderUtil.appendLine(completeOutput, commands.get(0), implementation.getKey());
+                String functionLabel = "F_" + implementation.getKey().toUpperCase();
+                BuilderUtil.appendLine(completeOutput, commands.get(0), functionLabel);
                 for (int i = 1; i < commands.size(); i++) {
                     BuilderUtil.appendLine(completeOutput, commands.get(i));
                 }
@@ -505,7 +507,9 @@ public class GeneratorKoda {
         if (node.children.get(0).elements.get(0).equals("KR_RETURN")) {
             Node tmp = node.children.get(1);
             while (!tmp.children.isEmpty()) tmp = tmp.children.get(0);
-            implementation.addCommand("MOVE %D " + tmp.elements.get(2) + ", R6");
+            int number = Integer.parseInt(tmp.elements.get(2));
+            String constant = createNewConstant(number);
+            implementation.addCommand("LOAD R6, (" + constant + ")");
             implementation.addCommand("RET");
         }
         for (Node child : node.children) {
@@ -592,6 +596,7 @@ public class GeneratorKoda {
                     break;
                 case "<lista_parametara>":
                     parameters = parameterList(child);
+                    implementation.setParameters(parameters);
                     function = tables.getFirst().get(functionName);
                     definedFunction = new FullType(returnType, parameters.stream().map(Variable::getFullType).collect(Collectors.toList()));
                     if (function != null && (function.defined || !definedFunction.equals(function.fullType))) {

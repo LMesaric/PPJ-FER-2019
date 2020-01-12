@@ -5,6 +5,7 @@ import java.util.Objects;
 public class Variable {
     String name;
     FullType fullType;
+    int addressingOffset;
 
     Variable(String name, FullType fullType) {
         this.name = name;
