@@ -28,9 +28,11 @@ public class GeneratorKoda {
 
     private static final Map<String, Integer> constants = new HashMap<>();
 
-    private static FunctionImplementation currentFunc;
+    private static FunctionImplementation initGlobals;
 
-    private static Map<String, Variable> globalVariables = new HashMap<>();
+    private static FunctionImplementation currentFunc = null;
+
+    private static Map<String, String> globalVariableLabels = new HashMap<>();
 
 
 
@@ -43,13 +45,15 @@ public class GeneratorKoda {
             BuilderUtil.appendLine(completeOutput, "HALT");
             allLabels.add("F_MAIN");
 
-            currentFunc = new FunctionImplementation();
-            currentFunc.functionName = "INIT_GLOBALS";
-            currentFunc.functionLabel = generateRandomLabel();
-            functionImplementations.put(currentFunc.functionName, currentFunc);
+            initGlobals = new FunctionImplementation();
+            initGlobals.functionName = "INIT_GLOBALS";
+            initGlobals.functionLabel = generateRandomLabel();
+            functionImplementations.put(initGlobals.functionName, initGlobals);
 
             tables.addFirst(new HashMap<>());
             compileUnit(root);
+
+            initGlobals.addCommand("RET");
 
             for (Map.Entry<String, FunctionImplementation> implementation : functionImplementations.entrySet()) {
                 List<String> commands = implementation.getValue().getCommands();
@@ -117,13 +121,43 @@ public class GeneratorKoda {
         return consts.toString();
     }
 
+    private static void appendCode(String code) {
+        if (currentFunc != null) currentFunc.addCommand(code);
+        else initGlobals.addCommand(code);
+    }
+
+    private static String variableToR0(String variableName) {
+        Variable var = currentFunc.findVariable(variableName);
+        if (var != null) {
+            int offset = var.addressingOffset;
+            return "LOAD R0, (R5" + (offset >= 0 ? "+" : "-") + offset + ")";
+        } else {
+            String globalLabel = globalVariableLabels.get(variableName);
+            return "LOAD R0, (" + globalLabel + ")";
+        }
+    }
+
+    private static String r0ToVariable(String variableName) {
+        Variable var = currentFunc.findVariable(variableName);
+        if (var != null) {
+            int offset = var.addressingOffset;
+            return "STORE R0, (R5" + (offset >= 0 ? "+" : "-") + offset + ")";
+        } else {
+            String globalLabel = globalVariableLabels.get(variableName);
+            return "STORE R0, (" + globalLabel + ")";
+        }
+    }
+
     private static TypeExpression primaryExpression(Node node) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "IDN":
                     String idn = child.elements.get(2);
+                    appendCode(variableToR0(idn));
+                    appendCode("PUSH R0");
                     for (Map<String, TypeExpression> table : tables) {
                         if (table.containsKey(idn)) {
+                            table.get(idn).idnName = idn;
                             return table.get(idn);
                         }
                     }
@@ -132,11 +166,16 @@ public class GeneratorKoda {
                     if (checkInt(child.elements.get(2)) == null) {
                         error(node);
                     }
+                    String label = createNewConstant(checkInt(child.elements.get(2)));
+                    appendCode("LOAD R0, (" + label + ")");
+                    appendCode("PUSH R0");
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
                 case "ZNAK":
                     if (checkChar(child.elements.get(2)) == null) {
                         error(node);
                     }
+                    appendCode("MOVE " + ((int) checkChar(child.elements.get(2))) + ", R0");
+                    appendCode("PUSH R0");
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.CHAR)), false);
                 case "NIZ_ZNAKOVA":
                     String arr;
@@ -156,6 +195,7 @@ public class GeneratorKoda {
 
     private static TypeExpression postfixExpression(Node node) {
         TypeExpression typeExpression = null;
+        List<FullType> arguments = null;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<primarni_izraz>":
@@ -172,12 +212,18 @@ public class GeneratorKoda {
                     if (!Objects.requireNonNull(typeExpression).fullType.array) {
                         error(node);
                     }
+                    String functionName = node.children.get(0).elements.get(0);
+                    String label = functionImplementations.get(functionName).functionLabel;
+                    appendCode("CALL " + label);
+                    int argumentsSize = (arguments == null) ? 0 : arguments.size();
+                    appendCode("ADD SP, %D " + 4*argumentsSize + ", SP");
+                    appendCode("PUSH R6");
                     return new TypeExpression(new FullType(typeExpression.fullType.type), !typeExpression.fullType.type.constant);
                 case "<lista_argumenata>":
                     if (Objects.requireNonNull(typeExpression).fullType.arguments == null) {
                         error(node);
                     }
-                    List<FullType> arguments = argumentList(child);
+                    arguments = argumentList(child);
                     if (typeExpression.fullType.arguments.size() != arguments.size()) {
                         error(node);
                     }
@@ -200,6 +246,12 @@ public class GeneratorKoda {
                     if (!Objects.requireNonNull(typeExpression).lExpression || !checkIntCast(typeExpression.fullType)) {
                         error(node);
                     }
+                    // TODO: implement for arrays
+                    String idn = node.children.get(0).elements.get(2);
+                    appendCode(variableToR0(idn));
+                    if (child.elements.get(0).equals("OP_INC")) appendCode("ADD R0, 1, R0");
+                    else if (child.elements.get(0).equals("OP_DEC")) appendCode("SUB R0, 1, R0");
+                    appendCode(r0ToVariable(idn));
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
             }
         }
@@ -212,6 +264,7 @@ public class GeneratorKoda {
             switch (child.elements.get(0)) {
                 case "<izraz_pridruzivanja>":
                     arguments.add(Objects.requireNonNull(assignmentExpression(child)).fullType);
+                    // Append nothing since result is already on stack
                     break;
                 case "<lista_argumenata>":
                     arguments.addAll(argumentList(child));
@@ -231,12 +284,40 @@ public class GeneratorKoda {
                     if (!Objects.requireNonNull(typeExpression).lExpression || !checkIntCast(typeExpression.fullType)) {
                         error(node);
                     }
+
+                    appendCode("POP R0");
+                    String idn = node.children.get(1).children.get(0).elements.get(2);
+                    appendCode(variableToR0(idn));
+                    if (node.children.get(0).elements.get(0).equals("OP_INC")) appendCode("ADD R0, 1, R0");
+                    else if (node.children.get(0).elements.get(0).equals("OP_DEC")) appendCode("SUB R0, 1, R0");
+                    appendCode(r0ToVariable(idn));
+                    appendCode("PUSH R0");
+
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
                 case "<cast_izraz>":
                     TypeExpression typeExp = castExpression(child);
                     if (!checkIntCast(typeExp.fullType)) {
                         error(node);
                     }
+
+                    String operator = node.children.get(0).children.get(0).elements.get(0);
+                    switch (operator) {
+                        case "PLUS":
+                            break;
+                        case "MINUS":
+                            appendCode("POP R0");
+                            appendCode("XOR R0, -1, R0");
+                            appendCode("ADD R0, 1, R0");
+                            appendCode("PUSH R0");
+                            break;
+                        case "OP_TILDA":
+                            //TODO: implement
+                            break;
+                        case "OP_NEG":
+                            // TODO: implement
+                            break;
+                    }
+
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
             }
         }
@@ -305,6 +386,20 @@ public class GeneratorKoda {
                 if (!checkIntCast(typeExpression.fullType)) {
                     error(node);
                 }
+
+                switch (firstCase) {
+                    case "PLUS":
+                        appendCode("POP R1");
+                        appendCode("POP R0");
+                        appendCode("ADD R0, R1, R0");
+                        appendCode("PUSH R0");
+                    case "MINUS":
+                        appendCode("POP R1");
+                        appendCode("POP R0");
+                        appendCode("SUB R0, R1, R0");
+                        appendCode("PUSH R0");
+                }
+
                 return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
             } else if (child.elements.get(0).equals(secondCase)) {
                 seen = true;
@@ -353,16 +448,18 @@ public class GeneratorKoda {
     }
 
     private static TypeExpression assignmentExpression(Node node) {
+        TypeExpression postfixExpression = null;
         TypeExpression typeExpression = null;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<log_ili_izraz>":
                     return logOrExpression(child);
                 case "<postfiks_izraz>":
-                    TypeExpression postfixExpression = postfixExpression(child);
+                    postfixExpression = postfixExpression(child);
                     if (!postfixExpression.lExpression) {
                         error(node);
                     }
+                    appendCode("POP R0");
                     typeExpression = new TypeExpression(postfixExpression.fullType, false);
                     break;
                 case "<izraz_pridruzivanja>":
@@ -370,6 +467,12 @@ public class GeneratorKoda {
                     if (!checkImplicitCast(equationalExpression.fullType, Objects.requireNonNull(typeExpression).fullType)) {
                         error(node);
                     }
+
+                    appendCode("POP R0");
+                    String idn = postfixExpression.idnName;
+                    appendCode(r0ToVariable(idn));
+                    appendCode("PUSH R0");
+
                     return new TypeExpression(typeExpression.fullType, false);
             }
         }
@@ -513,14 +616,14 @@ public class GeneratorKoda {
     }
 
     private static void jumpCommand(Node node, FunctionImplementation implementation) {
-        if (node.children.get(0).elements.get(0).equals("KR_RETURN")) {
-            Node tmp = node.children.get(1);
-            while (!tmp.children.isEmpty()) tmp = tmp.children.get(0);
-            int number = Integer.parseInt(tmp.elements.get(2));
-            String constant = createNewConstant(number);
-            implementation.addCommand("LOAD R6, (" + constant + ")");
-            implementation.addCommand("RET");
-        }
+//        if (node.children.get(0).elements.get(0).equals("KR_RETURN")) {
+//            Node tmp = node.children.get(1);
+//            while (!tmp.children.isEmpty()) tmp = tmp.children.get(0);
+//            int number = Integer.parseInt(tmp.elements.get(2));
+//            String constant = createNewConstant(number);
+//            implementation.addCommand("LOAD R6, (" + constant + ")");
+//            implementation.addCommand("RET");
+//        }
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "KR_CONTINUE":
@@ -539,6 +642,10 @@ public class GeneratorKoda {
                     if (currentFunction == null || !checkImplicitCast(expression.fullType, new FullType(currentFunction.type))) {
                         error(node);
                     }
+
+                    appendCode("POP R6");
+                    appendCode("RET");
+
                     return;
             }
         }
@@ -572,10 +679,12 @@ public class GeneratorKoda {
 
     private static void functionDefinition(Node node) {
         String functionName = null;
-        FunctionImplementation implementation = new FunctionImplementation();
         Type returnType = null;
         LinkedHashSet<Variable> parameters = new LinkedHashSet<>();
         FullType oldFunction = currentFunction;
+
+        currentFunc = new FunctionImplementation();
+        appendCode("MOVE SP, R5");
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<ime_tipa>":
@@ -586,8 +695,8 @@ public class GeneratorKoda {
                     break;
                 case "IDN":
                     functionName = child.elements.get(2);
-                    implementation.functionName = functionName;
-                    functionImplementations.put(functionName, implementation);
+                    currentFunc.functionName = functionName;
+                    functionImplementations.put(functionName, currentFunc);
                     break;
                 case "KR_VOID":
                     TypeExpression function = tables.getFirst().get(functionName);
@@ -605,7 +714,7 @@ public class GeneratorKoda {
                     break;
                 case "<lista_parametara>":
                     parameters = parameterList(child);
-                    implementation.setParameters(parameters);
+                    currentFunc.setParameters(parameters);
                     function = tables.getFirst().get(functionName);
                     definedFunction = new FullType(returnType, parameters.stream().map(Variable::getFullType).collect(Collectors.toList()));
                     if (function != null && (function.defined || !definedFunction.equals(function.fullType))) {
@@ -620,11 +729,12 @@ public class GeneratorKoda {
                     functionDeclarations.put(functionName, function);
                     break;
                 case "<slozena_naredba>":
-                    complexCommand(child, true, parameters, implementation);
+                    complexCommand(child, true, parameters, currentFunc);
                     currentFunction = oldFunction;
                     break;
             }
         }
+        currentFunc = null;
     }
 
     private static LinkedHashSet<Variable> parameterList(Node node) {
@@ -857,6 +967,8 @@ public class GeneratorKoda {
         // Tells whether function is defined
         boolean defined;
         boolean constCharArray;
+
+        String idnName;
 
         TypeExpression(FullType type, boolean lValue) {
             this.fullType = type;
