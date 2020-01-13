@@ -20,7 +20,7 @@ public class SprutEvaluator {
     private static final String JAVA_PARAMS1 = "-cp";
     private static final String JAVA_PARAMS2 = "target/classes";
     private static final int BUFFER_LENGTH = 1024;
-    private static final int MAX_TIMEOUT_MS = 15000;
+    private static final int MAX_TIMEOUT_MS = 5000;
 
     private static final String NODE_EXEC = "node";
     private static final String NODE_PARAM1 = "src/test/resources/friscjs/consoleapp/frisc-console.js";
@@ -135,14 +135,14 @@ public class SprutEvaluator {
         analyzer.getOutputStream().close();
 
         List<String> expected = Files.readAllLines(output);
-        List<String> stdout = readLinesFromInputStream(analyzer.getInputStream());
-        List<String> stderr = readLinesFromInputStream(analyzer.getErrorStream());
         analyzer.waitFor(MAX_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (analyzer.isAlive()) {
             print("Analyzer Time Limit Exceeded.\n");
             analyzer.destroy();
             return false;
         }
+        List<String> stdout = readLinesFromInputStream(analyzer.getInputStream());
+        List<String> stderr = readLinesFromInputStream(analyzer.getErrorStream());
         long analyzerEnd = System.nanoTime();
 
         boolean isExpected = expected.equals(stdout);
