@@ -378,29 +378,32 @@ public class GeneratorKoda {
     private static TypeExpression simpleExpression(Node node, String firstCase, String secondCase, Function<Node,
             TypeExpression> firstFunction, Function<Node, TypeExpression> secondFunction) {
         boolean seen = false;
+        boolean operation = node.children.size() == 3;
+
         for (Node child : node.children) {
             if (child.elements.get(0).equals(firstCase)) {
                 TypeExpression typeExpression = firstFunction.apply(child);
+
+                if (operation) {
+                    appendCode("POP R1");
+                    appendCode("POP R0");
+                    switch (node.children.get(1).elements.get(0)) {
+                        case "PLUS":
+                            appendCode("ADD R0, R1, R0");
+                            break;
+                        case "MINUS":
+                            appendCode("SUB R0, R1, R0");
+                            break;
+                    }
+                    appendCode("PUSH R0");
+                }
+
                 if (!seen) {
                     return typeExpression;
                 }
                 if (!checkIntCast(typeExpression.fullType)) {
                     error(node);
                 }
-
-                switch (firstCase) {
-                    case "PLUS":
-                        appendCode("POP R1");
-                        appendCode("POP R0");
-                        appendCode("ADD R0, R1, R0");
-                        appendCode("PUSH R0");
-                    case "MINUS":
-                        appendCode("POP R1");
-                        appendCode("POP R0");
-                        appendCode("SUB R0, R1, R0");
-                        appendCode("PUSH R0");
-                }
-
                 return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
             } else if (child.elements.get(0).equals(secondCase)) {
                 seen = true;
