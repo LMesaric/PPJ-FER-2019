@@ -175,7 +175,7 @@ public class GeneratorKoda {
                     if (checkChar(child.elements.get(2)) == null) {
                         error(node);
                     }
-                    appendCode("MOVE " + ((int) checkChar(child.elements.get(2))) + ", R0");
+                    appendCode("MOVE %D " + ((int) checkChar(child.elements.get(2))) + ", R0");
                     appendCode("PUSH R0");
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.CHAR)), false);
                 case "NIZ_ZNAKOVA":
