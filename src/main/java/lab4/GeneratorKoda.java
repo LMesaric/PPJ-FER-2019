@@ -131,7 +131,7 @@ public class GeneratorKoda {
         Variable var = currentFunc == null ? null : currentFunc.findVariable(variableName);
         if (var != null) {
             int offset = var.addressingOffset;
-            return "LOAD R0, (R5" + (offset >= 0 ? "+" : "-") + offset + ")";
+            return "LOAD R0, (R5" + (offset >= 0 ? "+" : "-") + " %D " + Math.abs(offset) + ")";
         } else {
             String globalLabel = globalVariableLabels.get(variableName);
             return "LOAD R0, (" + globalLabel + ")";
@@ -142,7 +142,7 @@ public class GeneratorKoda {
         Variable var = currentFunc == null ? null : currentFunc.findVariable(variableName);
         if (var != null) {
             int offset = var.addressingOffset;
-            return "STORE R0, (R5" + (offset >= 0 ? "+" : "-") + offset + ")";
+            return "STORE R0, (R5" + (offset >= 0 ? "+" : "-") + " %D " + Math.abs(offset) + ")";
         } else {
             String globalLabel = globalVariableLabels.get(variableName);
             return "STORE R0, (" + globalLabel + ")";
@@ -544,6 +544,7 @@ public class GeneratorKoda {
         }
         if (newBlock) {
             tables.removeFirst();
+            appendCode("ADD SP, %D " + currentFunc.getLastScope().size() * 4 + ", SP");
             currentFunc.removeLastScope();
         }
     }
@@ -670,6 +671,7 @@ public class GeneratorKoda {
                     }
 
                     appendCode("POP R6");
+                    appendCode("MOVE R5, SP");
                     appendCode("RET");
 
                     return;
@@ -856,6 +858,9 @@ public class GeneratorKoda {
                     Variable var = directDeclarator(child, type);
                     directDeclaratorType = var.fullType;
                     idn = var.name;
+
+                    if (currentFunc != null) appendCode("SUB SP, 4, SP");
+
                     break;
                 case "<inicijalizator>":
                     if (Objects.requireNonNull(directDeclaratorType).arguments != null) {

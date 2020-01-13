@@ -44,6 +44,10 @@ public class FunctionImplementation {
         localsScopeStack.push(variables.stream().collect(Collectors.toMap(var -> var.name, var -> var)));
     }
 
+    public Map<String, Variable> getLastScope() {
+        return localsScopeStack.peekLast();
+    }
+
     public void removeLastScope() {
         localsScopeStack.pop();
         currentOffset = lastOffsets.pop();
