@@ -24,6 +24,17 @@ public class FunctionImplementation {
         localsScopeStack.push(parameters);
     }
 
+    public void putNewVariable(Variable var) {
+        currentOffset -= 4;
+        var.addressingOffset = currentOffset;
+        localsScopeStack.peek().put(var.name, var);
+    }
+
+    public void putNewScope() {
+        lastOffsets.push(currentOffset);
+        localsScopeStack.push(new LinkedHashMap<>());
+    }
+
     public void putNewScope(Collection<Variable> variables) {
         lastOffsets.push(currentOffset);
         for (Variable var : variables) {
@@ -33,7 +44,7 @@ public class FunctionImplementation {
         localsScopeStack.push(variables.stream().collect(Collectors.toMap(var -> var.name, var -> var)));
     }
 
-    public void removeLastScope(Collection<Variable> variables) {
+    public void removeLastScope() {
         localsScopeStack.pop();
         currentOffset = lastOffsets.pop();
     }

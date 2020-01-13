@@ -41,6 +41,7 @@ public class GeneratorKoda {
         Node root = buildTree(inputText.split("\r?\n"));
         if (root != null) {
             BuilderUtil.appendLine(completeOutput, "MOVE 40000, R7");
+            BuilderUtil.appendLine(completeOutput, "CALL F_INIT_GLOBALS");
             BuilderUtil.appendLine(completeOutput, "CALL F_MAIN");
             BuilderUtil.appendLine(completeOutput, "HALT");
             allLabels.add("F_MAIN");
@@ -127,7 +128,7 @@ public class GeneratorKoda {
     }
 
     private static String variableToR0(String variableName) {
-        Variable var = currentFunc.findVariable(variableName);
+        Variable var = currentFunc == null ? null : currentFunc.findVariable(variableName);
         if (var != null) {
             int offset = var.addressingOffset;
             return "LOAD R0, (R5" + (offset >= 0 ? "+" : "-") + offset + ")";
@@ -138,7 +139,7 @@ public class GeneratorKoda {
     }
 
     private static String r0ToVariable(String variableName) {
-        Variable var = currentFunc.findVariable(variableName);
+        Variable var = currentFunc == null ? null : currentFunc.findVariable(variableName);
         if (var != null) {
             int offset = var.addressingOffset;
             return "STORE R0, (R5" + (offset >= 0 ? "+" : "-") + offset + ")";
@@ -506,6 +507,7 @@ public class GeneratorKoda {
                 boolean lValue = !p.fullType.array && p.fullType.arguments == null && !p.fullType.type.constant;
                 tables.getFirst().put(p.name, new TypeExpression(p.fullType, lValue));
             });
+            currentFunc.putNewScope();
         }
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
@@ -519,6 +521,7 @@ public class GeneratorKoda {
         }
         if (newBlock) {
             tables.removeFirst();
+            currentFunc.removeLastScope();
         }
     }
 
@@ -822,10 +825,13 @@ public class GeneratorKoda {
 
     private static void initDeclarator(Node node, Type type) {
         FullType directDeclaratorType = null;
+        String idn = null;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izravni_deklarator>":
-                    directDeclaratorType = directDeclarator(child, type).fullType;
+                    Variable var = directDeclarator(child, type);
+                    directDeclaratorType = var.fullType;
+                    idn = var.name;
                     break;
                 case "<inicijalizator>":
                     if (Objects.requireNonNull(directDeclaratorType).arguments != null) {
@@ -849,6 +855,10 @@ public class GeneratorKoda {
                             }
                         }
                     }
+
+                    appendCode("POP R0");
+                    appendCode(r0ToVariable(idn));
+
                     return;
             }
         }
@@ -911,6 +921,11 @@ public class GeneratorKoda {
         }
         if (tables.getFirst().put(name, new TypeExpression(fullType, lValue)) != null) {
             error(node);
+        }
+        Variable var = new Variable(name, fullType);
+        if (node.children.size() == 1) {
+            if (currentFunc != null) currentFunc.putNewVariable(var);
+            else globalVariableLabels.put(name, createNewConstant(0));
         }
         return new Variable(name, fullType);
     }
