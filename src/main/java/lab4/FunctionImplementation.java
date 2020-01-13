@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 public class FunctionImplementation {
 
     String functionName;
+    String functionLabel;
     Deque<Map<String, Variable>> localsScopeStack = new ArrayDeque<>();
     Deque<Integer> lastOffsets = new ArrayDeque<>();
     int currentOffset = 0;
@@ -35,6 +36,15 @@ public class FunctionImplementation {
     public void removeLastScope(Collection<Variable> variables) {
         localsScopeStack.pop();
         currentOffset = lastOffsets.pop();
+    }
+
+    public Variable findVariable(String variableName) {
+        Iterator<Map<String, Variable>> it = localsScopeStack.descendingIterator();
+        while (it.hasNext()) {
+            Map<String, Variable> scope = it.next();
+            if (scope.containsKey(variableName)) return scope.get(variableName);
+        }
+        return null;
     }
 
     public void addCommand(String command) {

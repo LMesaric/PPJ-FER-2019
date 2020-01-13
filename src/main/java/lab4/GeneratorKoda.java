@@ -28,6 +28,10 @@ public class GeneratorKoda {
 
     private static final Map<String, Integer> constants = new HashMap<>();
 
+    private static FunctionImplementation currentFunc;
+
+    private static Map<String, Variable> globalVariables = new HashMap<>();
+
 
 
     public static void main(String[] args) {
@@ -38,6 +42,11 @@ public class GeneratorKoda {
             BuilderUtil.appendLine(completeOutput, "CALL F_MAIN");
             BuilderUtil.appendLine(completeOutput, "HALT");
             allLabels.add("F_MAIN");
+
+            currentFunc = new FunctionImplementation();
+            currentFunc.functionName = "INIT_GLOBALS";
+            currentFunc.functionLabel = generateRandomLabel();
+            functionImplementations.put(currentFunc.functionName, currentFunc);
 
             tables.addFirst(new HashMap<>());
             compileUnit(root);
@@ -706,7 +715,7 @@ public class GeneratorKoda {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izravni_deklarator>":
-                    directDeclaratorType = directDeclarator(child, type);
+                    directDeclaratorType = directDeclarator(child, type).fullType;
                     break;
                 case "<inicijalizator>":
                     if (Objects.requireNonNull(directDeclaratorType).arguments != null) {
@@ -738,7 +747,7 @@ public class GeneratorKoda {
         }
     }
 
-    private static FullType directDeclarator(Node node, Type type) {
+    private static Variable directDeclarator(Node node, Type type) {
         String name = null;
         FullType fullType = new FullType(type);
         boolean lValue = !type.constant;
@@ -771,7 +780,7 @@ public class GeneratorKoda {
                     }
                     tables.getFirst().putIfAbsent(name, new TypeExpression(fullType, false));
                     functionDeclarations.putIfAbsent(name, new TypeExpression(fullType, false));
-                    return fullType;
+                    return new Variable(name, fullType);
                 case "<lista_parametara>":
                     fullType = new FullType(type, parameterList(child).stream().map(Variable::getFullType).collect(Collectors.toList()));
                     functionExpression = tables.getFirst().get(name);
@@ -784,7 +793,7 @@ public class GeneratorKoda {
                     }
                     tables.getFirst().putIfAbsent(name, new TypeExpression(fullType, false));
                     functionDeclarations.putIfAbsent(name, new TypeExpression(fullType, false));
-                    return fullType;
+                    return new Variable(name, fullType);
             }
         }
         if (type.primitiveType == PrimitiveType.VOID) {
@@ -793,7 +802,7 @@ public class GeneratorKoda {
         if (tables.getFirst().put(name, new TypeExpression(fullType, lValue)) != null) {
             error(node);
         }
-        return fullType;
+        return new Variable(name, fullType);
     }
 
     private static boolean checkFunction(String name, FullType function) {
