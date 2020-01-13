@@ -40,7 +40,7 @@ public class GeneratorKoda {
         String inputText = new String(readAllFromStdin(), StandardCharsets.UTF_8);
         Node root = buildTree(inputText.split("\r?\n"));
         if (root != null) {
-            BuilderUtil.appendLine(completeOutput, "MOVE 40000, R7");
+            BuilderUtil.appendLine(completeOutput, "MOVE 20000, R7");
             BuilderUtil.appendLine(completeOutput, "CALL F_INIT_GLOBALS");
             BuilderUtil.appendLine(completeOutput, "CALL F_MAIN");
             BuilderUtil.appendLine(completeOutput, "HALT");
@@ -209,16 +209,15 @@ public class GeneratorKoda {
                         error(node);
                     }
                     break;
+                case "L_ZAGRADA":
+                    currentFunc.commands.remove(currentFunc.commands.size() - 1);
+                    currentFunc.commands.remove(currentFunc.commands.size() - 1);
+                    appendCode("PUSH R5");
+                    break;
                 case "D_UGL_ZAGRADA":
                     if (!Objects.requireNonNull(typeExpression).fullType.array) {
                         error(node);
                     }
-                    String functionName = node.children.get(0).elements.get(0);
-                    String label = functionImplementations.get(functionName).functionLabel;
-                    appendCode("CALL " + label);
-                    int argumentsSize = (arguments == null) ? 0 : arguments.size();
-                    appendCode("ADD SP, %D " + 4*argumentsSize + ", SP");
-                    appendCode("PUSH R6");
                     return new TypeExpression(new FullType(typeExpression.fullType.type), !typeExpression.fullType.type.constant);
                 case "<lista_argumenata>":
                     if (Objects.requireNonNull(typeExpression).fullType.arguments == null) {
@@ -241,6 +240,15 @@ public class GeneratorKoda {
                     if (!typeExpression.fullType.arguments.isEmpty()) {
                         error(node);
                     }
+
+                    String functionName = node.children.get(0).children.get(0).children.get(0).elements.get(2);
+                    String label = "F_" + functionImplementations.get(functionName).functionName.toUpperCase();
+                    appendCode("CALL " + label);
+                    int argumentsSize = (arguments == null) ? 0 : arguments.size();
+                    appendCode("ADD SP, %D " + 4*argumentsSize + ", SP");
+                    appendCode("POP R5");
+                    appendCode("PUSH R6");
+
                     return new TypeExpression(new FullType(typeExpression.fullType.type), false);
                 case "OP_INC":
                 case "OP_DEC":
@@ -393,6 +401,15 @@ public class GeneratorKoda {
                             break;
                         case "MINUS":
                             appendCode("SUB R0, R1, R0");
+                            break;
+                        case "OP_BIN_I":
+                            appendCode("AND R0, R1, R0");
+                            break;
+                        case "OP_BIN_XILI":
+                            appendCode("XOR R0, R1, R0");
+                            break;
+                        case "OP_BIN_ILI":
+                            appendCode("OR R0, R1, R0");
                             break;
                     }
                     appendCode("PUSH R0");
@@ -690,6 +707,7 @@ public class GeneratorKoda {
         FullType oldFunction = currentFunction;
 
         currentFunc = new FunctionImplementation();
+        currentFunc.functionLabel = generateRandomLabel();
         appendCode("MOVE SP, R5");
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
