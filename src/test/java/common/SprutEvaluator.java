@@ -134,6 +134,8 @@ public class SprutEvaluator {
         if (!nodeAnalyzer) injectFileAsStdinToProcess(input, analyzer);
         analyzer.getOutputStream().close();
 
+        analyzer.getErrorStream().close();
+
         List<String> expected = Files.readAllLines(output);
         analyzer.waitFor(MAX_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (analyzer.isAlive()) {
@@ -142,7 +144,7 @@ public class SprutEvaluator {
             return false;
         }
         List<String> stdout = readLinesFromInputStream(analyzer.getInputStream());
-        List<String> stderr = readLinesFromInputStream(analyzer.getErrorStream());
+        //List<String> stderr = readLinesFromInputStream(analyzer.getErrorStream());
         long analyzerEnd = System.nanoTime();
 
         boolean isExpected = expected.equals(stdout);
@@ -152,7 +154,7 @@ public class SprutEvaluator {
             print("Generator time: %.3f s", getTimeInSeconds(generatorStart, generatorEnd));
         print("Analyzer time: %.3f s", getTimeInSeconds(analyzerStart, analyzerEnd));
         print("Analyzer stderr:");
-        stderr.forEach(s -> outputConsumer.accept("\t" + s));
+        //stderr.forEach(s -> outputConsumer.accept("\t" + s));
         if (!isExpected) {
             print("Expected:");
             expected.forEach(s -> outputConsumer.accept("\t" + s));
