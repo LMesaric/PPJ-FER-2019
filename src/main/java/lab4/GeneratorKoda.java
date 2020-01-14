@@ -50,6 +50,7 @@ public class GeneratorKoda {
             initGlobals.functionName = "INIT_GLOBALS";
             initGlobals.functionLabel = generateRandomLabel();
             functionImplementations.put(initGlobals.functionName, initGlobals);
+            initGlobals.addCommand("MOVE R0, R0", "F_INIT_GLOBALS");
 
             tables.addFirst(new HashMap<>());
             compileUnit(root);
@@ -59,12 +60,11 @@ public class GeneratorKoda {
             for (Map.Entry<String, FunctionImplementation> implementation : functionImplementations.entrySet()) {
                 List<String> commands = implementation.getValue().getCommands();
                 if (commands.isEmpty()) continue;
-                String functionLabel = "F_" + implementation.getKey().toUpperCase();
-                BuilderUtil.appendLine(completeOutput, commands.get(0), functionLabel);
-                for (int i = 1; i < commands.size(); i++) {
-                    BuilderUtil.appendLine(completeOutput, commands.get(i));
+                //String functionLabel = "F_" + implementation.getKey().toUpperCase();
+                for (int i = 0; i < commands.size(); i++) {
+                    completeOutput.append(commands.get(i)).append("\n");
                 }
-                BuilderUtil.appendLine(completeOutput, "");
+                completeOutput.append("\n");
             }
 
             TypeExpression main = tables.getFirst().get("main");
@@ -122,9 +122,13 @@ public class GeneratorKoda {
         return consts.toString();
     }
 
+    private static void appendCode(String code, String label) {
+        if (currentFunc != null) currentFunc.addCommand(code, label);
+        else initGlobals.addCommand(code, label);
+    }
+
     private static void appendCode(String code) {
-        if (currentFunc != null) currentFunc.addCommand(code);
-        else initGlobals.addCommand(code);
+        appendCode(code, null);
     }
 
     private static String variableToR0(String variableName) {
@@ -530,8 +534,8 @@ public class GeneratorKoda {
                 boolean lValue = !p.fullType.array && p.fullType.arguments == null && !p.fullType.type.constant;
                 tables.getFirst().put(p.name, new TypeExpression(p.fullType, lValue));
             });
-            currentFunc.putNewScope();
         }
+        currentFunc.putNewScope();
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<lista_deklaracija>":
@@ -545,8 +549,8 @@ public class GeneratorKoda {
         if (newBlock) {
             tables.removeFirst();
             appendCode("ADD SP, %D " + currentFunc.getLastScope().size() * 4 + ", SP");
-            currentFunc.removeLastScope();
         }
+        currentFunc.removeLastScope();
     }
 
     private static void commandList(Node node, FunctionImplementation implementation) {
@@ -594,19 +598,35 @@ public class GeneratorKoda {
     }
 
     private static void branchCommand(Node node, FunctionImplementation implementation) {
-        for (Node child : node.children) {
-            switch (child.elements.get(0)) {
-                case "<izraz>":
-                    if (!checkIntCast(expression(child).fullType)) {
-                        error(node);
-                    }
-                    break;
-                case "<naredba>":
-                    tables.addFirst(new HashMap<>());
-                    command(child, false, implementation);
-                    tables.removeFirst();
-                    break;
-            }
+        boolean hasElse = node.children.size() == 7;
+        String labelAfterIf = generateRandomLabel();
+        String labelAfterElse = null;
+
+        Node exprChild = node.child(2);
+        if (!checkIntCast(expression(exprChild).fullType)) error(node);
+
+        appendCode("POP R0");
+        appendCode("CMP R0, 0");
+        appendCode("JR_Z " + labelAfterIf);
+
+        Node commandNode1 = node.child(4);
+        tables.addFirst(new HashMap<>());
+        command(commandNode1, false, implementation);
+        tables.removeFirst();
+
+        if (hasElse) {
+            labelAfterElse = generateRandomLabel();
+            appendCode("JR " + labelAfterElse);
+            appendCode("MOVE R0, R0", labelAfterIf);
+
+            Node commandNode2 = node.child(6);
+            tables.addFirst(new HashMap<>());
+            command(commandNode2, false, implementation);
+            tables.removeFirst();
+
+            appendCode("MOVE R0, R0", labelAfterElse);
+        } else {
+            appendCode("MOVE R0, R0", labelAfterIf);
         }
     }
 
@@ -713,7 +733,6 @@ public class GeneratorKoda {
 
         currentFunc = new FunctionImplementation();
         currentFunc.functionLabel = generateRandomLabel();
-        appendCode("MOVE SP, R5");
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<ime_tipa>":
@@ -726,6 +745,7 @@ public class GeneratorKoda {
                     functionName = child.elements.get(2);
                     currentFunc.functionName = functionName;
                     functionImplementations.put(functionName, currentFunc);
+                    appendCode("MOVE SP, R5", "F_" + functionName.toUpperCase());
                     break;
                 case "KR_VOID":
                     TypeExpression function = tables.getFirst().get(functionName);
