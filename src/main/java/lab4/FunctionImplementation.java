@@ -63,7 +63,11 @@ public class FunctionImplementation {
     }
 
     public void addCommand(String command) {
-        commands.add(command);
+        addCommand(command, null);
+    }
+
+    public void addCommand(String command, String label) {
+        commands.add(BuilderUtil.buildLine(command, label));
     }
 
     public List<String> getCommands() {

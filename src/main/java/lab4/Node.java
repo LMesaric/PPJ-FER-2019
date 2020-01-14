@@ -22,6 +22,14 @@ class Node {
         this.children = Objects.requireNonNull(children);
     }
 
+    Node child(int index) {
+        return children.get(index);
+    }
+
+    String elem(int index) {
+        return elements.get(index);
+    }
+
     private Node addChildFirst(Node child) {
         children.add(0, Objects.requireNonNull(child));
         return child;
