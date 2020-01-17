@@ -10,6 +10,7 @@ public class FunctionImplementation {
     Deque<Map<String, Variable>> localsScopeStack = new ArrayDeque<>();
     Deque<Integer> lastOffsets = new ArrayDeque<>();
     int currentOffset = 0;
+    LoopGenerationContext loop = null;
 
     List<String> commands = new ArrayList<>();
 
@@ -60,6 +61,14 @@ public class FunctionImplementation {
             if (scope.containsKey(variableName)) return scope.get(variableName);
         }
         return null;
+    }
+
+    public void createLoop() {
+        loop = new LoopGenerationContext();
+    }
+
+    public void exitLoop() {
+        loop = null;
     }
 
     public void addCommand(String command) {
