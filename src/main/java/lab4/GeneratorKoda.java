@@ -414,29 +414,47 @@ public class GeneratorKoda {
 
                 boolean codeAdded = false;
                 if (operation) {
-                    appendCode("POP R1");
-                    appendCode("POP R0");
-                    switch (node.children.get(1).elements.get(0)) {
-                        case "PLUS":
-                            appendCode("ADD R0, R1, R0");
-                            codeAdded = true;
-                            break;
-                        case "MINUS":
-                            appendCode("SUB R0, R1, R0");
-                            codeAdded = true;
-                            break;
-                        case "OP_BIN_I":
-                            appendCode("AND R0, R1, R0");
-                            codeAdded = true;
-                            break;
-                        case "OP_BIN_XILI":
-                            appendCode("XOR R0, R1, R0");
-                            codeAdded = true;
-                            break;
-                        case "OP_BIN_ILI":
-                            appendCode("OR R0, R1, R0");
-                            codeAdded = true;
-                            break;
+                    if (Arrays.asList("OP_PUTA", "OP_DIJELI", "OP_MOD").contains(node.child(1).elem(0))) {
+                        codeAdded = true;
+                        switch (node.child(1).elem(0)) {
+                            case "OP_PUTA":
+                                appendCode("CALL O_MUL");
+                                break;
+                            case "OP_DIJELI":
+                                appendCode("CALL O_DIV");
+                                break;
+                            case "OP_MOD":
+                                appendCode("CALL O_MOD");
+                                break;
+                        }
+                        appendCode("ADD SP, %D 8, SP");
+                        appendCode("MOVE R6, R0");
+                    }
+                    if (!codeAdded) {
+                        appendCode("POP R1");
+                        appendCode("POP R0");
+                        switch (node.children.get(1).elements.get(0)) {
+                            case "PLUS":
+                                appendCode("ADD R0, R1, R0");
+                                codeAdded = true;
+                                break;
+                            case "MINUS":
+                                appendCode("SUB R0, R1, R0");
+                                codeAdded = true;
+                                break;
+                            case "OP_BIN_I":
+                                appendCode("AND R0, R1, R0");
+                                codeAdded = true;
+                                break;
+                            case "OP_BIN_XILI":
+                                appendCode("XOR R0, R1, R0");
+                                codeAdded = true;
+                                break;
+                            case "OP_BIN_ILI":
+                                appendCode("OR R0, R1, R0");
+                                codeAdded = true;
+                                break;
+                        }
                     }
                     if (!codeAdded) {
                         String randomLabel = generateRandomLabel();
