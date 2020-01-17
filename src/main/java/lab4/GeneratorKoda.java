@@ -553,7 +553,7 @@ public class GeneratorKoda {
     }
 
     private static TypeExpression binaryAndExpression(Node node) {
-        return simpleExpression(node, "<jednakosni_izraz>", "<bin i izraz>", GeneratorKoda::equationalExpression, GeneratorKoda::binaryAndExpression);
+        return simpleExpression(node, "<jednakosni_izraz>", "<bin_i_izraz>", GeneratorKoda::equationalExpression, GeneratorKoda::binaryAndExpression);
     }
 
     private static TypeExpression binaryXorExpression(Node node) {
