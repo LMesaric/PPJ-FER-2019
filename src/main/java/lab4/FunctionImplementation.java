@@ -10,7 +10,7 @@ public class FunctionImplementation {
     Deque<Map<String, Variable>> localsScopeStack = new ArrayDeque<>();
     Deque<Integer> lastOffsets = new ArrayDeque<>();
     int currentOffset = 0;
-    LoopGenerationContext loop = null;
+    Deque<LoopGenerationContext> loops = new ArrayDeque<>();
 
     List<String> commands = new ArrayList<>();
 
@@ -64,11 +64,15 @@ public class FunctionImplementation {
     }
 
     public void createLoop() {
-        loop = new LoopGenerationContext();
+        loops.push(new LoopGenerationContext());
     }
 
     public void exitLoop() {
-        loop = null;
+        loops.pop();
+    }
+
+    public LoopGenerationContext lastLoop() {
+        return loops.peek();
     }
 
     public void addCommand(String command) {
@@ -82,6 +86,5 @@ public class FunctionImplementation {
     public List<String> getCommands() {
         return commands;
     }
-
 
 }

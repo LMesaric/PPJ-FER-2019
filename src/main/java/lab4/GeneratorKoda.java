@@ -12,8 +12,6 @@ public class GeneratorKoda {
 
     private static FullType currentFunction;
 
-    private static boolean loop;
-
     private static boolean functionError;
 
     private static final Deque<Map<String, TypeExpression>> tables = new ArrayDeque<>();
@@ -646,34 +644,54 @@ public class GeneratorKoda {
     }
 
     private static void loopCommand(Node node, FunctionImplementation implementation) {
-        boolean seen = false;
-        for (Node child : node.children) {
-            switch (child.elements.get(0)) {
-                case "<izraz>":
-                    TypeExpression expression = expression(child);
-                    if (!seen) {
-                        checkIntCast(expression.fullType);
-                        tables.addFirst(new HashMap<>());
-                    }
-                    break;
-                case "<naredba>":
-                    boolean old = loop;
-                    loop = true;
-                    command(child, false, implementation);
-                    loop = old;
-                    break;
-                case "<izraz_naredba>":
-                    if (!seen) {
-                        tables.addFirst(new HashMap<>());
-                    }
-                    FullType expressionCommand = expressionCommand(child, implementation);
-                    if (seen && !checkIntCast(expressionCommand)) {
-                        error(node);
-                    }
-                    seen = true;
-                    break;
-            }
+        boolean isFor = node.child(0).elem(0).equals("KR_FOR");
+        boolean isCompleteFor = node.children.size() == 7;
+        String conditionCheckLabel = generateRandomLabel();
+        String afterContinueLabel = generateRandomLabel();
+        String afterLoopLabel = generateRandomLabel();
+
+        currentFunc.createLoop();
+        currentFunc.lastLoop().conditionCheckLabel = conditionCheckLabel;
+        currentFunc.lastLoop().afterContinueLabel = afterContinueLabel;
+        currentFunc.lastLoop().afterLoopLabel = afterLoopLabel;
+
+        // FOR loop init
+        if (isFor) {
+            tables.addFirst(new HashMap<>());
+            expressionCommand(node.child(2), implementation);
         }
+
+        // Condition check
+        appendCode("MOVE R0, R0", conditionCheckLabel);
+        if (isFor) {
+            FullType expressionCommand = expressionCommand(node.child(3), implementation);
+            if (!checkIntCast(expressionCommand)) {
+                error(node);
+            }
+        } else {
+            TypeExpression expression = expression(node.child(2));
+            checkIntCast(expression.fullType);
+            tables.addFirst(new HashMap<>());
+        }
+        appendCode("POP R0");
+        appendCode("CMP R0, 0");
+        appendCode("JR_Z " + afterLoopLabel);
+
+        // Actual code
+        command(node.child(node.children.size() - 1), false, implementation);
+        // TODO: solve memory leak
+
+        // FOR loop increment part
+        appendCode("MOVE R0, R0", afterContinueLabel);
+        if (isCompleteFor) {
+            expression(node.child(4));
+        }
+        appendCode("JR " + conditionCheckLabel);
+
+        // loop end
+        appendCode("MOVE R0, R0", afterLoopLabel);
+        currentFunc.exitLoop();
+
         tables.removeFirst();
     }
 
@@ -681,15 +699,25 @@ public class GeneratorKoda {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "KR_CONTINUE":
-                case "KR_BREAK":
-                    if (!loop) {
+                    if (currentFunc.lastLoop() == null) {
                         error(node);
                     }
+                    appendCode("JR " + currentFunc.lastLoop().afterContinueLabel);
+                    return;
+                case "KR_BREAK":
+                    if (currentFunc.lastLoop() == null) {
+                        error(node);
+                    }
+                    appendCode("JR " + currentFunc.lastLoop().afterLoopLabel);
                     return;
                 case "TOCKAZAREZ":
                     if (currentFunction == null || currentFunction.type.primitiveType != PrimitiveType.VOID) {
                         error(node);
                     }
+
+                    appendCode("MOVE R5, SP");
+                    appendCode("RET");
+
                     break;
                 case "<izraz>":
                     TypeExpression expression = expression(child);
