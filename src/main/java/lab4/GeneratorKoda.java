@@ -263,7 +263,7 @@ public class GeneratorKoda {
                         error(node);
                     }
                     // TODO: implement for arrays
-                    String idn = node.children.get(0).elements.get(2);
+                    String idn = node.child(0).child(0).child(0).elem(2);
                     appendCode(variableToR0(idn));
                     if (child.elements.get(0).equals("OP_INC")) appendCode("ADD R0, 1, R0");
                     else if (child.elements.get(0).equals("OP_DEC")) appendCode("SUB R0, 1, R0");
@@ -312,7 +312,7 @@ public class GeneratorKoda {
                     }
 
                     appendCode("POP R0");
-                    String idn = node.children.get(1).children.get(0).elements.get(2);
+                    String idn = node.child(1).child(0).child(0).child(0).elem(2);
                     appendCode(variableToR0(idn));
                     if (node.children.get(0).elements.get(0).equals("OP_INC")) appendCode("ADD R0, 1, R0");
                     else if (node.children.get(0).elements.get(0).equals("OP_DEC")) appendCode("SUB R0, 1, R0");
