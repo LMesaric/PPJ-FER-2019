@@ -38,7 +38,7 @@ public class GeneratorKoda {
         String inputText = new String(readAllFromStdin(), StandardCharsets.UTF_8);
         Node root = buildTree(inputText.split("\r?\n"));
         if (root != null) {
-            BuilderUtil.appendLine(completeOutput, "MOVE 20000, R7");
+            BuilderUtil.appendLine(completeOutput, "MOVE 40000, R7");
             BuilderUtil.appendLine(completeOutput, "CALL F_INIT_GLOBALS");
             BuilderUtil.appendLine(completeOutput, "CALL F_MAIN");
             BuilderUtil.appendLine(completeOutput, "HALT");
