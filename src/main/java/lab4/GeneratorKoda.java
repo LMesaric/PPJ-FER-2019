@@ -337,10 +337,19 @@ public class GeneratorKoda {
                             appendCode("PUSH R0");
                             break;
                         case "OP_TILDA":
-                            //TODO: implement
+                            appendCode("POP R0");
+                            appendCode("XOR R0, -1, R0");
+                            appendCode("PUSH R0");
                             break;
                         case "OP_NEG":
-                            // TODO: implement
+                            String label = generateRandomLabel();
+                            appendCode("POP R0");
+                            appendCode("MOVE 1, R1");
+                            appendCode("CMP R0, 0");
+                            appendCode("JR_EQ " + label);
+                            appendCode("MOVE 0, R1");
+                            appendCode("PUSH R1", label);
+                            appendCode("MOVE R1, R0");
                             break;
                     }
 
