@@ -8,9 +8,12 @@ import java.util.Objects;
 @SuppressWarnings("Duplicates")
 class Node {
 
-    private final Node parent;
+    final Node parent;
     final List<String> elements;
     final List<Node> children;
+
+    // Derived and inherited properties
+    String pendingSkipEvaluationLabel;
 
     Node(String text, Node parent) {
         this(text, parent, new ArrayList<>());

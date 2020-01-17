@@ -392,6 +392,9 @@ public class GeneratorKoda {
             TypeExpression> firstFunction, Function<Node, TypeExpression> secondFunction) {
         boolean seen = false;
         boolean operation = node.children.size() == 3;
+        boolean notEvaluatingRight = operation &&
+                (node.children.get(1).elements.get(0).equals("OP_I")
+                        || node.children.get(1).elements.get(0).equals("OP_ILI"));
 
         for (Node child : node.children) {
             if (child.elements.get(0).equals(firstCase)) {
@@ -473,6 +476,15 @@ public class GeneratorKoda {
                 if (!checkIntCast(secondFunction.apply(child).fullType)) {
                     error(node);
                 }
+
+                if (operation && notEvaluatingRight) {
+                    Node tmp = node.parent;
+                    while (!tmp.elem(0).equals("<izraz_pridruzivanja>")) tmp = tmp.parent;
+                    tmp.pendingSkipEvaluationLabel = generateRandomLabel();
+                    appendCode("CMP R0, 0");
+                    String jumpOp = node.child(1).elem(0).equals("OP_I") ? "Z" : "NZ";
+                    appendCode("JR_" + jumpOp + " " + tmp.pendingSkipEvaluationLabel);
+                }
             }
         }
         throw new IllegalStateException();
@@ -520,7 +532,10 @@ public class GeneratorKoda {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<log_ili_izraz>":
-                    return logOrExpression(child);
+                    TypeExpression ret = logOrExpression(child);
+                    if (node.pendingSkipEvaluationLabel != null) appendCode("MOVE R0, R0", node.pendingSkipEvaluationLabel);
+                    node.pendingSkipEvaluationLabel = null;
+                    return ret;
                 case "<postfiks_izraz>":
                     postfixExpression = postfixExpression(child);
                     if (!postfixExpression.lExpression) {
