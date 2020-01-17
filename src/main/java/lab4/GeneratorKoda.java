@@ -397,40 +397,66 @@ public class GeneratorKoda {
             if (child.elements.get(0).equals(firstCase)) {
                 TypeExpression typeExpression = firstFunction.apply(child);
 
+                boolean codeAdded = false;
                 if (operation) {
                     appendCode("POP R1");
                     appendCode("POP R0");
                     switch (node.children.get(1).elements.get(0)) {
                         case "PLUS":
                             appendCode("ADD R0, R1, R0");
+                            codeAdded = true;
                             break;
                         case "MINUS":
                             appendCode("SUB R0, R1, R0");
+                            codeAdded = true;
                             break;
                         case "OP_BIN_I":
                             appendCode("AND R0, R1, R0");
+                            codeAdded = true;
                             break;
                         case "OP_BIN_XILI":
                             appendCode("XOR R0, R1, R0");
+                            codeAdded = true;
                             break;
                         case "OP_BIN_ILI":
                             appendCode("OR R0, R1, R0");
+                            codeAdded = true;
                             break;
-                        case "OP_EQ":
-                            appendCode("XOR R0, R1, R0");
-                            break;
-                        case "OP_NEQ":
-                            appendCode("XOR R0, R1, R0");
-                            appendCode("AND R0, 1, R0");
-                            break;
-                        case "OP_LT":
-                            break;
-                        case "OP_LTE":
-                            break;
-                        case "OP_GT":
-                            break;
-                        case "OP_GTE":
-                            break;
+                    }
+                    if (!codeAdded) {
+                        String randomLabel = generateRandomLabel();
+                        appendCode("MOVE 1, R2");
+                        appendCode("CMP R0, R1");
+                        switch (node.child(1).elem(0)) {
+                            case "OP_EQ":
+                                appendCode("JR_EQ " + randomLabel);
+                                break;
+                            case "OP_NEQ":
+                                appendCode("JR_NEQ " + randomLabel);
+                                break;
+                            case "OP_LT":
+                                appendCode("JR_SLT " + randomLabel);
+                                break;
+                            case "OP_LTE":
+                                appendCode("JR_SLE " + randomLabel);
+                                break;
+                            case "OP_GT":
+                                appendCode("JR_SGT " + randomLabel);
+                                break;
+                            case "OP_GTE":
+                                appendCode("JR_SGE " + randomLabel);
+                                break;
+                            case "OP_I":
+                                appendCode("AND R0, R1, R0");
+                                appendCode("JR_NZ " + randomLabel);
+                                break;
+                            case "OP_ILI":
+                                appendCode("OR R0, R1, R0");
+                                appendCode("JR_NZ " + randomLabel);
+                                break;
+                        }
+                        appendCode("MOVE 0, R2");
+                        appendCode("MOVE R2, R0", randomLabel);
                     }
                     appendCode("PUSH R0");
                 }
