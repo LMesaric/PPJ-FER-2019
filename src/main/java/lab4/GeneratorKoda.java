@@ -364,6 +364,13 @@ public class GeneratorKoda {
                     if (!checkExplicitCast(Objects.requireNonNull(typeExpression).fullType, castExpression(child).fullType)) {
                         error(node);
                     }
+
+                    if (typeExpression.fullType.type.primitiveType == PrimitiveType.CHAR) {
+                        appendCode("POP R0");
+                        appendCode("AND R0, 0FF, R0");
+                        appendCode("PUSH R0");
+                    }
+
                     return typeExpression;
             }
         }
