@@ -44,6 +44,18 @@ public class GeneratorKoda {
             BuilderUtil.appendLine(completeOutput, "HALT");
             allLabels.add("F_MAIN");
 
+            FunctionImplementation mul = MathUtil.generateMultiplicationImplementation();
+            mul.functionLabel = generateRandomLabel();
+            functionImplementations.put(mul.functionName, mul);
+
+            FunctionImplementation div = MathUtil.generateDivisionImplementation();
+            div.functionLabel = generateRandomLabel();
+            functionImplementations.put(div.functionName, div);
+
+            FunctionImplementation mod = MathUtil.generateModuloImplementation();
+            mod.functionLabel = generateRandomLabel();
+            functionImplementations.put(mod.functionName, mod);
+
             initGlobals = new FunctionImplementation();
             initGlobals.functionName = "INIT_GLOBALS";
             initGlobals.functionLabel = generateRandomLabel();
