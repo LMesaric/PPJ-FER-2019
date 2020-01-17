@@ -418,6 +418,21 @@ public class GeneratorKoda {
                         case "OP_BIN_ILI":
                             appendCode("OR R0, R1, R0");
                             break;
+                        case "OP_EQ":
+                            appendCode("XOR R0, R1, R0");
+                            break;
+                        case "OP_NEQ":
+                            appendCode("XOR R0, R1, R0");
+                            appendCode("AND R0, 1, R0");
+                            break;
+                        case "OP_LT":
+                            break;
+                        case "OP_LTE":
+                            break;
+                        case "OP_GT":
+                            break;
+                        case "OP_GTE":
+                            break;
                     }
                     appendCode("PUSH R0");
                 }
@@ -663,14 +678,6 @@ public class GeneratorKoda {
     }
 
     private static void jumpCommand(Node node, FunctionImplementation implementation) {
-//        if (node.children.get(0).elements.get(0).equals("KR_RETURN")) {
-//            Node tmp = node.children.get(1);
-//            while (!tmp.children.isEmpty()) tmp = tmp.children.get(0);
-//            int number = Integer.parseInt(tmp.elements.get(2));
-//            String constant = createNewConstant(number);
-//            implementation.addCommand("LOAD R6, (" + constant + ")");
-//            implementation.addCommand("RET");
-//        }
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "KR_CONTINUE":
