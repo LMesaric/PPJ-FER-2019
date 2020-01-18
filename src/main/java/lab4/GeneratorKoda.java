@@ -651,8 +651,8 @@ public class GeneratorKoda {
         }
         if (newBlock) {
             tables.removeFirst();
-            appendCode("ADD SP, %D " + currentFunc.getLastScope().size() * 4 + ", SP");
         }
+        appendCode("ADD SP, %D " + currentFunc.getLastScopeMemSize() + ", SP");
         currentFunc.removeLastScope();
     }
 
@@ -769,7 +769,6 @@ public class GeneratorKoda {
 
         // Actual code
         command(node.child(node.children.size() - 1), false, implementation);
-        // TODO: solve memory leak
 
         // FOR loop increment part
         appendCode("MOVE R0, R0", afterContinueLabel);
@@ -792,12 +791,15 @@ public class GeneratorKoda {
                     if (currentFunc.lastLoop() == null) {
                         error(node);
                     }
+                    // TODO: check if memory leak is solved
+                    appendCode("ADD SP, %D " + currentFunc.getLastScopeMemSize() + ", SP");
                     appendCode("JR " + currentFunc.lastLoop().afterContinueLabel);
                     return;
                 case "KR_BREAK":
                     if (currentFunc.lastLoop() == null) {
                         error(node);
                     }
+                    appendCode("ADD SP, %D " + currentFunc.getLastScopeMemSize() + ", SP");
                     appendCode("JR " + currentFunc.lastLoop().afterLoopLabel);
                     return;
                 case "TOCKAZAREZ":

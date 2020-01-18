@@ -49,6 +49,11 @@ public class FunctionContext {
         return localsScopeStack.peekLast();
     }
 
+    public int getLastScopeMemSize() {
+        if (localsScopeStack.peekLast() == null) return 0;
+        return localsScopeStack.peekLast().values().stream().mapToInt(v -> v.memSize).sum();
+    }
+
     public void removeLastScope() {
         localsScopeStack.pop();
         currentOffset = lastOffsets.pop();
@@ -72,7 +77,7 @@ public class FunctionContext {
     }
 
     public LoopGenerationContext lastLoop() {
-        return loops.peek();
+        return loops.peekLast();
     }
 
     public void addCommand(String command) {

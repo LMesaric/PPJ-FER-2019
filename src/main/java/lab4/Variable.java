@@ -7,6 +7,7 @@ public class Variable {
     FullType fullType;
 
     int addressingOffset;
+    int memSize = 4;
 
 
     Variable(String name, FullType fullType) {
