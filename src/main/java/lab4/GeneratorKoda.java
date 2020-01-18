@@ -132,6 +132,12 @@ public class GeneratorKoda {
         return consts.toString();
     }
 
+    private static Node findParentWithName(Node node, String name) {
+        Node tmp = node.parent;
+        while (!tmp.elem(0).equals(name)) tmp = tmp.parent;
+        return tmp;
+    }
+
     private static void appendCode(String code, String label) {
         if (currentFunc != null) currentFunc.addCommand(code, label);
         else initGlobals.addCommand(code, label);
@@ -420,9 +426,7 @@ public class GeneratorKoda {
             TypeExpression> firstFunction, Function<Node, TypeExpression> secondFunction) {
         boolean seen = false;
         boolean operation = node.children.size() == 3;
-        boolean notEvaluatingRight = operation &&
-                (node.children.get(1).elements.get(0).equals("OP_I")
-                        || node.children.get(1).elements.get(0).equals("OP_ILI"));
+        boolean notEvaluatingRight = operation && Arrays.asList("OP_I", "OP_ILI").contains(node.child(1).elem(0));
 
         for (Node child : node.children) {
             if (child.elements.get(0).equals(firstCase)) {
@@ -524,8 +528,7 @@ public class GeneratorKoda {
                 }
 
                 if (operation && notEvaluatingRight) {
-                    Node tmp = node.parent;
-                    while (!tmp.elem(0).equals("<izraz_pridruzivanja>")) tmp = tmp.parent;
+                    Node tmp = findParentWithName(node, "<izraz_pridruzivanja>");
                     tmp.pendingSkipEvaluationLabel = generateRandomLabel();
                     appendCode("CMP R0, 0");
                     String jumpOp = node.child(1).elem(0).equals("OP_I") ? "Z" : "NZ";
