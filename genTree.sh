@@ -13,6 +13,7 @@ cd "${0%/*}"
 
 run='java -cp target/classes'
 base='src/main/resources'
+node='node src/test/resources/friscjs/consoleapp/frisc-console.js'
 
 # lexer definitions
 cat $base/ppjC.lan | $run lab1.GLA && \
@@ -21,4 +22,8 @@ cat $base/ppjC.lan | $run lab1.GLA && \
   # syntax definitions
   cat $base/ppjC.san | $run lab2.GSA) | \
   # syntax parsing
-  $run lab2.analizator.SA
+  $run lab2.analizator.SA | \
+  # generate FRISC code in a.frisc
+  $run lab4.GeneratorKoda && \
+  # execute the code
+  $node src/main/java/lab4/a.frisc
