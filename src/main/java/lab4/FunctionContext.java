@@ -3,7 +3,7 @@ package lab4;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FunctionImplementation {
+public class FunctionContext {
 
     String functionName;
     String functionLabel;

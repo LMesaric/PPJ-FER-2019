@@ -2,8 +2,8 @@ package lab4;
 
 class MathUtil {
 
-    static FunctionImplementation generateMultiplicationImplementation() {
-        FunctionImplementation impl = new FunctionImplementation();
+    static FunctionContext generateMultiplicationImplementation() {
+        FunctionContext impl = new FunctionContext();
         impl.functionName = "O_MUL";
 
         // R0 * R1 -> R6
@@ -36,8 +36,8 @@ class MathUtil {
         return impl;
     }
 
-    static FunctionImplementation generateDivisionImplementation() {
-        FunctionImplementation impl = new FunctionImplementation();
+    static FunctionContext generateDivisionImplementation() {
+        FunctionContext impl = new FunctionContext();
         impl.functionName = "O_DIV";
 
         // R0 / R1 -> R6
@@ -78,8 +78,8 @@ class MathUtil {
         return impl;
     }
 
-    static FunctionImplementation generateModuloImplementation() {
-        FunctionImplementation impl = new FunctionImplementation();
+    static FunctionContext generateModuloImplementation() {
+        FunctionContext impl = new FunctionContext();
         impl.functionName = "O_MOD";
 
         // R6 % R1 -> R6 (R6 >= 0, R1 > 0)

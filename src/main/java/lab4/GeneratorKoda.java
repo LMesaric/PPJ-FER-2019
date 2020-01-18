@@ -18,7 +18,7 @@ public class GeneratorKoda {
 
     private static final Map<String, TypeExpression> functionDeclarations = new HashMap<>();
 
-    private static final Map<String, FunctionImplementation> functionImplementations = new HashMap<>();
+    private static final Map<String, FunctionContext> functionImplementations = new HashMap<>();
 
     private static final Set<String> allLabels = new HashSet<>();
 
@@ -26,9 +26,9 @@ public class GeneratorKoda {
 
     private static final Map<String, Integer> constants = new HashMap<>();
 
-    private static FunctionImplementation initGlobals;
+    private static FunctionContext initGlobals;
 
-    private static FunctionImplementation currentFunc = null;
+    private static FunctionContext currentFunc = null;
 
     private static Map<String, String> globalVariableLabels = new HashMap<>();
 
@@ -44,19 +44,19 @@ public class GeneratorKoda {
             BuilderUtil.appendLine(completeOutput, "HALT");
             allLabels.add("F_MAIN");
 
-            FunctionImplementation mul = MathUtil.generateMultiplicationImplementation();
+            FunctionContext mul = MathUtil.generateMultiplicationImplementation();
             mul.functionLabel = generateRandomLabel();
             functionImplementations.put(mul.functionName, mul);
 
-            FunctionImplementation div = MathUtil.generateDivisionImplementation();
+            FunctionContext div = MathUtil.generateDivisionImplementation();
             div.functionLabel = generateRandomLabel();
             functionImplementations.put(div.functionName, div);
 
-            FunctionImplementation mod = MathUtil.generateModuloImplementation();
+            FunctionContext mod = MathUtil.generateModuloImplementation();
             mod.functionLabel = generateRandomLabel();
             functionImplementations.put(mod.functionName, mod);
 
-            initGlobals = new FunctionImplementation();
+            initGlobals = new FunctionContext();
             initGlobals.functionName = "INIT_GLOBALS";
             initGlobals.functionLabel = generateRandomLabel();
             functionImplementations.put(initGlobals.functionName, initGlobals);
@@ -67,7 +67,7 @@ public class GeneratorKoda {
 
             initGlobals.addCommand("RET");
 
-            for (Map.Entry<String, FunctionImplementation> implementation : functionImplementations.entrySet()) {
+            for (Map.Entry<String, FunctionContext> implementation : functionImplementations.entrySet()) {
                 List<String> commands = implementation.getValue().getCommands();
                 if (commands.isEmpty()) continue;
                 //String functionLabel = "F_" + implementation.getKey().toUpperCase();
@@ -630,7 +630,7 @@ public class GeneratorKoda {
         throw new IllegalStateException();
     }
 
-    private static void complexCommand(Node node, boolean newBlock, LinkedHashSet<Variable> parameters, FunctionImplementation implementation) {
+    private static void complexCommand(Node node, boolean newBlock, LinkedHashSet<Variable> parameters, FunctionContext implementation) {
         if (newBlock) {
             tables.addFirst(new HashMap<>());
             parameters.forEach(p -> {
@@ -656,7 +656,7 @@ public class GeneratorKoda {
         currentFunc.removeLastScope();
     }
 
-    private static void commandList(Node node, FunctionImplementation implementation) {
+    private static void commandList(Node node, FunctionContext implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<lista_naredbi>":
@@ -669,7 +669,7 @@ public class GeneratorKoda {
         }
     }
 
-    private static void command(Node node, boolean newBlock, FunctionImplementation implementation) {
+    private static void command(Node node, boolean newBlock, FunctionContext implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<slozena_naredba>":
@@ -691,7 +691,7 @@ public class GeneratorKoda {
         }
     }
 
-    private static FullType expressionCommand(Node node, FunctionImplementation implementation) {
+    private static FullType expressionCommand(Node node, FunctionContext implementation) {
         for (Node child : node.children) {
             if ("<izraz>".equals(child.elements.get(0))) {
                 return expression(child).fullType;
@@ -700,7 +700,7 @@ public class GeneratorKoda {
         return new FullType(new Type(false, PrimitiveType.INT));
     }
 
-    private static void branchCommand(Node node, FunctionImplementation implementation) {
+    private static void branchCommand(Node node, FunctionContext implementation) {
         boolean hasElse = node.children.size() == 7;
         String labelAfterIf = generateRandomLabel();
         String labelAfterElse = null;
@@ -733,7 +733,7 @@ public class GeneratorKoda {
         }
     }
 
-    private static void loopCommand(Node node, FunctionImplementation implementation) {
+    private static void loopCommand(Node node, FunctionContext implementation) {
         boolean isFor = node.child(0).elem(0).equals("KR_FOR");
         boolean isCompleteFor = node.children.size() == 7;
         String conditionCheckLabel = generateRandomLabel();
@@ -785,7 +785,7 @@ public class GeneratorKoda {
         tables.removeFirst();
     }
 
-    private static void jumpCommand(Node node, FunctionImplementation implementation) {
+    private static void jumpCommand(Node node, FunctionContext implementation) {
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "KR_CONTINUE":
@@ -856,7 +856,7 @@ public class GeneratorKoda {
         LinkedHashSet<Variable> parameters = new LinkedHashSet<>();
         FullType oldFunction = currentFunction;
 
-        currentFunc = new FunctionImplementation();
+        currentFunc = new FunctionContext();
         currentFunc.functionLabel = generateRandomLabel();
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
