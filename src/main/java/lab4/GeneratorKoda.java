@@ -639,6 +639,9 @@ public class GeneratorKoda {
             });
         }
         currentFunc.putNewScope();
+
+        if (currentFunc.lastLoop() != null) currentFunc.lastLoop().hasComplexCommand = true;
+
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<lista_deklaracija>":
@@ -792,14 +795,18 @@ public class GeneratorKoda {
                         error(node);
                     }
                     // TODO: check if memory leak is solved
-                    appendCode("ADD SP, %D " + currentFunc.getLastScopeMemSize() + ", SP");
+                    if (currentFunc.lastLoop().hasComplexCommand) {
+                        appendCode("ADD SP, %D " + currentFunc.getLastScopeMemSize() + ", SP");
+                    }
                     appendCode("JR " + currentFunc.lastLoop().afterContinueLabel);
                     return;
                 case "KR_BREAK":
                     if (currentFunc.lastLoop() == null) {
                         error(node);
                     }
-                    appendCode("ADD SP, %D " + currentFunc.getLastScopeMemSize() + ", SP");
+                    if (currentFunc.lastLoop().hasComplexCommand) {
+                        appendCode("ADD SP, %D " + currentFunc.getLastScopeMemSize() + ", SP");
+                    }
                     appendCode("JR " + currentFunc.lastLoop().afterLoopLabel);
                     return;
                 case "TOCKAZAREZ":
