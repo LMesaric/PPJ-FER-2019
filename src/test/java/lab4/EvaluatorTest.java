@@ -14,7 +14,7 @@ class EvaluatorTest {
     @Test
     void test() throws IOException, InterruptedException {
         SprutEvaluator sprut = new SprutEvaluator(TESTCASES_DIR, GENERATOR_CLASS,
-                ".*\\.in", ".*\\.out", str -> {});
+                ".*\\.in", ".*\\.out", System.out::println);
         Assertions.assertTrue(sprut.evaluateAll());
     }
 
