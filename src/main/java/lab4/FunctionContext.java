@@ -9,7 +9,7 @@ public class FunctionContext {
     String functionLabel;
     Deque<Map<String, Variable>> localsScopeStack = new ArrayDeque<>();
     Deque<Integer> lastOffsets = new ArrayDeque<>();
-    int currentOffset = 0;
+    int currentOffset = -4;
     Deque<LoopGenerationContext> loops = new ArrayDeque<>();
 
     List<String> commands = new ArrayList<>();
@@ -26,8 +26,8 @@ public class FunctionContext {
     }
 
     public void putNewVariable(Variable var) {
-        currentOffset -= 4;
         var.addressingOffset = currentOffset;
+        currentOffset -= var.memSize;
         localsScopeStack.peek().put(var.name, var);
     }
 
@@ -36,14 +36,14 @@ public class FunctionContext {
         localsScopeStack.push(new LinkedHashMap<>());
     }
 
-    public void putNewScope(Collection<Variable> variables) {
-        lastOffsets.push(currentOffset);
-        for (Variable var : variables) {
-            currentOffset -= 4;
-            var.addressingOffset = currentOffset;
-        }
-        localsScopeStack.push(variables.stream().collect(Collectors.toMap(var -> var.name, var -> var)));
-    }
+//    public void putNewScope(Collection<Variable> variables) {
+//        lastOffsets.push(currentOffset);
+//        for (Variable var : variables) {
+//            currentOffset -= 4;
+//            var.addressingOffset = currentOffset;
+//        }
+//        localsScopeStack.push(variables.stream().collect(Collectors.toMap(var -> var.name, var -> var)));
+//    }
 
     public Map<String, Variable> getLastScope() {
         return localsScopeStack.peekLast();

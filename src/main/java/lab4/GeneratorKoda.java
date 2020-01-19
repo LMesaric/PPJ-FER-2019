@@ -1044,7 +1044,13 @@ public class GeneratorKoda {
                     directDeclaratorType = var.fullType;
                     idn = var.name;
 
-                    if (currentFunc != null) appendCode("SUB SP, 4, SP");
+                    if (var.fullType.isVariable()) {
+                        var.memSize = var.fullType.array ? 4 * var.fullType.brElements : 4;
+                        if (currentFunc != null) currentFunc.putNewVariable(var);
+                        else globalVariableLabels.put(var.name, createNewConstant(0));
+
+                        if (currentFunc != null) appendCode("SUB SP, %D " + var.memSize + ", SP");
+                    }
 
                     break;
                 case "<inicijalizator>":
@@ -1137,10 +1143,6 @@ public class GeneratorKoda {
             error(node);
         }
         Variable var = new Variable(name, fullType);
-        if (node.children.size() == 1) {
-            if (currentFunc != null) currentFunc.putNewVariable(var);
-            else globalVariableLabels.put(name, createNewConstant(0));
-        }
         return new Variable(name, fullType);
     }
 
