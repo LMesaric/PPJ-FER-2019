@@ -195,7 +195,11 @@ public class GeneratorKoda {
                     if (ret == null) error(node);
                     if (ret.fullType.isVariable()) {
                         variableLocationToR4(idn);
-                        appendCode(variableToR0(idn));
+                        if (ret.fullType.array) {
+                            appendCode("MOVE R4, R0");
+                        } else {
+                            appendCode(variableToR0(idn));
+                        }
                         appendCode("PUSH R0");
                     }
                     return ret;
