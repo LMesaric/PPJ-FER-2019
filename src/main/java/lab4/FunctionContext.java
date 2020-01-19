@@ -11,6 +11,7 @@ public class FunctionContext {
     Deque<Integer> lastOffsets = new ArrayDeque<>();
     int currentOffset = -4;
     Deque<LoopGenerationContext> loops = new ArrayDeque<>();
+    boolean returnWritten = false;
 
     List<String> commands = new ArrayList<>();
 
@@ -50,8 +51,8 @@ public class FunctionContext {
     }
 
     public int getLastScopeMemSize() {
-        if (localsScopeStack.peekLast() == null) return 0;
-        return localsScopeStack.peekLast().values().stream().mapToInt(v -> v.memSize).sum();
+        if (localsScopeStack.peekFirst() == null) return 0;
+        return localsScopeStack.peekFirst().values().stream().mapToInt(v -> v.memSize).sum();
     }
 
     public void removeLastScope() {

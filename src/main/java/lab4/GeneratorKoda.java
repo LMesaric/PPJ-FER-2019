@@ -697,6 +697,7 @@ public class GeneratorKoda {
             tables.removeFirst();
         }
         appendCode("ADD SP, %D " + currentFunc.getLastScopeMemSize() + ", SP");
+        //System.err.println(currentFunc.getLastScopeMemSize());
         currentFunc.removeLastScope();
     }
 
@@ -859,6 +860,7 @@ public class GeneratorKoda {
 
                     appendCode("MOVE R5, SP");
                     appendCode("RET");
+                    currentFunc.returnWritten = true;
 
                     break;
                 case "<izraz>":
@@ -870,6 +872,7 @@ public class GeneratorKoda {
                     appendCode("POP R6");
                     appendCode("MOVE R5, SP");
                     appendCode("RET");
+                    currentFunc.returnWritten = true;
 
                     return;
             }
@@ -962,6 +965,10 @@ public class GeneratorKoda {
                     currentFunction = oldFunction;
                     break;
             }
+        }
+        if (!currentFunc.returnWritten) {
+            appendCode("MOVE R5, SP");
+            appendCode("RET");
         }
         currentFunc = null;
     }
