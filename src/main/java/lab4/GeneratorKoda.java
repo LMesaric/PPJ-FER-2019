@@ -286,7 +286,7 @@ public class GeneratorKoda {
                             error(node);
                         }
                     }
-                    callFunction(node, arguments);
+                    callFunction(node, arguments, typeExpression);
                     return new TypeExpression(new FullType(typeExpression.fullType.type), false);
                 case "D_ZAGRADA":
                     if (Objects.requireNonNull(typeExpression).fullType.arguments == null) {
@@ -295,7 +295,7 @@ public class GeneratorKoda {
                     if (!typeExpression.fullType.arguments.isEmpty()) {
                         error(node);
                     }
-                    callFunction(node, arguments);
+                    callFunction(node, arguments, typeExpression);
                     return new TypeExpression(new FullType(typeExpression.fullType.type), false);
                 case "OP_INC":
                 case "OP_DEC":
@@ -318,9 +318,11 @@ public class GeneratorKoda {
         return typeExpression;
     }
 
-    private static void callFunction(Node node, List<FullType> arguments) {
-        String functionName = node.children.get(0).children.get(0).children.get(0).elements.get(2);
-        String label = "F_" + functionImplementations.get(functionName).functionName.toUpperCase();
+    private static void callFunction(Node node, List<FullType> arguments, TypeExpression typeExpression) {
+        String functionName = typeExpression.idnName;
+        String label = "F_" + (functionImplementations.get(functionName) != null ?
+                functionImplementations.get(functionName).functionName.toUpperCase() :
+                functionDeclarations.get(functionName).idnName.toUpperCase());
         appendCode("CALL " + label);
         int argumentsSize = (arguments == null) ? 0 : arguments.size();
         appendCode("ADD SP, %D " + 4*argumentsSize + ", SP");
