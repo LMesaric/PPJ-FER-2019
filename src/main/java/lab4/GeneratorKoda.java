@@ -1040,10 +1040,11 @@ public class GeneratorKoda {
     private static void initDeclarator(Node node, Type type) {
         FullType directDeclaratorType = null;
         String idn = null;
+        Variable var = null;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izravni_deklarator>":
-                    Variable var = directDeclarator(child, type);
+                    var = directDeclarator(child, type);
                     directDeclaratorType = var.fullType;
                     idn = var.name;
 
@@ -1060,6 +1061,8 @@ public class GeneratorKoda {
 
                         if (currentFunc != null) appendCode("SUB SP, %D " + var.memSize + ", SP");
                     }
+
+                    variableLocationToR4(var.name);
 
                     break;
                 case "<inicijalizator>":
@@ -1085,8 +1088,10 @@ public class GeneratorKoda {
                         }
                     }
 
-                    appendCode("POP R0");
-                    appendCode(r0ToVariable(idn));
+                    if (!var.fullType.array) {
+                        appendCode("POP R0");
+                        appendCode(r0ToVariable(idn));
+                    }
 
                     return;
             }
@@ -1186,6 +1191,9 @@ public class GeneratorKoda {
             switch (child.elements.get(0)) {
                 case "<izraz_pridruzivanja>":
                     types.add(assignmentExpression(child).fullType);
+                    appendCode("POP R0");
+                    appendCode("STORE R0, (R4)");
+                    appendCode("SUB R4, 4, R4");
                     break;
                 case "<lista_izraza_pridruzivanja>":
                     types.addAll(assignmentExpressionList(child));
