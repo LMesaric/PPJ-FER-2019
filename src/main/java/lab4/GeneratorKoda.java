@@ -251,7 +251,7 @@ public class GeneratorKoda {
                     break;
                 case "<izraz>":
                     appendCode("POP R0");
-                    appendCode("MOVE R4, R3");
+                    appendCode("PUSH R4");
                     if (!checkIntCast(expression(child).fullType)) {
                         error(node);
                     }
@@ -267,7 +267,7 @@ public class GeneratorKoda {
 
                     appendCode("POP R0");
                     appendCode("SHL R0, 2, R0");
-                    appendCode("MOVE R3, R4");
+                    appendCode("POP R4");
                     appendCode("SUB R4, R0, R4");
                     appendCode("LOAD R0, (R4)");
                     appendCode("PUSH R0");
