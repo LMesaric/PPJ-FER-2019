@@ -17,6 +17,7 @@ public class GeneratorKoda {
     private static final Deque<Map<String, TypeExpression>> tables = new ArrayDeque<>();
 
     private static final Map<String, TypeExpression> functionDeclarations = new HashMap<>();
+    private static final Map<String, String> declaredFuncLabels = new HashMap<>();
 
     private static final Map<String, FunctionContext> functionImplementations = new HashMap<>();
 
@@ -39,10 +40,11 @@ public class GeneratorKoda {
         Node root = buildTree(inputText.split("\r?\n"));
         if (root != null) {
             BuilderUtil.appendLine(completeOutput, "MOVE 40000, R7");
-            BuilderUtil.appendLine(completeOutput, "CALL F_INIT_GLOBALS");
+            BuilderUtil.appendLine(completeOutput, "CALL O_INIT_GLOBALS");
             BuilderUtil.appendLine(completeOutput, "CALL F_MAIN");
             BuilderUtil.appendLine(completeOutput, "HALT");
             allLabels.add("F_MAIN");
+            allLabels.add("O_INIT_GLOBALS");
 
             FunctionContext mul = MathUtil.generateMultiplicationImplementation();
             mul.functionLabel = generateRandomLabel();
@@ -57,10 +59,10 @@ public class GeneratorKoda {
             functionImplementations.put(mod.functionName, mod);
 
             initGlobals = new FunctionContext();
-            initGlobals.functionName = "INIT_GLOBALS";
-            initGlobals.functionLabel = generateRandomLabel();
+            initGlobals.functionName = "O_INIT_GLOBALS";
+            initGlobals.functionLabel = "O_INIT_GLOBALS";
             functionImplementations.put(initGlobals.functionName, initGlobals);
-            initGlobals.addCommand("MOVE R0, R0", "F_INIT_GLOBALS");
+            initGlobals.addCommand("MOVE R0, R0", "O_INIT_GLOBALS");
 
             tables.addFirst(new HashMap<>());
             compileUnit(root);
@@ -320,9 +322,9 @@ public class GeneratorKoda {
 
     private static void callFunction(Node node, List<FullType> arguments, TypeExpression typeExpression) {
         String functionName = typeExpression.idnName;
-        String label = "F_" + (functionImplementations.get(functionName) != null ?
-                functionImplementations.get(functionName).functionName.toUpperCase() :
-                functionDeclarations.get(functionName).idnName.toUpperCase());
+        String label = (functionImplementations.get(functionName) != null ?
+                functionImplementations.get(functionName).functionLabel :
+                declaredFuncLabels.get(functionName));
         appendCode("CALL " + label);
         int argumentsSize = (arguments == null) ? 0 : arguments.size();
         appendCode("ADD SP, %D " + 4*argumentsSize + ", SP");
@@ -921,7 +923,6 @@ public class GeneratorKoda {
         FullType oldFunction = currentFunction;
 
         currentFunc = new FunctionContext();
-        currentFunc.functionLabel = generateRandomLabel();
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<ime_tipa>":
@@ -933,8 +934,12 @@ public class GeneratorKoda {
                 case "IDN":
                     functionName = child.elements.get(2);
                     currentFunc.functionName = functionName;
+                    currentFunc.functionLabel = declaredFuncLabels.get(functionName) != null ?
+                            declaredFuncLabels.get(functionName) : "F_" + generateRandomLabel();
+                    if (currentFunc.functionName.equals("main")) currentFunc.functionLabel = "F_MAIN";
                     functionImplementations.put(functionName, currentFunc);
-                    appendCode("MOVE SP, R5", "F_" + functionName.toUpperCase());
+                    declaredFuncLabels.put(functionName, currentFunc.functionLabel);
+                    appendCode("MOVE SP, R5", currentFunc.functionLabel);
                     break;
                 case "KR_VOID":
                     TypeExpression function = tables.getFirst().get(functionName);
@@ -1162,6 +1167,7 @@ public class GeneratorKoda {
                     }
                     tables.getFirst().putIfAbsent(name, new TypeExpression(fullType, false));
                     functionDeclarations.putIfAbsent(name, new TypeExpression(fullType, false));
+                    declaredFuncLabels.putIfAbsent(name, "F_" + generateRandomLabel());
                     return new Variable(name, fullType);
                 case "<lista_parametara>":
                     fullType = new FullType(type, parameterList(child).stream().map(Variable::getFullType).collect(Collectors.toList()));
@@ -1175,6 +1181,7 @@ public class GeneratorKoda {
                     }
                     tables.getFirst().putIfAbsent(name, new TypeExpression(fullType, false));
                     functionDeclarations.putIfAbsent(name, new TypeExpression(fullType, false));
+                    declaredFuncLabels.putIfAbsent(name, "F_" + generateRandomLabel());
                     return new Variable(name, fullType);
             }
         }
