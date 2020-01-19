@@ -11,6 +11,12 @@ public class FullType {
     // Not null if type is function
     List<FullType> arguments = null;
 
+    boolean isPointer = false;
+
+    public boolean isVariable() {
+        return arguments == null;
+    }
+
     FullType(Type type) {
         this.type = Objects.requireNonNull(type);
     }

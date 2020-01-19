@@ -24,7 +24,7 @@ public class GeneratorKoda {
 
     private static final StringBuilder completeOutput = new StringBuilder();
 
-    private static final Map<String, Integer> constants = new HashMap<>();
+    private static final Map<String, Integer> constants = new LinkedHashMap<>();
 
     private static FunctionContext initGlobals;
 
@@ -147,6 +147,17 @@ public class GeneratorKoda {
         appendCode(code, null);
     }
 
+    private static void variableLocationToR4(String variableName) {
+        Variable var = currentFunc == null ? null : currentFunc.findVariable(variableName);
+        if (var != null) {
+            int offset = var.addressingOffset;
+            appendCode((offset >= 0 ? "ADD" : "SUB") + " R5, %D " + Math.abs(offset) + ", R4");
+        } else {
+            String globalLabel = globalVariableLabels.get(variableName);
+            appendCode("MOVE " + globalLabel + ", R4");
+        }
+    }
+
     private static String variableToR0(String variableName) {
         Variable var = currentFunc == null ? null : currentFunc.findVariable(variableName);
         if (var != null) {
@@ -174,15 +185,28 @@ public class GeneratorKoda {
             switch (child.elements.get(0)) {
                 case "IDN":
                     String idn = child.elements.get(2);
-                    appendCode(variableToR0(idn));
-                    appendCode("PUSH R0");
+                    TypeExpression ret = null;
                     for (Map<String, TypeExpression> table : tables) {
                         if (table.containsKey(idn)) {
                             table.get(idn).idnName = idn;
-                            return table.get(idn);
+                            ret = table.get(idn);
                         }
                     }
-                    error(node);
+                    if (ret == null) error(node);
+                    if (ret.fullType.isVariable()) {
+                        variableLocationToR4(idn);
+                        if (ret.fullType.array) {
+                            appendCode("MOVE R4, R0");
+                            if (ret.fullType.isPointer) {
+                                appendCode("LOAD R0, (R4)");
+                                appendCode("MOVE R0, R4");
+                            }
+                        } else {
+                            appendCode(variableToR0(idn));
+                        }
+                        appendCode("PUSH R0");
+                    }
+                    return ret;
                 case "BROJ":
                     if (checkInt(child.elements.get(2)) == null) {
                         error(node);
@@ -205,6 +229,7 @@ public class GeneratorKoda {
                     } else {
                         TypeExpression typeExpression = new TypeExpression(new FullType(new Type(true, PrimitiveType.CHAR), arr.length() + 1), false);
                         typeExpression.constCharArray = true;
+                        typeExpression.charArrayVal = checkConstCharArray(child.elem(2));
                         return typeExpression;
                     }
                 case "<izraz>":
@@ -225,19 +250,26 @@ public class GeneratorKoda {
                     typeExpression = postfixExpression(child);
                     break;
                 case "<izraz>":
+                    appendCode("POP R0");
                     if (!checkIntCast(expression(child).fullType)) {
                         error(node);
                     }
                     break;
                 case "L_ZAGRADA":
-                    currentFunc.commands.remove(currentFunc.commands.size() - 1);
-                    currentFunc.commands.remove(currentFunc.commands.size() - 1);
+                    appendCode("PUSH R4");
                     appendCode("PUSH R5");
                     break;
                 case "D_UGL_ZAGRADA":
                     if (!Objects.requireNonNull(typeExpression).fullType.array) {
                         error(node);
                     }
+
+                    appendCode("POP R0");
+                    appendCode("SHL R0, 2, R0");
+                    appendCode("SUB R4, R0, R4");
+                    appendCode("LOAD R0, (R4)");
+                    appendCode("PUSH R0");
+
                     return new TypeExpression(new FullType(typeExpression.fullType.type), !typeExpression.fullType.type.constant);
                 case "<lista_argumenata>":
                     if (Objects.requireNonNull(typeExpression).fullType.arguments == null) {
@@ -268,12 +300,16 @@ public class GeneratorKoda {
                     if (!Objects.requireNonNull(typeExpression).lExpression || !checkIntCast(typeExpression.fullType)) {
                         error(node);
                     }
-                    // TODO: implement for arrays
-                    String idn = node.child(0).child(0).child(0).elem(2);
-                    appendCode(variableToR0(idn));
+                    //String idn = typeExpression.idnName;
+                    appendCode("LOAD R0, (R4)");
                     if (child.elements.get(0).equals("OP_INC")) appendCode("ADD R0, 1, R0");
                     else if (child.elements.get(0).equals("OP_DEC")) appendCode("SUB R0, 1, R0");
-                    appendCode(r0ToVariable(idn));
+                    if (typeExpression.fullType.type.primitiveType == PrimitiveType.CHAR) {
+                        appendCode("AND R0, 0FF, R0");
+                    }
+                    appendCode("STORE R0, (R4)");
+                    appendCode("POP R0");
+                    appendCode("PUSH R0");
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
             }
         }
@@ -287,6 +323,7 @@ public class GeneratorKoda {
         int argumentsSize = (arguments == null) ? 0 : arguments.size();
         appendCode("ADD SP, %D " + 4*argumentsSize + ", SP");
         appendCode("POP R5");
+        appendCode("POP R4");
         appendCode("PUSH R6");
     }
 
@@ -318,11 +355,14 @@ public class GeneratorKoda {
                     }
 
                     appendCode("POP R0");
-                    String idn = node.child(1).child(0).child(0).child(0).elem(2);
-                    appendCode(variableToR0(idn));
+                    //String idn = typeExpression.idnName;
+                    appendCode("LOAD R0, (R4)");
                     if (node.children.get(0).elements.get(0).equals("OP_INC")) appendCode("ADD R0, 1, R0");
                     else if (node.children.get(0).elements.get(0).equals("OP_DEC")) appendCode("SUB R0, 1, R0");
-                    appendCode(r0ToVariable(idn));
+                    if (typeExpression.fullType.type.primitiveType == PrimitiveType.CHAR) {
+                        appendCode("AND R0, 0FF, R0");
+                    }
+                    appendCode("STORE R0, (R4)");
                     appendCode("PUSH R0");
 
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
@@ -591,6 +631,7 @@ public class GeneratorKoda {
                         error(node);
                     }
                     appendCode("POP R0");
+                    appendCode("PUSH R4");
                     typeExpression = new TypeExpression(postfixExpression.fullType, false);
                     break;
                 case "<izraz_pridruzivanja>":
@@ -600,8 +641,8 @@ public class GeneratorKoda {
                     }
 
                     appendCode("POP R0");
-                    String idn = postfixExpression.idnName;
-                    appendCode(r0ToVariable(idn));
+                    appendCode("POP R4");
+                    appendCode("STORE R0, (R4)");
                     appendCode("PUSH R0");
 
                     return new TypeExpression(typeExpression.fullType, false);
@@ -697,7 +738,9 @@ public class GeneratorKoda {
     private static FullType expressionCommand(Node node, FunctionContext implementation) {
         for (Node child : node.children) {
             if ("<izraz>".equals(child.elements.get(0))) {
-                return expression(child).fullType;
+                FullType ret = expression(child).fullType;
+                //appendCode("POP R0");
+                return ret;
             }
         }
         return new FullType(new Type(false, PrimitiveType.INT));
@@ -897,6 +940,9 @@ public class GeneratorKoda {
                     break;
                 case "<lista_parametara>":
                     parameters = parameterList(child);
+                    for (Variable var : parameters) {
+                        if (var.fullType.array) var.fullType.isPointer = true;
+                    }
                     currentFunc.setParameters(parameters);
                     function = tables.getFirst().get(functionName);
                     definedFunction = new FullType(returnType, parameters.stream().map(Variable::getFullType).collect(Collectors.toList()));
@@ -1006,14 +1052,29 @@ public class GeneratorKoda {
     private static void initDeclarator(Node node, Type type) {
         FullType directDeclaratorType = null;
         String idn = null;
+        Variable var = null;
         for (Node child : node.children) {
             switch (child.elements.get(0)) {
                 case "<izravni_deklarator>":
-                    Variable var = directDeclarator(child, type);
+                    var = directDeclarator(child, type);
                     directDeclaratorType = var.fullType;
                     idn = var.name;
 
-                    if (currentFunc != null) appendCode("SUB SP, 4, SP");
+                    if (var.fullType.isVariable()) {
+                        var.memSize = var.fullType.array ? 4 * var.fullType.brElements : 4;
+                        if (currentFunc != null) {
+                            currentFunc.putNewVariable(var);
+                        } else {
+                            if (var.fullType.array) {
+                                for (int i = 0; i < var.fullType.brElements - 1; i++) createNewConstant(0);
+                            }
+                            globalVariableLabels.put(var.name, createNewConstant(0));
+                        }
+
+                        if (currentFunc != null) appendCode("SUB SP, %D " + var.memSize + ", SP");
+                    }
+
+                    variableLocationToR4(var.name);
 
                     break;
                 case "<inicijalizator>":
@@ -1039,8 +1100,10 @@ public class GeneratorKoda {
                         }
                     }
 
-                    appendCode("POP R0");
-                    appendCode(r0ToVariable(idn));
+                    if (!var.fullType.array) {
+                        appendCode("POP R0");
+                        appendCode(r0ToVariable(idn));
+                    }
 
                     return;
             }
@@ -1106,10 +1169,6 @@ public class GeneratorKoda {
             error(node);
         }
         Variable var = new Variable(name, fullType);
-        if (node.children.size() == 1) {
-            if (currentFunc != null) currentFunc.putNewVariable(var);
-            else globalVariableLabels.put(name, createNewConstant(0));
-        }
         return new Variable(name, fullType);
     }
 
@@ -1128,6 +1187,17 @@ public class GeneratorKoda {
                         for (int i = 0; i < assignmentExpressionType.fullType.brElements; i++) {
                             charTypes.add(new FullType(new Type(false, PrimitiveType.CHAR)));
                         }
+
+                        String str = assignmentExpressionType.charArrayVal;
+                        for (int i=0; i<str.length(); i++) {
+                            appendCode("MOVE %D " + ((int) str.charAt(i)) + ", R0");
+                            appendCode("STORE R0, (R4)");
+                            appendCode("SUB R4, 4, R4");
+                        }
+                        appendCode("MOVE 0, R0");
+                        appendCode("STORE R0, (R4)");
+                        appendCode("SUB R4, 4, R4");
+
                         return new InitializerWrapper(new LinkedList<>(charTypes));
                     }
                     return new InitializerWrapper(assignmentExpressionType.fullType);
@@ -1144,6 +1214,9 @@ public class GeneratorKoda {
             switch (child.elements.get(0)) {
                 case "<izraz_pridruzivanja>":
                     types.add(assignmentExpression(child).fullType);
+                    appendCode("POP R0");
+                    appendCode("STORE R0, (R4)");
+                    appendCode("SUB R4, 4, R4");
                     break;
                 case "<lista_izraza_pridruzivanja>":
                     types.addAll(assignmentExpressionList(child));
@@ -1165,6 +1238,7 @@ public class GeneratorKoda {
         // Tells whether function is defined
         boolean defined;
         boolean constCharArray;
+        String charArrayVal;
 
         String idnName;
 
