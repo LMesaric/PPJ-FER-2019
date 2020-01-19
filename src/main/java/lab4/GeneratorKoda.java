@@ -221,6 +221,7 @@ public class GeneratorKoda {
                     } else {
                         TypeExpression typeExpression = new TypeExpression(new FullType(new Type(true, PrimitiveType.CHAR), arr.length() + 1), false);
                         typeExpression.constCharArray = true;
+                        typeExpression.charArrayVal = checkConstCharArray(child.elem(2));
                         return typeExpression;
                     }
                 case "<izraz>":
@@ -1175,6 +1176,17 @@ public class GeneratorKoda {
                         for (int i = 0; i < assignmentExpressionType.fullType.brElements; i++) {
                             charTypes.add(new FullType(new Type(false, PrimitiveType.CHAR)));
                         }
+
+                        String str = assignmentExpressionType.charArrayVal;
+                        for (int i=0; i<str.length(); i++) {
+                            appendCode("MOVE %D " + ((int) str.charAt(i)) + ", R0");
+                            appendCode("STORE R0, (R4)");
+                            appendCode("SUB R4, 4, R4");
+                        }
+                        appendCode("MOVE 0, R0");
+                        appendCode("STORE R0, (R4)");
+                        appendCode("SUB R4, 4, R4");
+
                         return new InitializerWrapper(new LinkedList<>(charTypes));
                     }
                     return new InitializerWrapper(assignmentExpressionType.fullType);
@@ -1215,6 +1227,7 @@ public class GeneratorKoda {
         // Tells whether function is defined
         boolean defined;
         boolean constCharArray;
+        String charArrayVal;
 
         String idnName;
 
