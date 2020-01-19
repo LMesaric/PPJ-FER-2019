@@ -247,6 +247,7 @@ public class GeneratorKoda {
                     }
                     break;
                 case "L_ZAGRADA":
+                    appendCode("PUSH R4");
                     appendCode("PUSH R5");
                     break;
                 case "D_UGL_ZAGRADA":
@@ -289,15 +290,16 @@ public class GeneratorKoda {
                     if (!Objects.requireNonNull(typeExpression).lExpression || !checkIntCast(typeExpression.fullType)) {
                         error(node);
                     }
-                    // TODO: implement for arrays
-                    String idn = typeExpression.idnName;
-                    appendCode(variableToR0(idn));
+                    //String idn = typeExpression.idnName;
+                    appendCode("LOAD R0, (R4)");
                     if (child.elements.get(0).equals("OP_INC")) appendCode("ADD R0, 1, R0");
                     else if (child.elements.get(0).equals("OP_DEC")) appendCode("SUB R0, 1, R0");
                     if (typeExpression.fullType.type.primitiveType == PrimitiveType.CHAR) {
                         appendCode("AND R0, 0FF, R0");
                     }
-                    appendCode(r0ToVariable(idn));
+                    appendCode("STORE R0, (R4)");
+                    appendCode("POP R0");
+                    appendCode("PUSH R0");
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
             }
         }
@@ -311,6 +313,7 @@ public class GeneratorKoda {
         int argumentsSize = (arguments == null) ? 0 : arguments.size();
         appendCode("ADD SP, %D " + 4*argumentsSize + ", SP");
         appendCode("POP R5");
+        appendCode("POP R4");
         appendCode("PUSH R6");
     }
 
@@ -342,14 +345,14 @@ public class GeneratorKoda {
                     }
 
                     appendCode("POP R0");
-                    String idn = typeExpression.idnName;
-                    appendCode(variableToR0(idn));
+                    //String idn = typeExpression.idnName;
+                    appendCode("LOAD R0, (R4)");
                     if (node.children.get(0).elements.get(0).equals("OP_INC")) appendCode("ADD R0, 1, R0");
                     else if (node.children.get(0).elements.get(0).equals("OP_DEC")) appendCode("SUB R0, 1, R0");
                     if (typeExpression.fullType.type.primitiveType == PrimitiveType.CHAR) {
                         appendCode("AND R0, 0FF, R0");
                     }
-                    appendCode(r0ToVariable(idn));
+                    appendCode("STORE R0, (R4)");
                     appendCode("PUSH R0");
 
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
