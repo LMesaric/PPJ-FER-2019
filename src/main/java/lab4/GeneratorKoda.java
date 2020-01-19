@@ -147,6 +147,17 @@ public class GeneratorKoda {
         appendCode(code, null);
     }
 
+    private static void variableLocationToR4(String variableName) {
+        Variable var = currentFunc == null ? null : currentFunc.findVariable(variableName);
+        if (var != null) {
+            int offset = var.addressingOffset;
+            appendCode((offset >= 0 ? "ADD" : "SUB") + " R5, %D " + Math.abs(offset) + ", R4");
+        } else {
+            String globalLabel = globalVariableLabels.get(variableName);
+            appendCode("MOVE " + globalLabel + ", R4");
+        }
+    }
+
     private static String variableToR0(String variableName) {
         Variable var = currentFunc == null ? null : currentFunc.findVariable(variableName);
         if (var != null) {
@@ -174,15 +185,20 @@ public class GeneratorKoda {
             switch (child.elements.get(0)) {
                 case "IDN":
                     String idn = child.elements.get(2);
-                    appendCode(variableToR0(idn));
-                    appendCode("PUSH R0");
+                    TypeExpression ret = null;
                     for (Map<String, TypeExpression> table : tables) {
                         if (table.containsKey(idn)) {
                             table.get(idn).idnName = idn;
-                            return table.get(idn);
+                            ret = table.get(idn);
                         }
                     }
-                    error(node);
+                    if (ret == null) error(node);
+                    if (ret.fullType.isVariable()) {
+                        variableLocationToR4(idn);
+                        appendCode(variableToR0(idn));
+                        appendCode("PUSH R0");
+                    }
+                    return ret;
                 case "BROJ":
                     if (checkInt(child.elements.get(2)) == null) {
                         error(node);
@@ -225,19 +241,24 @@ public class GeneratorKoda {
                     typeExpression = postfixExpression(child);
                     break;
                 case "<izraz>":
+                    appendCode("POP R0");
                     if (!checkIntCast(expression(child).fullType)) {
                         error(node);
                     }
                     break;
                 case "L_ZAGRADA":
-                    currentFunc.commands.remove(currentFunc.commands.size() - 1);
-                    currentFunc.commands.remove(currentFunc.commands.size() - 1);
                     appendCode("PUSH R5");
                     break;
                 case "D_UGL_ZAGRADA":
                     if (!Objects.requireNonNull(typeExpression).fullType.array) {
                         error(node);
                     }
+
+                    appendCode("POP R0");
+                    appendCode("SUB R4, R0, R4");
+                    appendCode("LOAD R0, (R4)");
+                    appendCode("PUSH R0");
+
                     return new TypeExpression(new FullType(typeExpression.fullType.type), !typeExpression.fullType.type.constant);
                 case "<lista_argumenata>":
                     if (Objects.requireNonNull(typeExpression).fullType.arguments == null) {
