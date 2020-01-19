@@ -24,7 +24,7 @@ public class GeneratorKoda {
 
     private static final StringBuilder completeOutput = new StringBuilder();
 
-    private static final Map<String, Integer> constants = new HashMap<>();
+    private static final Map<String, Integer> constants = new LinkedHashMap<>();
 
     private static FunctionContext initGlobals;
 
@@ -256,6 +256,7 @@ public class GeneratorKoda {
                     }
 
                     appendCode("POP R0");
+                    appendCode("SHL R0, 2, R0");
                     appendCode("SUB R4, R0, R4");
                     appendCode("LOAD R0, (R4)");
                     appendCode("PUSH R0");
@@ -728,7 +729,9 @@ public class GeneratorKoda {
     private static FullType expressionCommand(Node node, FunctionContext implementation) {
         for (Node child : node.children) {
             if ("<izraz>".equals(child.elements.get(0))) {
-                return expression(child).fullType;
+                FullType ret = expression(child).fullType;
+                //appendCode("POP R0");
+                return ret;
             }
         }
         return new FullType(new Type(false, PrimitiveType.INT));
@@ -1046,8 +1049,14 @@ public class GeneratorKoda {
 
                     if (var.fullType.isVariable()) {
                         var.memSize = var.fullType.array ? 4 * var.fullType.brElements : 4;
-                        if (currentFunc != null) currentFunc.putNewVariable(var);
-                        else globalVariableLabels.put(var.name, createNewConstant(0));
+                        if (currentFunc != null) {
+                            currentFunc.putNewVariable(var);
+                        } else {
+                            if (var.fullType.array) {
+                                for (int i = 0; i < var.fullType.brElements - 1; i++) createNewConstant(0);
+                            }
+                            globalVariableLabels.put(var.name, createNewConstant(0));
+                        }
 
                         if (currentFunc != null) appendCode("SUB SP, %D " + var.memSize + ", SP");
                     }
