@@ -467,6 +467,7 @@ public class GeneratorKoda {
         boolean seen = false;
         boolean operation = node.children.size() == 3;
         boolean notEvaluatingRight = operation && Arrays.asList("OP_I", "OP_ILI").contains(node.child(1).elem(0));
+        String pendingSkipEvaluationLabel = null;
 
         for (Node child : node.children) {
             if (child.elements.get(0).equals(firstCase)) {
@@ -525,7 +526,7 @@ public class GeneratorKoda {
                                 appendCode("JR_EQ " + randomLabel);
                                 break;
                             case "OP_NEQ":
-                                appendCode("JR_NEQ " + randomLabel);
+                                appendCode("JR_NE " + randomLabel);
                                 break;
                             case "OP_LT":
                                 appendCode("JR_SLT " + randomLabel);
@@ -552,6 +553,9 @@ public class GeneratorKoda {
                         appendCode("MOVE R2, R0", randomLabel);
                     }
                     appendCode("PUSH R0");
+                    if (pendingSkipEvaluationLabel != null) {
+                        appendCode("MOVE R0, R0", pendingSkipEvaluationLabel);
+                    }
                 }
 
                 if (!seen) {
@@ -568,11 +572,12 @@ public class GeneratorKoda {
                 }
 
                 if (operation && notEvaluatingRight) {
-                    Node tmp = findParentWithName(node, "<izraz_pridruzivanja>");
-                    tmp.pendingSkipEvaluationLabel = generateRandomLabel();
+                    pendingSkipEvaluationLabel = generateRandomLabel();
+                    appendCode("POP R0");
+                    appendCode("PUSH R0");
                     appendCode("CMP R0, 0");
                     String jumpOp = node.child(1).elem(0).equals("OP_I") ? "Z" : "NZ";
-                    appendCode("JR_" + jumpOp + " " + tmp.pendingSkipEvaluationLabel);
+                    appendCode("JR_" + jumpOp + " " + pendingSkipEvaluationLabel);
                 }
             }
         }
@@ -622,8 +627,8 @@ public class GeneratorKoda {
             switch (child.elements.get(0)) {
                 case "<log_ili_izraz>":
                     TypeExpression ret = logOrExpression(child);
-                    if (node.pendingSkipEvaluationLabel != null) appendCode("MOVE R0, R0", node.pendingSkipEvaluationLabel);
-                    node.pendingSkipEvaluationLabel = null;
+//                    if (node.pendingSkipEvaluationLabel != null) appendCode("MOVE R0, R0", node.pendingSkipEvaluationLabel);
+//                    node.pendingSkipEvaluationLabel = null;
                     return ret;
                 case "<postfiks_izraz>":
                     postfixExpression = postfixExpression(child);
@@ -697,6 +702,7 @@ public class GeneratorKoda {
             tables.removeFirst();
         }
         appendCode("ADD SP, %D " + currentFunc.getLastScopeMemSize() + ", SP");
+        //System.err.println(currentFunc.getLastScopeMemSize());
         currentFunc.removeLastScope();
     }
 
@@ -859,6 +865,7 @@ public class GeneratorKoda {
 
                     appendCode("MOVE R5, SP");
                     appendCode("RET");
+                    currentFunc.returnWritten = true;
 
                     break;
                 case "<izraz>":
@@ -870,6 +877,7 @@ public class GeneratorKoda {
                     appendCode("POP R6");
                     appendCode("MOVE R5, SP");
                     appendCode("RET");
+                    currentFunc.returnWritten = true;
 
                     return;
             }
@@ -962,6 +970,10 @@ public class GeneratorKoda {
                     currentFunction = oldFunction;
                     break;
             }
+        }
+        if (!currentFunc.returnWritten) {
+            appendCode("MOVE R5, SP");
+            appendCode("RET");
         }
         currentFunc = null;
     }
