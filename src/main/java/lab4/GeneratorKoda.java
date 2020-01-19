@@ -197,6 +197,10 @@ public class GeneratorKoda {
                         variableLocationToR4(idn);
                         if (ret.fullType.array) {
                             appendCode("MOVE R4, R0");
+                            if (ret.fullType.isPointer) {
+                                appendCode("LOAD R0, (R4)");
+                                appendCode("MOVE R0, R4");
+                            }
                         } else {
                             appendCode(variableToR0(idn));
                         }
@@ -936,6 +940,9 @@ public class GeneratorKoda {
                     break;
                 case "<lista_parametara>":
                     parameters = parameterList(child);
+                    for (Variable var : parameters) {
+                        if (var.fullType.array) var.fullType.isPointer = true;
+                    }
                     currentFunc.setParameters(parameters);
                     function = tables.getFirst().get(functionName);
                     definedFunction = new FullType(returnType, parameters.stream().map(Variable::getFullType).collect(Collectors.toList()));
