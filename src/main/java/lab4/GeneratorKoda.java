@@ -621,6 +621,7 @@ public class GeneratorKoda {
                         error(node);
                     }
                     appendCode("POP R0");
+                    appendCode("PUSH R4");
                     typeExpression = new TypeExpression(postfixExpression.fullType, false);
                     break;
                 case "<izraz_pridruzivanja>":
@@ -630,8 +631,8 @@ public class GeneratorKoda {
                     }
 
                     appendCode("POP R0");
-                    String idn = postfixExpression.idnName;
-                    appendCode(r0ToVariable(idn));
+                    appendCode("POP R4");
+                    appendCode("STORE R0, (R4)");
                     appendCode("PUSH R0");
 
                     return new TypeExpression(typeExpression.fullType, false);
