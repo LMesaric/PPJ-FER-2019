@@ -290,10 +290,13 @@ public class GeneratorKoda {
                         error(node);
                     }
                     // TODO: implement for arrays
-                    String idn = node.child(0).child(0).child(0).elem(2);
+                    String idn = typeExpression.idnName;
                     appendCode(variableToR0(idn));
                     if (child.elements.get(0).equals("OP_INC")) appendCode("ADD R0, 1, R0");
                     else if (child.elements.get(0).equals("OP_DEC")) appendCode("SUB R0, 1, R0");
+                    if (typeExpression.fullType.type.primitiveType == PrimitiveType.CHAR) {
+                        appendCode("AND R0, 0FF, R0");
+                    }
                     appendCode(r0ToVariable(idn));
                     return new TypeExpression(new FullType(new Type(false, PrimitiveType.INT)), false);
             }
@@ -339,10 +342,13 @@ public class GeneratorKoda {
                     }
 
                     appendCode("POP R0");
-                    String idn = node.child(1).child(0).child(0).child(0).elem(2);
+                    String idn = typeExpression.idnName;
                     appendCode(variableToR0(idn));
                     if (node.children.get(0).elements.get(0).equals("OP_INC")) appendCode("ADD R0, 1, R0");
                     else if (node.children.get(0).elements.get(0).equals("OP_DEC")) appendCode("SUB R0, 1, R0");
+                    if (typeExpression.fullType.type.primitiveType == PrimitiveType.CHAR) {
+                        appendCode("AND R0, 0FF, R0");
+                    }
                     appendCode(r0ToVariable(idn));
                     appendCode("PUSH R0");
 
